@@ -56,6 +56,10 @@ export function MpesaPaymentFormClient({
     setIsLoading(true);
     try {
       setIsAddingPayment(false);
+      console.log("add payment method:", {
+        newFullName,
+        newPhoneNumber,
+      });
       setNewFullName("");
       setNewPhoneNumber("");
       router.refresh();
@@ -71,7 +75,7 @@ export function MpesaPaymentFormClient({
       <Dialog open={isAddingPayment} onOpenChange={setIsAddingPayment}>
         <DialogTrigger asChild>
           <div className="lg:mx-7">
-            <Button className="w-full">
+            <Button className="w-full lg:w-[80%] justify-center">
               <Plus className="h-4 w-4 mr-2" />
               Add New M-Pesa Number
             </Button>

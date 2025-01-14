@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { BottomNavWrapper } from "@/components/BottomNavWrapper";
 import SignInButton from "@/components/SignInButton";
 
 export default function SignIn() {
@@ -30,7 +28,6 @@ export default function SignIn() {
           </p>
           <SignInButton />
         </div>
-        <BottomNavWrapper />;
       </div>
     </>
   );

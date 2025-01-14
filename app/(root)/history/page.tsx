@@ -1,9 +1,23 @@
 // app/history/page.tsx
-export default function History() {
+import { Suspense } from "react";
+import { HistoryList } from "@/components/HistoryList";
+import { HistoryHeader } from "@/components/HistoryHeader";
+
+export default function HistoryPage() {
   return (
-    <main className="flex flex-col items-center justify-center p-4">
-      <h1 className="text-2xl font-bold">Your Transaction History</h1>
-      {/* Content for transaction history */}
-    </main>
+    <div className="flex flex-col min-h-screen bg-white text-black">
+      <HistoryHeader />
+      <main className="flex-1 p-4">
+        <Suspense
+          fallback={
+            <div className="text-black text-center mt-8">
+              Loading transactions...
+            </div>
+          }
+        >
+          <HistoryList />
+        </Suspense>
+      </main>
+    </div>
   );
 }

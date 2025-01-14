@@ -13,7 +13,7 @@ export default function UserHomePageCard({ user }: { user: User }) {
         <div className="flex items-baseline justify-center">
           <span className="text-2xl mr-1">{user.baseCurrency}</span>
           <span className="text-4xl sm:text-6xl font-medium">
-            {user.balance}
+            {user.balance.toLocaleString()}
           </span>
         </div>
       </div>

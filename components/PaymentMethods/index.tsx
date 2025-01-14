@@ -30,7 +30,7 @@ export default async function MpesaPaymentForm({
           {paymentMethods.map((method) => (
             <div
               key={method.id}
-              className="flex items-center justify-between p-4 border rounded-lg"
+              className="flex items-center justify-between p-4 "
             >
               <div className="flex items-center gap-4">
                 <RadioGroupItem value={method.id} id={method.id} />

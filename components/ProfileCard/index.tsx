@@ -4,11 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 const profileCard = ({ user }: any) => {
   return (
     <div>
-      <Card className=" bg-opacity-10 backdrop-blur-md border-none  ">
+      <Card className=" bg-opacity-10  border-none  ">
         <CardContent className="p-6">
           <div className="flex items-center">
             <Avatar className="w-20 h-20 mr-4 border-2 border-white">
-              <AvatarImage src={user.image} alt={user.name?.slice(0, 8)} />
+              <AvatarImage src={user?.name} alt={user.name?.slice(0, 8)} />
               <AvatarFallback>
                 {user.name?.charAt(0).toUpperCase()}
               </AvatarFallback>

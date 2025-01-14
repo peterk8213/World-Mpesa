@@ -61,26 +61,25 @@ export default function Home() {
     },
   ];
 
-  const user = {
+  const user: User = {
     name: "John Doe",
     balance: 5000.75,
-    baseCurrency: "USD",
+    baseCurrency: "KES",
   };
 
   return (
-    <div className="flex flex-col  h-[100dvh] bg-white text-black overflow-hidden  px-3">
+    <div className="flex flex-col  h-[100dvh] bg-white text-black overflow-hidden  px-3 lg:mx-20">
       <NavBar />
       <main className="flex-1 flex flex-col px-1 overflow-auto mt-3">
         <div>
-          // render user homepage and pass user as props
-          <UserHomePageCard user={} />
+          {/* render user homepage and pass user as props */}
+          <UserHomePageCard user={user} />
           {/* <UserHomePageCard user={user:} /> */}
         </div>
 
         <div className="flex justify-around items-center mb-auto mt-7 lg:mt-5 px-3">
           <Link href={"/deposit"}>
             <div className="text-center">
-              s
               <Button
                 variant="ghost"
                 size="sm"

@@ -1,89 +1,87 @@
 // app/profile/page.tsx
 
-"use client";
+import { ArrowLeft, HelpCircle, ChevronRight } from "lucide-react";
 
-import { useState } from "react";
-import { ArrowLeft, LogOut, HelpCircle, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-import { signOut, useSession } from "next-auth/react";
 import { VerifyBlock } from "@/components/Verify";
 import { Card, CardContent } from "@/components/ui/card";
 import ProfileNavBar from "@/components/ProfileNavBar";
 import ProfileCard from "@/components/ProfileCard";
 import MpesaPaymentForm from "@/components/PaymentMethods";
+import Link from "next/link";
+
+// Define the User type
+type User = {
+  name: string;
+  balance: number;
+  baseCurrency: string;
+};
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const { data: session } = useSession();
-  const user = session?.user;
-  const [isVerified, setIsVerified] = useState(false);
+  // const { data: session } = useSession();
+  // const user = session?.user;
+  // const [isVerified, setIsVerified] = useState(false);
 
-  const handleLogout = async () => {
-    await signOut();
-    router.push("/");
+  // if (!user) {
+  //   router.push("/");
+  // }
+
+  const user: User = {
+    name: "John Doe",
+    balance: 5000.75,
+    baseCurrency: "KES",
   };
 
-  if (!user) {
-    router.push("/");
-  }
-
   return (
-    <div className="flex flex-col min-h-screen   p-2 lg:p-8  bg-gradient-to-br from-blue-100 to-gray-100">
-      <ProfileNavBar />
-      <div className="">
-        <ProfileCard user={user} />
-      </div>
-      <MpesaPaymentForm
-        initialPaymentMethods={[
-          {
-            id: "string",
-            fullName: "M-pesa",
-            phoneNumber: "0757608513",
-            isDefault: true,
-          },
-          {
-            id: "string",
-            fullName: "M-pesa",
-            phoneNumber: "0769807821",
-            isDefault: false,
-          },
-        ]}
-      />
-
+    <div className="flex flex-col min-h-screen   p-2 lg:p-12 lg:mx-20 animate-fade-in">
       <main className="flex-1 flex flex-col px-4 py-6 space-y-6">
-        <Card className="bg-white bg-opacity-10 backdrop-blur-md border-none ">
+        <div>
+          <ProfileNavBar />
+        </div>
+        <div className="">
+          <ProfileCard user={user} />
+        </div>
+        <MpesaPaymentForm
+          initialPaymentMethods={[
+            {
+              id: "string1",
+              fullName: "kennedy kanini",
+              phoneNumber: "0757608513",
+              isDefault: true,
+            },
+            {
+              id: "string",
+              fullName: "M-pesa",
+              phoneNumber: "0769807821",
+              isDefault: false,
+            },
+          ]}
+        />
+        <Card className="bg-white bg-opacity-10  border-none ">
           <CardContent className="p-6 space-y-4">
-            <Button
-              variant="ghost"
-              className="w-full justify-between py-2  hover:bg-white hover:bg-opacity-20"
-              onClick={() => router.push("/settings")}
-            >
-              <span>Settings</span>
-              <ChevronRight className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-between py-2  hover:bg-white hover:bg-opacity-20"
-              onClick={() => router.push("/help")}
-            >
-              <span>Help & Support</span>
-              <ChevronRight className="h-5 w-5" />
-            </Button>
+            <Link href={`/settings/${user?.name}`}>
+              <Button
+                variant="ghost"
+                className="w-full justify-between py-2  hover:bg-white hover:bg-opacity-20"
+              >
+                <span>Settings</span>
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href={`/help/${user?.name}`}>
+              <Button
+                variant="ghost"
+                className="w-full justify-between py-2  hover:bg-white hover:bg-opacity-20"
+              >
+                <span>Help & Support</span>
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </Link>
           </CardContent>
         </Card>
 
         <div className="flex-1" />
-
-        <Button
-          variant="destructive"
-          className="w-full py-3 bg-red-500 hover:bg-red-600 mb-7"
-          onClick={handleLogout}
-        >
-          <LogOut className="mr-2 h-5 w-5" />
-          Sign Out
-        </Button>
       </main>
     </div>
   );

@@ -26,7 +26,7 @@ export default function RootLayout({
           <ErudaClient>
             <MiniKitProvider>
               {/* Main content area */}
-              <main className="min-h-screen flex flex-col">{children}</main>
+              <main className="min-h-screen ">{children}</main>
             </MiniKitProvider>
           </ErudaClient>
         </NextAuthProvider>
