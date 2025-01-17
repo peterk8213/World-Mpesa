@@ -8,7 +8,10 @@ const profileCard = ({ user }: any) => {
         <CardContent className="p-6">
           <div className="flex items-center">
             <Avatar className="w-20 h-20 mr-4 border-2 border-white">
-              <AvatarImage src={user?.name} alt={user.name?.slice(0, 8)} />
+              <AvatarImage
+                src={"https://avatar.iran.liara.run/public"}
+                alt={user.name?.slice(0, 8)}
+              />
               <AvatarFallback>
                 {user.name?.charAt(0).toUpperCase()}
               </AvatarFallback>

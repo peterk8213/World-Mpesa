@@ -1,6 +1,13 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, {
+  NextAuthOptions,
+  Profile as NextAuthProfile,
+} from "next-auth";
 
-const authOptions: NextAuthOptions = {
+import { User } from "@/models/User";
+import dbConnect from "@/lib/mongodb";
+import getRedisClient from "@/lib/redis";
+
+export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 
   providers: [
@@ -26,7 +33,72 @@ const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
+      try {
+        const { id, name, verificationLevel, email } = user;
+        const redis = await getRedisClient();
+        const cachedData = await redis.get(id);
+        if (!cachedData) {
+          await dbConnect();
+          const existingUser = await User.findOne({ worldId: id });
+
+          if (existingUser) {
+            // Store data in cache with a TTL (e.g., 3600 seconds)
+            await redis.setEx(id, 3600, JSON.stringify(existingUser));
+          }
+
+          console.log("existing User signed in redis set", existingUser);
+
+          if (!existingUser) {
+            const newuser = await User.create({
+              worldId: id,
+              name,
+              email,
+              verificationLevel,
+            });
+
+            await redis.setEx(id, 3600, JSON.stringify(newuser));
+
+            console.log("new User signed in  ", newuser);
+          }
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
       return true;
+    },
+    async jwt({ token, account, profile }) {
+      try {
+        if (account && profile) {
+          const redis = await getRedisClient();
+          const cachedData = await redis.get(profile.sub);
+
+          if (!cachedData) {
+            await dbConnect();
+            const existingUser = await User.findOne({
+              worldId: profile.sub,
+            });
+            if (existingUser) {
+              token.isnewUser = false;
+            }
+          } else if (cachedData) {
+            token.isnewUser = false;
+          } else {
+            token.isnewUser = true;
+          }
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      Object.assign(
+        session,
+        { isnewUser: token.isnewUser },
+        { worldId: token.sub }
+      );
+      return session;
     },
   },
   debug: process.env.NODE_ENV === "development",

@@ -2,15 +2,16 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import { signOut } from "next-auth/react";
 
 export default function ProfileNavBar() {
+  const router = useRouter();
+
   const handleLogout = () => {
     signOut();
-    router.push("/");
+    redirect("/");
   };
-  const router = useRouter();
 
   return (
     <div className=" border-b-4  border-gray-200">

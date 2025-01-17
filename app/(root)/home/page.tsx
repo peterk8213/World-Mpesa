@@ -2,6 +2,12 @@
 // import { VerifyBlock } from "@/components/Verify";
 import Link from "next/link";
 import NavBar from "@/components/TopNavBar";
+import { Wallet } from "@/models/Wallet";
+import dbConnect from "@/lib/mongodb";
+import getRedisClient from "@/lib/redis";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
 interface CryptoData {
   name: string;
@@ -25,7 +31,21 @@ import { Button } from "@/components/ui/button";
 import CryptoList from "@/components/CryptoList";
 import UserHomePageCard from "@/components/UserHomePage";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  console.log("session", session);
+
+  if (!session) {
+    redirect("/");
+  }
+
+  // Use the session.user.id to query user-specific data
+
+  const user = await Wallet.findOne({
+    worldId: session?.worldId,
+  }).populate("userId");
+
+  console.log("user", user);
   const cryptoData = [
     {
       name: "Worldcoin",
@@ -60,12 +80,6 @@ export default function Home() {
       iconBg: "bg-orange-500",
     },
   ];
-
-  const user: User = {
-    name: "John Doe",
-    balance: 5000.75,
-    baseCurrency: "KES",
-  };
 
   return (
     <div className="flex flex-col  h-[100dvh] bg-white text-black overflow-hidden  px-3 lg:mx-20">

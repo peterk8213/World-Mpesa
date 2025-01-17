@@ -34,7 +34,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen   p-2 lg:p-12 lg:mx-20 animate-fade-in">
+    <div className="flex flex-col min-h-screen   p-2 lg:p-12 lg:mx-20 ">
       <main className="flex-1 flex flex-col px-4 py-6 space-y-6">
         <div>
           <ProfileNavBar />

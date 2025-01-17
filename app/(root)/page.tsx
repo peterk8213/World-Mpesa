@@ -1,14 +1,26 @@
-"use client";
 import SplashScreen from "@/components/SplashScreen";
-import { useSession } from "next-auth/react";
 
-import Home from "./home/page";
-export default function Entry() {
-  const { data: session, status } = useSession();
+import { redirect } from "next/navigation";
 
-  return (
-    <>
-      <main>{session ? <Home /> : <SplashScreen />}</main>
-    </>
-  );
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+export default async function Entry() {
+  const session = await getServerSession(authOptions);
+  console.log(session);
+
+  if (session) {
+    redirect("/home");
+  }
+
+  // if (status === "unauthenticated") {
+  //   redirect("/");
+  // }
+  if (!session) {
+    return (
+      <>
+        <main>{<SplashScreen />}</main>
+      </>
+    );
+  }
 }

@@ -2,7 +2,7 @@
 type User = {
   name: string;
   balance: number;
-  baseCurrency: string;
+  currency: string;
 };
 
 export default function UserHomePageCard({ user }: { user: User }) {
@@ -11,7 +11,7 @@ export default function UserHomePageCard({ user }: { user: User }) {
       <div className="text-center my-4">
         <p className="text-sm text-gray-500 mb-1">Welcome, {user.name}</p>
         <div className="flex items-baseline justify-center">
-          <span className="text-2xl mr-1">{user.baseCurrency}</span>
+          <span className="text-2xl mr-1">{user.currency}</span>
           <span className="text-4xl sm:text-6xl font-medium">
             {user.balance.toLocaleString()}
           </span>

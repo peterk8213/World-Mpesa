@@ -6,7 +6,12 @@ import {
   PayCommandInput,
 } from "@worldcoin/minikit-js";
 
+import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+
 const sendPayment = async () => {
+  const { data: session } = useSession();
+  console.log("session data from client", session);
   try {
     const res = await fetch(`/api/initiate-payment`, {
       method: "POST",
@@ -22,11 +27,11 @@ const sendPayment = async () => {
       tokens: [
         {
           symbol: Tokens.WLD,
-          token_amount: tokenToDecimals(0.5, Tokens.WLD).toString(),
+          token_amount: tokenToDecimals(0.1, Tokens.WLD).toString(),
         },
         {
           symbol: Tokens.USDCE,
-          token_amount: tokenToDecimals(0.1, Tokens.USDCE).toString(),
+          token_amount: tokenToDecimals(0.001, Tokens.USDCE).toString(),
         },
       ],
       description: "Watch this is a test",
@@ -71,8 +76,10 @@ const handlePay = async () => {
 
 export const PayBlock = () => {
   return (
-    <button className="bg-blue-500 p-4" onClick={handlePay}>
-      Pay
-    </button>
+    <div>
+      <Button onClick={handlePay} className="w-full py-6 text-lg rounded-full">
+        Pay now
+      </Button>
+    </div>
   );
 };

@@ -1,20 +1,6 @@
 import SignInButton from "@/components/SignInButton";
 
 export default function SignIn() {
-  const handleSuccess = () => {
-    console.log("Verification successful!");
-    // Redirect to the dashboard or continue with your app flow
-  };
-
-  const handleVerify = async (verificationResponse: any) => {
-    console.log("Verification Response:", verificationResponse);
-    // Send this response to your backend for validation
-  };
-
-  const handleError = (error: Error) => {
-    console.error("Verification Error:", error.message);
-  };
-
   return (
     <>
       <div className=" overscroll-none h-screen overflow-hidden items-center">

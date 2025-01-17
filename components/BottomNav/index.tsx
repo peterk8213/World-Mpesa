@@ -33,7 +33,7 @@ export function BottomNav({ className }: BottomNavProps) {
     {
       icon: <Wallet />,
       label: "Home",
-      href: "/",
+      href: "/home",
     },
     {
       icon: (
