@@ -1,6 +1,9 @@
 import { MiniAppPaymentSuccessPayload } from "@worldcoin/minikit-js";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { Transaction } from "@/models/Transaction";
+
+import { WorldcoinTransaction } from "@/models/WldTransaction";
 
 interface IRequestPayload {
   payload: MiniAppPaymentSuccessPayload;
@@ -36,6 +39,13 @@ export async function POST(req: NextRequest) {
     // 2. Here we optimistically confirm the transaction.
     // Otherwise, you can poll until the status == mined
     if (transaction.reference == reference && transaction.status != "failed") {
+      const WldTransaction = await WorldcoinTransaction.createTransaction(
+        transaction
+      );
+      const { reference } = transaction;
+      const updatedTransaction = await Transaction.findOneAndUpdate(reference, {
+        status: "completed",
+      });
       return NextResponse.json({ success: true });
     } else {
       return NextResponse.json({ success: false });

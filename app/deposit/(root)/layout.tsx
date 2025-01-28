@@ -1,4 +1,5 @@
-import { BottomNav } from "@/components/BottomNav";
+import { ArrowLeft } from "lucide-react";
+import { Header } from "@/components/DepositHeader";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -10,7 +11,7 @@ export default async function Layout({
   return (
     <>
       <main>
-        {session && <BottomNav />}
+        {<Header leftIcon={<ArrowLeft className="h-6 w-6" />} />}
         {children}
       </main>
     </>

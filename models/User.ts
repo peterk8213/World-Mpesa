@@ -14,6 +14,22 @@ const UserSchema = new Schema(
   { timestamps: true }
 );
 
+// static method to get a user by World ID
+UserSchema.statics.getUserByWorldId = async function (worldId) {
+  return this.findOne({ worldId });
+};
+
+// static method to add a new user
+
+UserSchema.statics.addNewUser = async function ({
+  worldId,
+  name,
+  email,
+  verificationLevel,
+}) {
+  return this.create({ worldId, name, email, verificationLevel });
+};
+
 UserSchema.post("save", async function (doc) {
   try {
     await Wallet.create({

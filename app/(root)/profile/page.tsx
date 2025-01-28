@@ -8,7 +8,7 @@ import { VerifyBlock } from "@/components/Verify";
 import { Card, CardContent } from "@/components/ui/card";
 import ProfileNavBar from "@/components/ProfileNavBar";
 import ProfileCard from "@/components/ProfileCard";
-import MpesaPaymentForm from "@/components/PaymentMethods";
+import PaymenMethods from "@/components/PaymentMethods";
 import Link from "next/link";
 
 // Define the User type
@@ -42,22 +42,7 @@ export default function ProfilePage() {
         <div className="">
           <ProfileCard user={user} />
         </div>
-        <MpesaPaymentForm
-          initialPaymentMethods={[
-            {
-              id: "string1",
-              fullName: "kennedy kanini",
-              phoneNumber: "0757608513",
-              isDefault: true,
-            },
-            {
-              id: "string",
-              fullName: "M-pesa",
-              phoneNumber: "0769807821",
-              isDefault: false,
-            },
-          ]}
-        />
+        <PaymenMethods />
         <Card className="bg-white bg-opacity-10  border-none ">
           <CardContent className="p-6 space-y-4">
             <Link href={`/settings/${user?.name}`}>

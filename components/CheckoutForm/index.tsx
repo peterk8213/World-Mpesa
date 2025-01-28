@@ -10,20 +10,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export function CheckoutForm({ amount }: { amount: string | any }) {
+export function CheckoutForm({ userAmount }: { userAmount: string }) {
   const formattedAmount = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(parseFloat(amount || "0"));
+  }).format(parseFloat(userAmount || "0"));
 
-  const fee = parseFloat(amount || "0") * 0.015;
+  const fee = parseFloat("0") * 0.015;
   const formattedFee = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
   }).format(fee);
 
   const handlePay = () => {
-    if (parseFloat(amount || "0") > 1000) {
+    if (parseFloat(userAmount || "0") > 1000) {
       redirect("/error");
     } else {
       redirect("/success");
@@ -33,7 +33,7 @@ export function CheckoutForm({ amount }: { amount: string | any }) {
   return (
     <main className="flex-col h-full justify-around items-center">
       <div className="flex justify-center items-center">
-        <Card className="w-[95%] lg:w-auto  bg-gray-100">
+        <Card className="w-[95%] lg:w-auto  bg-gray-100 xs:mt-6">
           <CardHeader>
             <CardTitle>Summary</CardTitle>
             <CardDescription>Confirm payment details</CardDescription>
@@ -54,45 +54,33 @@ export function CheckoutForm({ amount }: { amount: string | any }) {
               </div>
 
               <div>
-                <h3 className="text-gray-500 mb-2">Gas Fee (1.5%)</h3>
+                <h3 className="text-gray-500 mb-2">Gas Fee (0.0%)</h3>
                 <div className="font-semibold">{formattedFee}</div>
+              </div>
+              <div>
+                <h3 className="text-gray-500 mb-2">Equivalent in Fiat</h3>
+                <div className="">
+                  <div className="font-semibold">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "KES",
+                    }).format(parseFloat(userAmount || "0") * 129)}
+                    <div>
+                      <span className="text-xs text-gray-500">
+                        1 USD = 127 KES
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
           <CardFooter className="flex-col ">
             <div className="justify-center  items-center mt-2">
-              <PayBlock />
+              <PayBlock userAmount={userAmount} />
             </div>
           </CardFooter>
         </Card>
-      </div>
-
-      <div className="mt-auto fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
-        <div className="text-center text-sm text-gray-500 mb-4">
-          <p>Powered by MpesaWorld</p>
-          <p>
-            By proceeding with "Pay," you accept the{" "}
-            <a
-              href="/terms"
-              target="_blank"
-              className="text-blue-500 underline"
-            >
-              Terms & Conditions
-            </a>{" "}
-            of MpesaWorld
-          </p>
-          <p>
-            and agree to the{" "}
-            <a
-              href="/privacy"
-              target="_blank"
-              className="text-blue-500 underline"
-            >
-              Privacy Policy
-            </a>{" "}
-            of WLD.
-          </p>
-        </div>
       </div>
     </main>
   );

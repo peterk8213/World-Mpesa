@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
           console.log("existing User signed in redis set", existingUser);
 
           if (!existingUser) {
-            const newuser = await User.create({
+            const newuser = await User.addNewUser({
               worldId: id,
               name,
               email,
@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
       try {
         if (account && profile) {
           const redis = await getRedisClient();
-          const cachedData = await redis.get(profile.sub);
+          const cachedData = await redis.get(profile?.sub);
 
           if (!cachedData) {
             await dbConnect();
@@ -79,8 +79,10 @@ export const authOptions: NextAuthOptions = {
             });
             if (existingUser) {
               token.isnewUser = false;
+              token.userId = existingUser._id;
             }
           } else if (cachedData) {
+            token.userId = JSON.parse(cachedData)._id;
             token.isnewUser = false;
           } else {
             token.isnewUser = true;
@@ -96,7 +98,8 @@ export const authOptions: NextAuthOptions = {
       Object.assign(
         session,
         { isnewUser: token.isnewUser },
-        { worldId: token.sub }
+        { worldId: token.sub },
+        { userId: token.userId }
       );
       return session;
     },

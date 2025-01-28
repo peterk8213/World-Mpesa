@@ -4,6 +4,7 @@ import Link from "next/link";
 import NavBar from "@/components/TopNavBar";
 import { Wallet } from "@/models/Wallet";
 import dbConnect from "@/lib/mongodb";
+
 import getRedisClient from "@/lib/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -33,19 +34,24 @@ import UserHomePageCard from "@/components/UserHomePage";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
+
+  console.log("session from home", session);
   console.log("session", session);
 
   if (!session) {
     redirect("/");
   }
+  await dbConnect();
+  const { userId } = session;
 
   // Use the session.user.id to query user-specific data
 
   const user = await Wallet.findOne({
-    worldId: session?.worldId,
+    userId,
   }).populate("userId");
 
   console.log("user", user);
+  // const user = { name: "John Doe", balance: 100, baseCurrency: "USD" };
   const cryptoData = [
     {
       name: "Worldcoin",

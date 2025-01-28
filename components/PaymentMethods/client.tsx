@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface PaymentMethod {
   id: string;
@@ -51,14 +52,38 @@ export function MpesaPaymentFormClient({
     }
   };
 
-  const handleAddPayment = (e: React.FormEvent) => {
+  const handleAddPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       setIsAddingPayment(false);
-      console.log("add payment method:", {
-        newFullName,
-        newPhoneNumber,
+      const { data: session } = useSession();
+      console.log("add payment method: session", {
+        payload: {
+          userId: session?.userId,
+          worldId: session?.worldId,
+          newFullName,
+          newPhoneNumber,
+        },
+      });
+
+      const res = await fetch(`/api/add-payment-account`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          payload: {
+            userId: session?.userId,
+            worldId: session?.worldId,
+            newFullName,
+            newPhoneNumber,
+          },
+        }),
+      });
+
+      // const { id } = await res.json();
+
+      console.log("add payment method: from client", {
+        res,
       });
       setNewFullName("");
       setNewPhoneNumber("");

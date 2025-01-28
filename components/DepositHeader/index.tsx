@@ -10,9 +10,10 @@ interface HeaderProps {
 }
 
 export function Header({ title, showLogo = true, leftIcon }: HeaderProps) {
+  const router = useRouter();
   return (
     <header className="flex items-center justify-between p-4 border-b">
-      <Button variant="ghost" size="icon" onClick={() => useRouter().back()}>
+      <Button variant="ghost" size="icon" onClick={() => router.back()}>
         {leftIcon}
       </Button>
       {showLogo ? (
