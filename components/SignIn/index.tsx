@@ -1,4 +1,5 @@
 import SignInButton from "@/components/SignInButton";
+import { Suspense } from "react";
 
 export default function SignIn() {
   return (

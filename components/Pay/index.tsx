@@ -103,12 +103,12 @@ const handlePay = async ({ userAmount }: { userAmount: string }) => {
 
 export const PayBlock = ({ userAmount }: { userAmount: string }) => {
   return (
-    <div>
+    <div className="fixed bottom-5 left-0 right-0 p-4 z-10">
       <Button
         onClick={() => handlePay({ userAmount })}
-        className="w-full py-4 text-lg rounded-full"
+        className="w-full bg-black text-white py-6 rounded-lg font-medium text-lg hover:scale-95 transition-transform"
       >
-        Pay now
+        Deposit Now
       </Button>
     </div>
   );

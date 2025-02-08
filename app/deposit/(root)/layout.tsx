@@ -10,10 +10,8 @@ export default async function Layout({
   const session = await getServerSession(authOptions);
   return (
     <>
-      <main>
-        {<Header leftIcon={<ArrowLeft className="h-6 w-6" />} />}
-        {children}
-      </main>
+      <Header leftIcon={<ArrowLeft className="h-6 w-6" />} />
+      <main className="">{children}</main>
     </>
   );
 }

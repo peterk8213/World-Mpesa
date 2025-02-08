@@ -12,7 +12,7 @@ interface HeaderProps {
 export function Header({ title, showLogo = true, leftIcon }: HeaderProps) {
   const router = useRouter();
   return (
-    <header className="flex items-center justify-between p-4 border-b">
+    <header className="flex items-center justify-between p-4 border-b  fixed top-0 left-0 right-0 z-50">
       <Button variant="ghost" size="icon" onClick={() => router.back()}>
         {leftIcon}
       </Button>

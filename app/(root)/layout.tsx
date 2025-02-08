@@ -7,10 +7,15 @@ export default async function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return <>{children}</>;
+  }
+
   return (
     <>
       <main>
-        {session && <BottomNav />}
+        {<BottomNav />}
         {children}
       </main>
     </>

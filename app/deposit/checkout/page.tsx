@@ -1,5 +1,3 @@
-import { ArrowLeft } from "lucide-react";
-import { Header } from "@/components/DepositHeader";
 //import {  } from "@worldcoin/idkit";
 
 import { CheckoutForm } from "@/components/CheckoutForm";
@@ -24,11 +22,6 @@ export default async function Checkout({
 
   return (
     <div className="min-h-screen bg-white overflow-hidden">
-      <Header
-        leftIcon={<ArrowLeft className="h-6 w-6" />}
-        showLogo={false}
-        title="Checkout"
-      />
       {userAmount ? (
         <Suspense fallback={<div> loading ...</div>}>
           <CheckoutForm userAmount={userAmount} />

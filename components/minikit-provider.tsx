@@ -7,8 +7,8 @@ export default function MiniKitProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     MiniKit.install();
     console.log(MiniKit.isInstalled());
-    const username = MiniKit?.user?.username;
-    console.log(username);
+    const username = MiniKit?.user;
+    console.log("user from minikit", username);
   }, []);
 
   return <>{children}</>;

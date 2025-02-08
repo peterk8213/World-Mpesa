@@ -1,47 +1,70 @@
 "use client";
-import { cache } from "react";
 
 import { useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { WithdrawKeypadProps } from "@/types";
+
 import { Delete } from "lucide-react";
 
-const MotionButton = motion(Button);
+/// motion() is deprecated. Use motion.create() instead.
+const MotionButton = motion.create(Button);
+// const MotionButton = motion(Button);
 
-interface WithdrawKeypadProps {
-  method: string;
-  balance: number;
-}
-
-export function WithdrawKeypad({ method, balance }: WithdrawKeypadProps) {
+export default function WithdrawKeypad({
+  method,
+  account,
+  balance,
+  conversionRate: { conversionRate },
+}: WithdrawKeypadProps) {
   const [amount, setAmount] = useState("");
+  const [shake, setShake] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [backspaceClicks, setBackspaceClicks] = useState(0); // Added state for backspace clicks
   const router = useRouter();
 
   const handleNumberClick = useCallback(
     (num: string) => {
       setError(null);
       if (num === "backspace") {
-        setAmount((prev) => prev.slice(0, -1));
-      } else if (num === "." && amount.includes(".")) {
-        // Prevent multiple decimal points
-      } else if (amount.includes(".") && amount.split(".")[1]?.length >= 2) {
-        // Limit decimal places to 2
+        setBackspaceClicks((prev) => prev + 1);
+        if (backspaceClicks > 4) {
+          setAmount("");
+          setBackspaceClicks(0);
+        } else {
+          setAmount((prev) => prev.slice(0, -1) || "");
+        }
       } else {
-        setAmount((prev) => {
-          const newAmount = prev + num;
-          return Number.parseFloat(newAmount) > balance ? prev : newAmount;
-        });
+        setBackspaceClicks(0);
+        if (num === "." && (amount.includes(".") || amount === "")) {
+          return;
+        } else if (amount.includes(".") && amount.split(".")[1]?.length >= 2) {
+          setShake(true);
+          setTimeout(() => setShake(false), 500);
+          return;
+        } else {
+          const newAmount = amount + num;
+          if (Number.parseFloat(newAmount) > balance) {
+            setShake(true);
+            setTimeout(() => setShake(false), 500);
+            return;
+          }
+          setAmount(newAmount);
+        }
       }
     },
-    [amount, balance]
+    [amount, balance, backspaceClicks] // Added backspaceClicks to dependencies
   );
 
-  const handleMaxClick = useCallback(() => {
-    setAmount(balance.toFixed(2));
-    setError(null);
-  }, [balance]);
+  const handlePercentageClick = useCallback(
+    (percentage: number) => {
+      const newAmount = (balance * percentage).toFixed(2);
+      setAmount(newAmount);
+      setError(null);
+    },
+    [balance]
+  );
 
   const handleSubmit = useCallback(() => {
     const withdrawAmount = Number.parseFloat(amount);
@@ -57,12 +80,32 @@ export function WithdrawKeypad({ method, balance }: WithdrawKeypadProps) {
       setError("Minimum withdrawal amount is $1");
       return;
     }
+
     router.push(
       `/withdraw/checkout?method=${encodeURIComponent(
         method
-      )}&amount=${encodeURIComponent(amount)}`
+      )}&amount=${encodeURIComponent(amount)}&account=${encodeURIComponent(
+        account
+      )}`
     );
   }, [amount, method, balance, router]);
+
+  const formatAmount = useCallback((value: string) => {
+    if (!value) return "0";
+    const numericValue = Number.parseFloat(value);
+    if (isNaN(numericValue)) return "0";
+    return numericValue.toFixed(value.includes(".") ? 2 : 0);
+  }, []);
+
+  const calculateFiatEquivalent = useCallback((cryptoAmount: string) => {
+    const cryptoValue = Number.parseFloat(cryptoAmount);
+    if (isNaN(cryptoValue)) return "0";
+
+    return (cryptoValue * conversionRate).toFixed(2);
+  }, []);
+
+  const isAmountValid =
+    Number.parseFloat(amount) >= 1 && Number.parseFloat(amount) <= balance;
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -78,73 +121,105 @@ export function WithdrawKeypad({ method, balance }: WithdrawKeypadProps) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleNumberClick, handleSubmit]);
 
-  const keypadButtons = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    ".",
-    "0",
-    "backspace",
-  ];
+  useEffect(() => {
+    // Added useEffect to reset backspaceClicks
+    if (backspaceClicks > 0) {
+      const timer = setTimeout(() => setBackspaceClicks(0), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [backspaceClicks]);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-md space-y-6"
+      className="flex flex-col h-screen bg-background fixed inset-0"
+      initial={{ x: -50, opacity: 0 }}
+      animate={{
+        x: 0,
+        opacity: 1,
+        transition: { duration: 0.5, ease: easeInOut },
+      }}
     >
-      <div className="text-center">
+      <div className="flex-1 flex flex-col justify-center items-center space-y-2">
         <AnimatePresence mode="wait">
           <motion.div
             key={amount}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="text-6xl font-bold mb-2"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              x: shake ? [0, -5, 5, -5, 5, 0] : 0,
+              transition: {
+                duration: 0.3,
+                ease: "easeOut",
+                x: shake ? { duration: 0.3 } : undefined,
+              },
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.95,
+              transition: { duration: 0.2, ease: "easeIn" },
+            }}
+            className="text-center"
           >
-            ${amount || "0"}
+            <div
+              className={`text-5xl font-bold ${
+                !isAmountValid ? "text-red-500" : ""
+              }`}
+            >
+              {formatAmount(amount)}
+            </div>
+            <div className="text-xl text-muted-foreground mt-2">
+              KES {calculateFiatEquivalent(formatAmount(amount))}
+            </div>
+            <p className="text-sm text-gray-500 mt-2">
+              Available balance: ${balance.toFixed(2)}
+            </p>
+            {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
           </motion.div>
         </AnimatePresence>
-        <p className="text-sm text-gray-500">
-          Available balance: ${balance.toFixed(2)}
-        </p>
-        {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        {keypadButtons.map((btn) => (
-          // i will remove the outline
-          <MotionButton
-            key={btn}
-            onClick={() => handleNumberClick(btn)}
-            variant="outline"
-            size="lg"
-            whileTap={{ scale: 0.95 }}
-            className="h-16 text-2xl font-semibold rounded-full"
+      <div className="flex justify-evenly space-x-2 mb-6 px-3">
+        {[25, 50, 75, 100].map((percentage) => (
+          <Button
+            key={percentage}
+            variant="ghost"
+            size="sm"
+            onClick={() => handlePercentageClick(percentage / 100)}
+            className="text-sm font-semibold  outline-dotted rounded-full"
           >
-            {btn === "backspace" ? <Delete className="w-6 h-6" /> : btn}
-          </MotionButton>
+            {percentage}%
+          </Button>
         ))}
       </div>
-      {/* ///// adjusted the margin */}
-      <div className="flex space-x-4 mt-4">
-        <Button onClick={handleMaxClick} className="flex-1 py-6">
-          Max
-        </Button>
-        <Button
+
+      <div className="pb-24 px-4 mb-10">
+        <div className="grid grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, ".", 0, "backspace"].map((num) => (
+            <MotionButton
+              key={num}
+              variant="ghost"
+              size="lg"
+              onClick={() => handleNumberClick(num.toString())}
+              whileTap={{ scale: 0.95 }}
+              className="h-16 text-2xl font-semibold rounded-full"
+            >
+              {num === "backspace" ? <Delete className="w-8 h-8" /> : num}
+            </MotionButton>
+          ))}
+        </div>
+      </div>
+
+      <div className="fixed bottom-5 left-0 right-0 p-4 bg-background border-t">
+        <MotionButton
+          className="w-full text-xl rounded-lg py-6"
+          disabled={!isAmountValid}
           onClick={handleSubmit}
-          className="flex-1 py-6"
-          disabled={!amount || Number.parseFloat(amount) <= 1}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 300 }}
         >
           Continue
-        </Button>
+        </MotionButton>
       </div>
     </motion.div>
   );

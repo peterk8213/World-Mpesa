@@ -41,17 +41,63 @@ export default async function Home() {
   if (!session) {
     redirect("/");
   }
-  await dbConnect();
-  const { userId } = session;
+
+  const { userId, worldId } = session;
+
+  // there is a twist for the wallet info cache i will add wlt flag so that i can be able to query using the user id
+
+  const redis = await getRedisClient();
+  const redisKey = `user:${worldId}`;
+  const cachedData = await redis.hGet(redisKey, "walletInfo");
+
+  let user;
+
+  if (!cachedData) {
+    await dbConnect();
+    user = await Wallet.findOne({
+      userId,
+    }).populate("userId");
+
+    console.log("user data from home", user);
+
+    if (user) {
+      // Store data in cache with a TTL (e.g., 3600 seconds)
+      const walletInfo = {
+        _id: user._id,
+        userId: {
+          _id: user.userId._id,
+          name: user.userId.name,
+        },
+        worldId: user.worldId,
+        balance: user.balance,
+        currency: user.currency,
+        isFrozen: user.isFrozen,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      };
+      await redis
+        .multi()
+        .hSet(redisKey, "walletInfo", JSON.stringify(walletInfo))
+        // Set TTL for the entire key (in seconds)
+        // Expires after 10 hours
+        .expire(redisKey, 36000)
+        .exec();
+    }
+
+    console.log("user dashboard", user);
+  } else {
+    console.info("walletinfo from cache ");
+    user = JSON.parse(cachedData);
+  }
 
   // Use the session.user.id to query user-specific data
 
-  const user = await Wallet.findOne({
-    userId,
-  }).populate("userId");
+  // const user = await Wallet.findOne({
+  //   userId,
+  // }).populate("userId");
 
-  console.log("user", user);
-  // const user = { name: "John Doe", balance: 100, baseCurrency: "USD" };
+  // console.log("user", user);
+  // // const user = { name: "John Doe", balance: 100, baseCurrency: "USD" };
   const cryptoData = [
     {
       name: "Worldcoin",

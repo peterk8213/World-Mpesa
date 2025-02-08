@@ -51,7 +51,7 @@ TransactionSchema.statics.createMpesaTransaction = async function ({
   worldId,
   amount,
   reference,
-}: ) {
+}) {
   if (amount <= 0.15) {
     throw new Error("Amount must be greater than 0.15.");
   }
@@ -78,8 +78,7 @@ TransactionSchema.statics.createWorldcoinTransaction = async function ({
   amount,
   reference,
   meta,
-}:{
-
+}: {
   userId: string;
 
   walletId: string;
@@ -91,7 +90,6 @@ TransactionSchema.statics.createWorldcoinTransaction = async function ({
   reference: string;
 
   meta: any;
-
 }) {
   if (amount <= 0.15) {
     throw new Error("Amount must be greater than 0.15");

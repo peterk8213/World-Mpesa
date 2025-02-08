@@ -25,7 +25,6 @@ const getRedisClient = async (): Promise<RedisClientType> => {
   } catch (error) {
     console.error("Error connecting to Redis:", error);
     throw new Error("Error connecting to Redis");
-    
   }
 };
 

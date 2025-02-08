@@ -1,5 +1,4 @@
 "use client";
-import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,10 +17,6 @@ interface BottomNavProps {
 }
 
 export function BottomNav({ className }: BottomNavProps) {
-  const { data: session } = useSession();
-  if (!session) {
-    return null;
-  }
   const pathname = usePathname();
 
   const navItems: NavItem[] = [
