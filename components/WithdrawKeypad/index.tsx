@@ -5,6 +5,7 @@ import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { WithdrawKeypadProps } from "@/types";
+import { toastInfo } from "@/lib/toast";
 
 import { Delete } from "lucide-react";
 
@@ -73,10 +74,13 @@ export default function WithdrawKeypad({
       return;
     }
     if (withdrawAmount > balance) {
+      toastInfo("Insufficient funds");
       setError("Insufficient funds");
       return;
     }
     if (withdrawAmount < 1) {
+      toastInfo("Minimum withdrawal amount is $1");
+
       setError("Minimum withdrawal amount is $1");
       return;
     }
@@ -131,7 +135,7 @@ export default function WithdrawKeypad({
 
   return (
     <motion.div
-      className="flex flex-col h-screen bg-background fixed inset-0"
+      className="flex flex-col  bg-background fixed  p-4 overflow-auto xs:mt-5 top-0 bottom-0 left-0 right-0 justify-around"
       initial={{ x: -50, opacity: 0 }}
       animate={{
         x: 0,

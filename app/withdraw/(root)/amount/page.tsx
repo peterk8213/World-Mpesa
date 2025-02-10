@@ -1,52 +1,69 @@
 import { Suspense } from "react";
 
 import WithdrawKeypad from "@/components/WithdrawKeypad";
-import { getConversionRate } from "@/actions/GetFiatEquivalent";
+import { WithdrawKeypadProps } from "@/types";
+
+import { getConversionRate } from "@/lib/wallet/conversion";
 import { ConversionRate as ConversionRateType } from "@/types";
+
+import { WalletBalanceResponse } from "@/types";
+
+import { getServerSession } from "next-auth";
+import { getUserBalance } from "@/lib/wallet/balance";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
 export default async function WithdrawAmountPage({
   searchParams,
 }: {
   searchParams: Promise<{ method: string; account: string }>;
 }) {
-  // dummy implementation get user balance
+  const session = await getServerSession(authOptions);
 
-  //   export const getUserBalance = cache(async () => {
-  //     try {
-  //       const response = await fetch("https://api.example.com/user-balance", {
-  //         next: { revalidate: 60 }, // Revalidate every minute
-  //       });
-  //       if (!response.ok) throw new Error("Failed to fetch user balance");
-  //       const data = await response.json();
-  //       return data.balance;
-  //     } catch (error) {
-  //       console.error("Error fetching user balance:", error);
-  //       throw new Error("Unable to load your balance. Please try again later.");
-  //     }
-  //   });
-  const conversionRate: ConversionRateType = await getConversionRate();
+  if (!session) {
+    redirect("/");
+  }
+  const { userId } = session;
 
-  const getUserBalance = async () => {
-    return 100;
-  };
   const method = (await searchParams).method;
 
   const account = (await searchParams).account;
 
-  const balance = await getUserBalance();
-
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col md:p-10 lg:p-5 md:overflow-auto">
       <main className="flex-grow flex items-center justify-center p-4">
         <Suspense fallback={<div>Loading...</div>}>
-          <WithdrawKeypad
+          <WithdrawAmountPageWrapper
             method={method}
-            balance={balance}
             account={account}
-            conversionRate={conversionRate}
+            userId={userId}
           />
         </Suspense>
       </main>
     </div>
+  );
+}
+
+async function WithdrawAmountPageWrapper({
+  method,
+  account,
+  userId,
+}: {
+  method: string;
+  account: string;
+  userId: string;
+}) {
+  const { data } = await getUserBalance({ userId });
+  const conversionRate: ConversionRateType = await getConversionRate();
+
+  return (
+    <>
+      <WithdrawKeypad
+        method={method}
+        balance={data?.balance || 0}
+        account={account}
+        conversionRate={conversionRate}
+      />
+    </>
   );
 }

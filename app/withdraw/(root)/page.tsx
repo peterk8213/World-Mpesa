@@ -23,8 +23,6 @@ import { Phone, Banknote } from "lucide-react";
 
 // Dummy implementation
 const getWithdrawalMethods = async (): Promise<WithdrawalMethod[]> => {
-  
-
   return [
     {
       id: "bank-transfer",

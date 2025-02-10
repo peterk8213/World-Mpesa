@@ -11,6 +11,10 @@ const PaymentAccountSchema = new Schema(
       ref: "Wallet",
       required: true,
     },
+    provider: {
+      _id: { type: String, required: true, ref: "PayoutProvider" },
+      shortname: { type: String, required: true },
+    }, // Reference to the PayoutProvider model
     isdefault: { type: Boolean, default: false }, // Default payment method
   },
   { timestamps: true }
@@ -35,8 +39,14 @@ PaymentAccountSchema.statics.addPaymentAccount = async function ({
 };
 
 // static method to get a payment account by ID
-PaymentAccountSchema.statics.getPaymentAccountById = async function ({ id }) {
-  return this.findOne({ _id: id });
+PaymentAccountSchema.statics.getPaymentAccountById = async function ({
+  accountId,
+  userId,
+}: {
+  accountId: string;
+  userId: string;
+}) {
+  return this.findOne({ _id: accountId, userId });
 };
 
 // static method to get all payment accounts by user ID

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { convertToCrypto } from "@/actions/DepositConverttoCrypto";
+import { convertToCrypto } from "@/lib/wallet/crypto-equivalent";
 
 import dbConnect from "@/lib/mongodb";
 import getRedisClient from "@/lib/redis";
@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
     }
 
     if (!depositAmount) {
-      console.log("Invalid amount", depositAmount);
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 

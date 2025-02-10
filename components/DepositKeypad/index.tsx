@@ -58,7 +58,7 @@ export function DepositKeypad({ conversionRate }: ConversionRateType) {
     const cryptoValue = Number.parseFloat(cryptoAmount);
     if (isNaN(cryptoValue)) return "0";
 
-    return (cryptoValue * conversionRate).toFixed(2);
+    return (cryptoValue * (conversionRate || 0)).toFixed(0);
   }, []);
 
   const isAmountValid = Number.parseFloat(amount) >= 0.2;

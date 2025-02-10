@@ -54,9 +54,7 @@ export default async function Home() {
 
   if (!cachedData) {
     await dbConnect();
-    user = await Wallet.findOne({
-      userId,
-    }).populate("userId");
+    user = await Wallet.getWalletByUserId(userId);
 
     console.log("user data from home", user);
 
@@ -71,16 +69,13 @@ export default async function Home() {
         worldId: user.worldId,
         balance: user.balance,
         currency: user.currency,
-        isFrozen: user.isFrozen,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
       };
       await redis
         .multi()
         .hSet(redisKey, "walletInfo", JSON.stringify(walletInfo))
         // Set TTL for the entire key (in seconds)
         // Expires after 10 hours
-        .expire(redisKey, 36000)
+        .expire(redisKey, 60)
         .exec();
     }
 

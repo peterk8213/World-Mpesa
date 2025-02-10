@@ -12,10 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getConversionRate } from "@/actions/GetFiatEquivalent";
+import { getConversionRate } from "@/lib/wallet/conversion";
 
 export async function CheckoutForm({ userAmount }: { userAmount: string }) {
   const conversionRate = await getConversionRate();
+
+  console.log("running on server");
   const formattedAmount = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -86,11 +88,11 @@ export async function CheckoutForm({ userAmount }: { userAmount: string }) {
             </CardContent>
           </Card>
         </div>
-        <div className="fixed bottom-10 left-0 right-0 p-4 ">
+        <div className="fixed bottom-12 left-0 right-0 p-5 ">
           <CompanyFooter />
-          <div className="justify-center  items-center mt-2 space-y-4">
-            <PayBlock userAmount={userAmount} />
-          </div>
+        </div>
+        <div className="justify-center  items-center mt-2 space-y-4">
+          <PayBlock userAmount={userAmount} />
         </div>
       </div>
     </main>

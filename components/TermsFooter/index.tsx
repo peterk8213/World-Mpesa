@@ -2,9 +2,9 @@ import Link from "next/link";
 
 const CompanyFooter = () => {
   return (
-    <footer className="mt-auto py-6  px-6 outline-1 border-t border-gray-200 rounded-full">
-      <div className="container mx-auto px-4">
-        <div className="text-center text-sm text-gray-600">
+    <footer className="mt-auto py-8  px-6 outline-1 border-t border-gray-50 rounded-full backdrop-blur">
+      <div className="container mx-auto px-4 text-gray-600">
+        <div className="text-center text-sm ">
           <p className="font-semibold mb-2">Powered by MpesaWorld</p>
           <p className="mb-2 justify-start">
             By proceeding, you accept the{" "}

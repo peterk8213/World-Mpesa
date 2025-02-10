@@ -30,7 +30,7 @@ export default function RootLayout({
               <main className="min-h-screen ">
                 <ToastContainer
                   position="top-center"
-                  autoClose={4000}
+                  autoClose={2000}
                   hideProgressBar
                   newestOnTop
                   closeOnClick

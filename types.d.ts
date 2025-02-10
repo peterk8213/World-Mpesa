@@ -1,3 +1,5 @@
+import exp from "constants";
+
 export interface Amount {
   WLD: number;
   USDCE: number;
@@ -39,8 +41,13 @@ export interface WithdrawConfirmProps {
 
 export interface PaymentAccount {
   id: string;
-  provider: string;
+  provider: {
+    _id: string;
+    shortname: string;
+  };
   phoneNumber: string;
+  isdefault: boolean;
+  userId: string;
 
   holderName: string;
   addedOn: string;
@@ -64,6 +71,21 @@ interface OrderDetails {
 }
 export interface ConversionRate {
   conversionRate: number;
+}
+
+export interface WalletBalanceResponse {
+  success: boolean;
+  data?: WalletBalanceResponseData;
+  error?: string;
+}
+interface WalletBalanceResponseData {
+  balance: number;
+  currency: string;
+}
+export interface ConversionRateApiResponse {
+  success: boolean;
+  data?: ConversionRate;
+  error?: string;
 }
 
 export interface WithdrawRequestCheckout {

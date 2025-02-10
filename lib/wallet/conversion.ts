@@ -19,7 +19,7 @@ export async function getConversionRate() {
           method: "GET",
           // revalidate: 60,
           next: {
-            revalidate: 60,
+            revalidate: 30,
           },
         }
       );
@@ -41,14 +41,12 @@ export async function getConversionRate() {
         throw new Error("Invalid conversion rates");
       }
 
-      console.log("conversionRate", kesRateNumber, usdRateNumber);
-
       const conversionRateNumber = kesRateNumber / usdRateNumber;
 
       conversionRate = {
         conversionRate: conversionRateNumber,
       };
-      console.log("conversionRate1", conversionRate);
+
       // const cache = await redis.setEx(
       //   "conversionRate",
       //   120,

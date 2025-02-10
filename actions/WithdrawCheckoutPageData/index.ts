@@ -1,6 +1,6 @@
 "use server";
 
-import { getConversionRate } from "@/actions/GetFiatEquivalent";
+import { getConversionRate } from "@/lib/wallet/conversion";
 import { InitiateWithdrawData } from "@/types";
 
 const getOrderDetails = async ({
@@ -12,9 +12,10 @@ const getOrderDetails = async ({
   const { conversionRate } = await getConversionRate();
 
   const totalAmount = parseFloat(amount) - fees;
-  const fiatAmount = totalAmount * conversionRate;
+
+  const fiatAmount = parseFloat(totalAmount.toFixed(4)) * conversionRate;
   const estimatedTime = "Instant";
-  const walletBalance = 1000;
+  const walletBalance = 100;
   const orderDetails = {
     amount,
     fees,
@@ -25,6 +26,7 @@ const getOrderDetails = async ({
     fiatAmount,
     conversionRate,
   };
+  console.log("orderDetails done");
   return orderDetails;
 };
 const getAccountDetails = async ({ accountId }: { accountId: string }) => {
@@ -36,6 +38,7 @@ const getAccountDetails = async ({ accountId }: { accountId: string }) => {
     phoneNumber,
     provider,
   };
+
   return accountdetails;
 };
 
@@ -48,8 +51,12 @@ export async function getWithdrawCheckoutPageData({
   method: string;
   accountId: string;
 }) {
-  const accountDetails = await getAccountDetails({ accountId });
-  const orderDetails = await getOrderDetails({ amount, method, accountId });
+  //resolve the requests concurrently
+
+  const [orderDetails, accountDetails] = await Promise.all([
+    getOrderDetails({ amount, method, accountId }),
+    getAccountDetails({ accountId }),
+  ]);
 
   return {
     orderDetails,

@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 
 // Simulate fetching accounts from a database
 async function getAccounts(): Promise<PaymentAccountType[]> {
+  console.log("Fetching accounts... running on the server");
+
   return [
     {
       id: "123456",
@@ -45,23 +47,32 @@ export default async function AccountSelectionPage({
   searchParams: Promise<{ method?: string }>;
 }) {
   const method = (await searchParams).method || "";
-  const accounts = await getAccounts();
 
   return (
     <div>
-      <Suspense fallback={<div> loading accounts</div>}>
-        {accounts ? (
-          <AccountSelectionClient method={method} accounts={accounts} />
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <NoPaymentMethodsPage />
-          </motion.div>
-        )}
+      <Suspense fallback={<div> loading accounts.......</div>}>
+        <AccountSelectionClientWrapper method={method} />
       </Suspense>
     </div>
+  );
+}
+
+async function AccountSelectionClientWrapper({ method }: { method: string }) {
+  const accounts = await getAccounts();
+
+  return (
+    <>
+      {accounts.length > 0 ? (
+        <AccountSelectionClient method={method} accounts={accounts} />
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <NoPaymentMethodsPage />
+        </motion.div>
+      )}
+    </>
   );
 }
