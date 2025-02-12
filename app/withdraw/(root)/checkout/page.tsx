@@ -5,8 +5,7 @@ import {
   WithdrawRequestCheckout,
   WalletBalanceResponse,
 } from "@/types";
-import { getWithdrawCheckoutPageData } from "@/actions/WithdrawCheckoutPageData";
-
+import { getWithdrawCheckoutPageData } from "@/lib/wallet/WithdrawCheckoutData";
 import dbConnect from "@/lib/mongodb";
 import { Wallet } from "@/models/Wallet";
 import { redirect } from "next/navigation";

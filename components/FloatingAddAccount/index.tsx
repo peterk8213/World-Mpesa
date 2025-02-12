@@ -10,7 +10,7 @@ export default function FloatingAddButton() {
       transition={{ delay: 0.5, duration: 0.3 }}
       className=""
     >
-      <Link href="/add-account" className="block">
+      <Link href="/withdraw/add-account" className="block">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

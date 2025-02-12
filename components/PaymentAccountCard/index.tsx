@@ -15,7 +15,13 @@ export default function WithdrawAccountCard({
   selected,
   onSelect,
 }: AccountProps) {
-  const { id, provider, phoneNumber, holderName, addedOn } = account;
+  const {
+    _id,
+    provider: { shortname, name },
+    phoneNumber,
+    holderName,
+    addedOn,
+  } = account;
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -49,7 +55,7 @@ export default function WithdrawAccountCard({
     }
   };
 
-  const styles = getProviderStyles(provider);
+  const styles = getProviderStyles(name);
 
   return (
     <motion.div
@@ -72,7 +78,7 @@ export default function WithdrawAccountCard({
               <span
                 className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${styles.badge}`}
               >
-                {provider}
+                {shortname}
               </span>
               <span className="text-xs text-black/50">
                 Added {formatDate(addedOn)}

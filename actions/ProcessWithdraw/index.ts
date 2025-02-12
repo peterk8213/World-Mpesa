@@ -3,11 +3,24 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
+
+import {
+  addTransaction,
+  validatePaymentAccount,
+  updateWallet,
+  createMpesaPaymentPayout,
+} from "@/lib/wallet/withdraw";
+
 import { Wallet } from "@/models/Wallet";
 import { PaymentAccount } from "@/models/PaymentAccount";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Transaction } from "@/models/Transaction";
-import { PaymentAccount as PaymentAccountType } from "@/types";
+import {
+  PaymentAccount as PaymentAccountType,
+  Wallet as WalletDataType,
+} from "@/types";
+
+import { InitiateIntasendPayout } from "@/lib/wallet/payout";
 
 const getFormData = async (
   formData: FormData
@@ -24,81 +37,38 @@ const getFormData = async (
   return { amount: parseFloat(amount), method, userId, accountId };
 };
 
-const validatePaymentAccount = async ({
-  accountId,
-  userId,
-  method,
-}: {
-  accountId: string;
-  userId: string;
-  method: string;
-}): Promise<{
+const verifyWithdrawRequest = async (
+  userId: string,
+  amount: number
+): Promise<{
   success: boolean;
-  error?: string;
-  data?: PaymentAccountType;
+  error?: any;
+  data?: WalletDataType;
 }> => {
-  const account: PaymentAccountType =
-    await PaymentAccount.getPaymentAccountById(accountId);
-  if (!account) {
-    throw new Error("Payment account not found.");
-  }
-  if (account.provider && account.provider._id !== method) {
+  try {
+    const wallet = await Wallet.getWalletBalanceByUserId(userId);
+    if (!wallet) {
+      return {
+        success: false,
+        error: "Wallet not found.",
+      };
+    }
+    const WithdrawRequestValid = wallet.verifyWithdrawRequest(amount);
+    if (!WithdrawRequestValid) {
+      return {
+        success: false,
+        error: "invalid withdrawal request",
+      };
+    }
     return {
-      success: false,
-      error: "Invalid payment method",
+      success: true,
+
+      data: wallet,
     };
+  } catch (error) {
+    console.error("Error verifying withdrawal request:", error);
+    return { success: false, error };
   }
-  return {
-    success: true,
-    data: account,
-  };
-};
-
-const verifyWithdrawRequest = async (userId: string, amount: number) => {
-  const wallet = await Wallet.getWalletBalanceByUserId(userId);
-  if (!wallet) {
-    throw new Error("Wallet not found.");
-  }
-  return wallet.balance >= amount;
-};
-
-const addTransaction = async ({
-  userId,
-  amount,
-  method,
-  walletId,
-}: {
-  userId: string;
-  amount: number;
-  method: string;
-  walletId: string;
-}) => {
-  const uuid = crypto.randomUUID().replace(/-/g, "");
-  const newTransaction = await Transaction.createMpesaTransaction({
-    userId,
-    amount,
-    method,
-    walletId,
-    reference: uuid,
-  });
-  if (!newTransaction) {
-    throw new Error("Transaction not created.");
-  }
-  return newTransaction;
-};
-
-const updateWallet = async ({
-  userId,
-  amount,
-}: {
-  userId: string;
-  amount: number;
-}) => {
-  const wallet = await Wallet.withdraw({ userId, amount });
-  if (!wallet) {
-    throw new Error("Wallet not found.");
-  }
-  return wallet;
 };
 
 export async function processWithdrawal(formData: FormData): Promise<void> {
@@ -111,7 +81,9 @@ export async function processWithdrawal(formData: FormData): Promise<void> {
     const { userId: userIdFromSession } = session;
     const { amount, method, userId, accountId } = await getFormData(formData);
 
-    await dbConnect();
+    if (amount < 2) {
+      throw new Error("Invalid amount. Amount must be greater than 2 usd.");
+    }
 
     // Validate the withdrawal details
     if (!accountId || !userId || !method || !amount) {
@@ -120,16 +92,20 @@ export async function processWithdrawal(formData: FormData): Promise<void> {
     if (userIdFromSession !== userId) {
       throw new Error("Invalid user ID.");
     }
+    await dbConnect();
 
     // Validate payment account and wallet balance concurrently
-    const [isBalanceValid, accountValidation] = await Promise.all([
+    const [WithdrawRequestValid, accountValidation] = await Promise.all([
       verifyWithdrawRequest(userId, amount),
       validatePaymentAccount({ accountId, userId, method }),
     ]);
 
-    if (!isBalanceValid) {
-      throw new Error("Insufficient funds.");
+    if (!WithdrawRequestValid.success) {
+      throw new Error(
+        WithdrawRequestValid.error || "Invalid withdrawal request."
+      );
     }
+
     if (!accountValidation.success) {
       throw new Error(accountValidation.error || "Invalid payment account.");
     }
@@ -140,12 +116,54 @@ export async function processWithdrawal(formData: FormData): Promise<void> {
       updateWallet({ userId, amount }),
     ]);
 
+    const payoutData = await InitiateIntasendPayout({
+      fullname: "john doe",
+      amount,
+    });
+
+    if (!payoutData.success) {
+      throw new Error(
+        payoutData.message || "Failed to initiate payout.",
+        payoutData.error
+      );
+    }
+    const {
+      tracking_id,
+      request_reference_id,
+      transactionAmount,
+      status,
+      currency,
+      estimatedCharges,
+    } = payoutData.data;
+
+    if (!updatedWallet.data) {
+      throw new Error("Failed to update wallet.");
+    }
+    if (!transaction.data) {
+      throw new Error("Failed to update wallet.");
+    }
+    const { _id: walletId } = updatedWallet.data;
+
+    const { _id: transactionId } = transaction.data;
+
+    const newTransaction = await createMpesaPaymentPayout({
+      tracking_id,
+      request_reference_id,
+      transactionAmount,
+      status,
+      currency,
+      estimatedCharges,
+      transactionId,
+      paymentAccountId: accountId,
+      userId,
+      walletId,
+    });
+
     console.log("Withdrawal processed successfully:", {
       transaction,
       updatedWallet,
     });
   } catch (error) {
     console.error("Error processing withdrawal:", error);
-    throw new Error("Failed to process withdrawal. Please try again.");
   }
 }

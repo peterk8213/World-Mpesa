@@ -20,7 +20,7 @@ export function WithdrawCheckoutpage({
       estimatedTime,
       conversionRate,
       fiatAmount,
-      fees,
+      fees: { totalFee: fees },
       method,
       walletBalance,
       amount: withdrawAmount,

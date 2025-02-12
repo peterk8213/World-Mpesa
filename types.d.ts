@@ -40,10 +40,11 @@ export interface WithdrawConfirmProps {
 }
 
 export interface PaymentAccount {
-  id: string;
+  _id: Schema.Types.ObjectId;
   provider: {
     _id: string;
     shortname: string;
+    name: string;
   };
   phoneNumber: string;
   isdefault: boolean;
@@ -61,7 +62,10 @@ export interface InitiateWithdrawData {
 
 interface OrderDetails {
   amount: string;
-  fees: number;
+  fees: {
+    totalFee: number;
+    netAmount: number;
+  };
   totalAmount: number;
   walletBalance: number;
   estimatedTime: string;
@@ -123,3 +127,30 @@ export interface WithdrawPageProps {
 // }
 
 export type Status = "active" | "inactive" | "banned";
+
+export interface Wallet {
+  _id: string;
+  userId: string;
+  balance: Amount;
+  status: Status;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MpesaPayment {
+  tracking_id: string;
+  request_reference_id?: string;
+  walletId: Schema.Types.ObjectId;
+  transactionAmount: number;
+  status: "pending" | "completed" | "failed";
+  transactionId: Schema.Types.ObjectId;
+  userId: Schema.Types.ObjectId;
+  paymentAccountId?: Schema.Types.ObjectId;
+  currency: string;
+  actualCharges?: number;
+  estimatedCharges: number;
+  ReceiverPartyPublicName?: string;
+  paid_amount?: string;
+  resultCode?: string;
+  resultDesc?: string;
+}

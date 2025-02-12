@@ -11,32 +11,41 @@ async function getAccounts(): Promise<PaymentAccountType[]> {
 
   return [
     {
-      id: "123456",
-      provider: "mpesa",
-      phoneNumber: "+254 712 345 678",
+      _id: "pm1",
+      provider: { _id: "4", shortname: "Safaricom Airtime", name: "safaricom" },
+
+      phoneNumber: "254712345678",
+      isdefault: true,
+      userId: "user123",
       holderName: "John Doe",
       addedOn: "2023-05-15T10:30:00Z",
     },
     {
-      id: "1234565",
-      provider: "paypal",
+      _id: "1234565",
+      provider: { _id: "4", shortname: "Airtel Airtime", name: "airtel" },
       phoneNumber: "+254 712 345 678",
       holderName: "John Doe",
       addedOn: "2023-05-15T10:30:00Z",
+      isdefault: false,
+      userId: "user123",
     },
     {
-      id: "789012",
-      provider: "bank",
-      phoneNumber: "+254 723 456 789",
+      _id: "789012",
+      provider: { _id: "p2", shortname: "Equity Bank", name: "bank" },
+      isdefault: false,
+      phoneNumber: "254712345678",
+      userId: "user123",
       holderName: "Jane Smith",
       addedOn: "2023-06-20T14:45:00Z",
     },
     {
-      id: "345678",
-      provider: "airtel",
+      _id: "345678",
+      provider: { _id: "2", shortname: "Safaricom M-Pesa", name: "mpesa" },
       phoneNumber: "+254 734 567 890",
       holderName: "Alice Johnson",
       addedOn: "2023-07-05T09:15:00Z",
+      isdefault: false,
+      userId: "user123",
     },
   ];
 }

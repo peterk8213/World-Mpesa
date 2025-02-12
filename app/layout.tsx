@@ -1,6 +1,7 @@
 import { Rubik } from "next/font/google";
 import type { Metadata } from "next";
 import { ToastContainer, Bounce } from "react-toastify";
+import "@worldcoin/mini-apps-ui-kit-react/styles.css";
 
 import "./globals.css";
 import MiniKitProvider from "@/components/minikit-provider";
@@ -27,7 +28,7 @@ export default function RootLayout({
           <ErudaClient>
             <MiniKitProvider>
               {/* Main content area */}
-              <main className="min-h-screen ">
+              <main className="min-h-screen overflow-hidden overscroll-none">
                 <ToastContainer
                   position="top-center"
                   autoClose={2000}

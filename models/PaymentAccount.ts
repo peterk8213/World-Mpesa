@@ -1,62 +1,112 @@
-import { Schema, model, models } from "mongoose";
-import { unique } from "next/dist/build/utils";
+import { Schema, model, models, Document, Model } from "mongoose";
 
-const PaymentAccountSchema = new Schema(
+// Define TypeScript interface for PaymentAccount
+export interface IPaymentAccount extends Document {
+  userId: Schema.Types.ObjectId;
+  fullName: string;
+  phoneNumber: string;
+  walletId: Schema.Types.ObjectId;
+  provider: {
+    _id: Schema.Types.ObjectId;
+    shortname: string;
+  };
+  isdefault: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Define static methods
+export interface IPaymentAccountStatics
+  extends Model<IPaymentAccount, {}, IPaymentAccountMethods> {
+  addPaymentAccount(data: {
+    userId: Schema.Types.ObjectId;
+    fullName: string;
+    phoneNumber: string;
+    walletId: Schema.Types.ObjectId;
+    provider: { _id: Schema.Types.ObjectId; shortname: string };
+    isdefault?: boolean;
+  }): Promise<IPaymentAccount>;
+  getPaymentAccountById(
+    accountId: string,
+    userId: Schema.Types.ObjectId
+  ): Promise<IPaymentAccount | null>;
+  getPaymentAccountsByUserId(
+    userId: Schema.Types.ObjectId
+  ): Promise<IPaymentAccount[]>;
+}
+
+// Define instance methods
+export interface IPaymentAccountMethods {}
+
+// Define PaymentAccount Schema
+const PaymentAccountSchema = new Schema<
+  IPaymentAccount,
+  IPaymentAccountStatics,
+  IPaymentAccountMethods
+>(
   {
-    userId: { type: String, required: true, ref: "User" }, // User's World ID
+    userId: { type: Schema.Types.ObjectId, required: true, ref: "User" }, // Reference to User
     fullName: { type: String, required: true }, // User's name from Worldcoin
-    phoneNumber: { type: String, required: true, unique: true }, // Default payment method
-    walletId: {
-      type: Schema.Types.ObjectId,
-      ref: "Wallet",
-      required: true,
-    },
+    phoneNumber: { type: String, required: true, unique: true }, // Unique phone number
+    walletId: { type: Schema.Types.ObjectId, ref: "Wallet", required: true }, // Reference to Wallet
     provider: {
-      _id: { type: String, required: true, ref: "PayoutProvider" },
+      _id: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: "PayoutProvider",
+      }, // Reference to PayoutProvider
       shortname: { type: String, required: true },
-    }, // Reference to the PayoutProvider model
-    isdefault: { type: Boolean, default: false }, // Default payment method
+    },
+    isdefault: { type: Boolean, default: false }, // Indicates default payment method
   },
   { timestamps: true }
 );
 
-// static method to create a payment account
-
+// Static method to create a payment account
 PaymentAccountSchema.statics.addPaymentAccount = async function ({
   userId,
   fullName,
   phoneNumber,
   walletId,
-  isdefault,
+  provider,
+  isdefault = false,
+}: {
+  userId: Schema.Types.ObjectId;
+  fullName: string;
+  phoneNumber: string;
+  walletId: Schema.Types.ObjectId;
+  provider: { _id: Schema.Types.ObjectId; shortname: string };
+  isdefault?: boolean;
 }) {
   return this.create({
     userId,
     fullName,
     phoneNumber,
     walletId,
+    provider,
     isdefault,
   });
 };
 
-// static method to get a payment account by ID
-PaymentAccountSchema.statics.getPaymentAccountById = async function ({
-  accountId,
-  userId,
-}: {
-  accountId: string;
-  userId: string;
-}) {
+// Static method to get a payment account by ID
+PaymentAccountSchema.statics.getPaymentAccountById = async function (
+  accountId: string,
+  userId: Schema.Types.ObjectId
+) {
   return this.findOne({ _id: accountId, userId });
 };
 
-// static method to get all payment accounts by user ID
-PaymentAccountSchema.statics.getPaymentAccountsByUserId = async function ({
-  userId,
-}) {
-  return this.find({ userId }, { sort: { isdefault: -1 } });
+// Static method to get all payment accounts by user ID
+PaymentAccountSchema.statics.getPaymentAccountsByUserId = async function (
+  userId: Schema.Types.ObjectId
+) {
+  return this.find({ userId }).sort({ isdefault: -1 });
 };
 
-// Use models to check if 'User' model already exists to prevent recompilation issues
-
+// Use models to check if 'PaymentAccount' already exists to prevent recompilation issues
 export const PaymentAccount =
-  models.PaymentAccount || model("PaymentAccount", PaymentAccountSchema);
+  models.PaymentAccount ||
+  model<IPaymentAccount, IPaymentAccountStatics>(
+    "PaymentAccount",
+    PaymentAccountSchema
+  );

@@ -1,9 +1,54 @@
-import mongoose, { Schema, models } from "mongoose";
+import mongoose, { Schema, Document, Model, models, model } from "mongoose";
+
+// Define TypeScript interface for Payment model
+export interface IPayment extends Document {
+  tracking_id: string;
+  request_reference_id?: string;
+  transactionAmount: number;
+  status: "pending" | "completed" | "failed";
+  transactionId: Schema.Types.ObjectId;
+  userId: Schema.Types.ObjectId;
+  paymentAccountId?: Schema.Types.ObjectId;
+  currency: string;
+  walletId: Schema.Types.ObjectId;
+  actualCharges: number;
+  estimatedCharges: number;
+  ReceiverPartyPublicName?: string;
+  paid_amount?: string;
+  resultCode?: string;
+  resultDesc?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Define instance methods (methods available on model instances)
+export interface IPaymentMethods {
+  calculateNetProfit(): number;
+}
+
+// Define static methods (methods available on the PaymentModel itself)
+export interface IPaymentStatics extends Model<IPayment, {}, IPaymentMethods> {
+  createPayment(data: Partial<IPayment>): Promise<IPayment>;
+  getPaymentByTransactionId(
+    transactionId: string,
+    userId: string
+  ): Promise<IPayment | null>;
+  updatePaymentStatus(
+    tracking_id: string,
+    status: "pending" | "completed" | "failed",
+    actualCharges: number
+  ): Promise<void>;
+}
 
 // Define a schema for payments
-const MpesaPaymentSchema = new Schema(
+const MpesaPaymentSchema = new Schema<
+  IPayment,
+  IPaymentStatics,
+  IPaymentMethods
+>(
   {
-    originatorConversationID: { type: String, required: true, unique: true },
+    tracking_id: { type: String, required: true, unique: true },
+    request_reference_id: { type: String },
     transactionAmount: { type: Number, required: true },
     status: {
       type: String,
@@ -16,92 +61,50 @@ const MpesaPaymentSchema = new Schema(
       ref: "Transaction",
       required: true,
       unique: true,
-    }, // Link to Transaction model,
-    partyB: { type: String },
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    paymentAccountId: {
-      type: Schema.Types.ObjectId,
-      ref: "PaymentAccount",
     },
-    transactionReceipt: { type: String, optional: true },
-    B2CRecipientIsRegisteredCustomer: { type: String, optional: true },
-    ReceiverPartyPublicName: { type: String, optional: true },
-    TransactionCompletedDateTime: { type: String, optional: true },
-
-    B2CWorkingAccountAvailableFunds: { type: Number, optional: true },
-    resultCode: { type: Number, optional: true },
-    resultDesc: { type: String, optional: true },
+    walletId: { type: Schema.Types.ObjectId, ref: "Wallet", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    paymentAccountId: { type: Schema.Types.ObjectId, ref: "PaymentAccount" },
+    currency: { type: String, default: "KES" },
+    actualCharges: { type: Number, default: 0 },
+    estimatedCharges: { type: Number, default: 0 },
+    ReceiverPartyPublicName: { type: String },
+    paid_amount: { type: String },
+    resultCode: { type: String },
+    resultDesc: { type: String },
   },
   { timestamps: true }
 );
 
-MpesaPaymentSchema.statics.createPayment = async function ({
-  originatorConversationID,
-  transactionAmount,
-  status,
-  transactionId,
-  paymentAccountId,
-  userId,
-}) {
-  return this.create({
-    originatorConversationID,
-    transactionAmount,
-    status,
-    transactionId,
-    paymentAccountId,
-    userId,
-  });
-};
-// static method to get a payment by ID
-MpesaPaymentSchema.statics.getPaymentByTransactionId = async function ({
-  transactionId,
-  userId,
-}) {
-  return this.findOne({ transactionId, userId });
-};
-// static method to update payment status
-MpesaPaymentSchema.statics.updatePaymentStatus = async function (
-  transactionId,
-  status,
-  userId
-) {
-  return this.updateOne({ transactionId, userId }, { status });
-};
+// Instance Method to calculate net profit
+MpesaPaymentSchema.method("calculateNetProfit", function () {
+  return this.transactionAmount - this.actualCharges;
+});
 
-// Static method to update a payment
-MpesaPaymentSchema.statics.updatePayment = async function ({
-  transactionAmount,
-  userId,
-  transactionId,
-  status,
-  partyB,
-  transactionReceipt,
-  B2CRecipientIsRegisteredCustomer,
-  ReceiverPartyPublicName,
-  TransactionCompletedDateTime,
-  B2CWorkingAccountAvailableFunds,
-  resultCode,
-  resultDesc,
-}) {
-  return this.updateOne(
-    { userId, transactionId },
-    {
-      transactionAmount,
-      status,
-      partyB,
-      transactionReceipt,
-      B2CRecipientIsRegisteredCustomer,
-      ReceiverPartyPublicName,
-      TransactionCompletedDateTime,
-      B2CWorkingAccountAvailableFunds,
-      resultCode,
-      resultDesc,
-    }
-  );
-};
+// Static method to create a payment
+MpesaPaymentSchema.static("createPayment", async function (data) {
+  return this.create(data);
+});
 
-// Create the Payment model
+// Static method to get a payment by transaction ID
+MpesaPaymentSchema.static(
+  "getPaymentByTransactionId",
+  async function (transactionId, userId) {
+    return this.findOne({ transactionId, userId });
+  }
+);
+
+// Static method to update payment status
+MpesaPaymentSchema.static(
+  "updatePaymentStatus",
+  async function (tracking_id, status, actualCharges) {
+    return this.updateOne({ tracking_id }, { status, actualCharges });
+  }
+);
+
+// Create and export the Payment model
 const MpesaPayment =
-  models.MpesaPayment || mongoose.model("MpesaPayment", MpesaPaymentSchema);
+  models.MpesaPayment ||
+  model<IPayment, IPaymentStatics>("MpesaPayment", MpesaPaymentSchema);
 
 export default MpesaPayment;

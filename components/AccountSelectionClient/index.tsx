@@ -8,6 +8,8 @@ import WithdrawAccountCard from "@/components/PaymentAccountCard";
 import { PaymentAccount as PaymentAccountType } from "@/types";
 import FloatingAddButton from "@/components/FloatingAddAccount";
 
+import { AddPaymentAccountForm } from "@/components/AddPaymentAccount";
+
 /// motion() is deprecated. Use motion.create() instead.
 const MotionButton = motion.create(Button);
 // const MotionButton = motion(Button);
@@ -52,15 +54,15 @@ export default function AccountSelectionClient({
             {accounts.length > 0 &&
               accounts.map((account, index) => (
                 <motion.div
-                  key={account.id}
+                  key={account._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
                   <WithdrawAccountCard
                     account={account}
-                    selected={selectedAccount === account.id}
-                    onSelect={() => setSelectedAccount(account.id)}
+                    selected={selectedAccount === account._id}
+                    onSelect={() => setSelectedAccount(account._id)}
                   />
                 </motion.div>
               ))}
