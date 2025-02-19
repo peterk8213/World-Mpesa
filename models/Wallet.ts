@@ -55,26 +55,34 @@ WalletSchema.methods.verifyWithdrawRequest = function (amount: number) {
 };
 
 WalletSchema.statics.withdraw = async function ({ userId, amount }) {
+  /// static method to find one and update the wallet balance and return the updated wallet
+
   const wallet = await this.findOne({ userId });
   if (!wallet) throw new Error("Wallet not found.");
-  if (wallet.balance < amount) throw new Error("Insufficient funds.");
+  if (wallet.balance < amount) throw new Error("Insufficient funds");
+
   wallet.balance -= amount;
-  return wallet.save();
+  const updatedWallet = await wallet.save();
+  return updatedWallet;
 };
 
 WalletSchema.statics.deposit = async function ({ userId, amount }) {
+  ///// i want to find one and update the wallet balance and return the updated wallet
   const wallet = await this.findOne({ userId });
   if (!wallet) throw new Error("Wallet not found.");
   wallet.balance += amount;
-  return wallet.save();
+  const updatedWallet = await wallet.save();
+  return updatedWallet;
 };
 
-WalletSchema.statics.getWalletByUserId = function (userId) {
-  return this.findOne({ userId, isFrozen: false }).populate("userId");
+WalletSchema.statics.getWalletByUserId = async function (userId) {
+  return await this.findOne({ userId, isFrozen: false }).populate("userId");
 };
 
-WalletSchema.statics.getWalletBalanceByUserId = function (userId) {
-  return this.findOne({ userId, isFrozen: false }).select("balance currency");
+WalletSchema.statics.getWalletBalanceByUserId = async function (userId) {
+  return await this.findOne({ userId, isFrozen: false }).select(
+    "balance currency"
+  );
 };
 
 WalletSchema.statics.freezeWallet = async function (userId) {

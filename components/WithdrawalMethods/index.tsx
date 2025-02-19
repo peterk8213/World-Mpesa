@@ -36,7 +36,7 @@ export function WithdrawalMethods({
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          key={method.id}
+          key={method._id}
           variants={item}
         >
           <WithdrawalMethod method={method} />

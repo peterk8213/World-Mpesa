@@ -9,6 +9,7 @@ import { PaymentAccount as PaymentAccountType } from "@/types";
 import FloatingAddButton from "@/components/FloatingAddAccount";
 
 import { AddPaymentAccountForm } from "@/components/AddPaymentAccount";
+import { toastLoading } from "@/lib/toast";
 
 /// motion() is deprecated. Use motion.create() instead.
 const MotionButton = motion.create(Button);
@@ -32,6 +33,9 @@ export default function AccountSelectionClient({
     }
     if (!method) {
       return;
+    }
+    if (selectedAccount) {
+      toastLoading(" Processing...");
     }
     router.push(
       `/withdraw/amount?method=${encodeURIComponent(

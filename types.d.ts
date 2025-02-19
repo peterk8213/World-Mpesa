@@ -18,8 +18,9 @@ type PaymentMethod = {
 };
 
 export interface WithdrawalMethod {
-  id: string;
+  _id: string;
   name: string;
+  shortname: string;
   iconUrl: string;
   available: boolean;
   minAmount?: number;
@@ -41,23 +42,51 @@ export interface WithdrawConfirmProps {
 
 export interface PaymentAccount {
   _id: Schema.Types.ObjectId;
-  provider: {
+  providerId: {
     _id: string;
+
     shortname: string;
-    name: string;
   };
   phoneNumber: string;
   isdefault: boolean;
   userId: string;
 
-  holderName: string;
-  addedOn: string;
+  fullName: string;
+  createdAt: string;
+}
+
+interface PayoutProvider {
+  _id?: string; // Optional for new documents, automatically added by MongoDB
+  name: string; // Provider name (e.g., "M-Pesa", "Airtel Money")
+  shortname: string; // Short name or abbreviation (e.g., "MPESA", "AIRTEL")
+  icon: string; // URL to the provider's icon
+  maxAmount: number; // Maximum transaction amount
+  minAmount: number; // Minimum transaction amount
+  fee: number; // Transaction fee
+  processingTime: string; // Estimated processing time (e.g., "Instant", "1-2 Business Days")
+  available: boolean; // Whether the provider is currently available
+  description: string; // Description of the provider
+  createdAt?: Date; // Automatically added by Mongoose
+  updatedAt?: Date; // Automatically added by Mongoose
+}
+
+export interface WithdrawalMethod {
+  _id: string;
+  name: string;
+  iconUrl: string;
+  available: boolean;
+  minAmount?: number;
+  maxAmount?: number;
+  processingTime: string;
+  fees?: string;
+  description?: string;
 }
 
 export interface InitiateWithdrawData {
   amount: string;
   method: string;
   accountId: string;
+  userId: string;
 }
 
 interface OrderDetails {
@@ -68,7 +97,7 @@ interface OrderDetails {
   };
   totalAmount: number;
   walletBalance: number;
-  estimatedTime: string;
+
   method: string;
   fiatAmount: number;
   conversionRate: number;
@@ -109,6 +138,7 @@ interface AccountDetails {
   accountHolderName: string;
   phoneNumber: string;
   provider: string;
+  estimatedTime: string;
 }
 
 export interface WithdrawPageProps {

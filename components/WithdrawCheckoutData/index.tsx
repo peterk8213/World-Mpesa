@@ -17,7 +17,7 @@ export function WithdrawCheckoutpage({
   const {
     orderDetails: {
       totalAmount,
-      estimatedTime,
+
       conversionRate,
       fiatAmount,
       fees: { totalFee: fees },
@@ -25,7 +25,7 @@ export function WithdrawCheckoutpage({
       walletBalance,
       amount: withdrawAmount,
     },
-    accountdetails: { accountHolderName, phoneNumber, provider },
+    accountdetails: { accountHolderName, phoneNumber, provider, estimatedTime },
   } = withdrawCheckoutData;
   return (
     <motion.div
@@ -105,7 +105,7 @@ export function WithdrawCheckoutpage({
                       Transfer Method
                     </span>
 
-                    <p className="text-sm">{method}</p>
+                    <p className="text-sm">{provider}</p>
                   </div>
                   <div className="flex justify-between items-center pt-1">
                     <span className="text-sm text-gray-600">

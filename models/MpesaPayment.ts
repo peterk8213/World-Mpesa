@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document, Model, models, model } from "mongoose";
 
+import { MpesaPayment as MpesaPaymentType } from "@/types";
+
 // Define TypeScript interface for Payment model
 export interface IPayment extends Document {
   tracking_id: string;
@@ -82,9 +84,34 @@ MpesaPaymentSchema.method("calculateNetProfit", function () {
 });
 
 // Static method to create a payment
-MpesaPaymentSchema.static("createPayment", async function (data) {
-  return this.create(data);
-});
+MpesaPaymentSchema.static(
+  "createPayment",
+  async function ({
+    tracking_id,
+    request_reference_id,
+    transactionAmount,
+    status,
+    currency,
+    estimatedCharges,
+    transactionId,
+    paymentAccountId,
+    userId,
+    walletId,
+  }: MpesaPaymentType) {
+    return this.create({
+      tracking_id,
+      request_reference_id,
+      transactionAmount,
+      status,
+      currency,
+      estimatedCharges,
+      transactionId,
+      paymentAccountId,
+      userId,
+      walletId,
+    });
+  }
+);
 
 // Static method to get a payment by transaction ID
 MpesaPaymentSchema.static(

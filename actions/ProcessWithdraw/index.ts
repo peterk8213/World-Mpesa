@@ -3,24 +3,25 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
-
 import {
   addTransaction,
   validatePaymentAccount,
   updateWallet,
   createMpesaPaymentPayout,
 } from "@/lib/wallet/withdraw";
-
 import { Wallet } from "@/models/Wallet";
 import { PaymentAccount } from "@/models/PaymentAccount";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Transaction } from "@/models/Transaction";
-import {
-  PaymentAccount as PaymentAccountType,
-  Wallet as WalletDataType,
-} from "@/types";
-
 import { InitiateIntasendPayout } from "@/lib/wallet/payout";
+import { Wallet as WalletDataType } from "@/types";
+
+interface State {
+  success?: boolean;
+  error?: string;
+  pending?: boolean;
+  transactionId?: string;
+}
 
 const getFormData = async (
   formData: FormData
@@ -42,7 +43,7 @@ const verifyWithdrawRequest = async (
   amount: number
 ): Promise<{
   success: boolean;
-  error?: any;
+  error?: string;
   data?: WalletDataType;
 }> => {
   try {
@@ -57,41 +58,57 @@ const verifyWithdrawRequest = async (
     if (!WithdrawRequestValid) {
       return {
         success: false,
-        error: "invalid withdrawal request",
+        error: "Invalid withdrawal request.",
       };
     }
     return {
       success: true,
-
       data: wallet,
     };
   } catch (error) {
     console.error("Error verifying withdrawal request:", error);
-    return { success: false, error };
+    return { success: false, error: "Failed to verify withdrawal request." };
   }
 };
 
-export async function processWithdrawal(formData: FormData): Promise<void> {
+export async function processWithdrawal(
+  prevState: State,
+  formData: FormData
+): Promise<State> {
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect("/");
   }
 
   try {
-    const { userId: userIdFromSession } = session;
+    const { userId: userIdFromSession, worldId } = session;
     const { amount, method, userId, accountId } = await getFormData(formData);
 
+    // Validate the withdrawal details
     if (amount < 2) {
-      throw new Error("Invalid amount. Amount must be greater than 2 usd.");
+      return {
+        ...prevState,
+        error: "Invalid amount. Amount must be greater than 2 USD.",
+        pending: false,
+      };
     }
 
-    // Validate the withdrawal details
     if (!accountId || !userId || !method || !amount) {
-      throw new Error("No credentials provided for withdrawal.");
+      return {
+        ...prevState,
+        error: "No credentials provided for withdrawal.",
+        pending: false,
+      };
     }
+
     if (userIdFromSession !== userId) {
-      throw new Error("Invalid user ID.");
+      return {
+        ...prevState,
+        error: "Invalid user ID.",
+        pending: false,
+      };
     }
+
     await dbConnect();
 
     // Validate payment account and wallet balance concurrently
@@ -101,55 +118,90 @@ export async function processWithdrawal(formData: FormData): Promise<void> {
     ]);
 
     if (!WithdrawRequestValid.success) {
-      throw new Error(
-        WithdrawRequestValid.error || "Invalid withdrawal request."
-      );
+      return {
+        ...prevState,
+        error: WithdrawRequestValid.error || "Invalid withdrawal request.",
+        pending: false,
+      };
     }
 
     if (!accountValidation.success) {
-      throw new Error(accountValidation.error || "Invalid payment account.");
+      return {
+        ...prevState,
+        error: accountValidation.error || "Invalid payment account.",
+        pending: false,
+      };
+    }
+
+    // Initiate payout
+    const payoutData = await InitiateIntasendPayout({
+      amount,
+      method,
+      phoneNumber: accountValidation.data?.phoneNumber || "",
+      accountHolderName: accountValidation.data?.fullName || "",
+    });
+
+    if (!payoutData.success) {
+      return {
+        ...prevState,
+        error: payoutData.message || "Failed to initiate payout.",
+        pending: false,
+      };
     }
 
     // Process the withdrawal
     const [transaction, updatedWallet] = await Promise.all([
-      addTransaction({ userId, amount, method, walletId: accountId }),
+      addTransaction({
+        userId,
+        amount,
+        method,
+        walletId: WithdrawRequestValid.data?._id || "",
+        worldId,
+      }),
       updateWallet({ userId, amount }),
     ]);
 
-    const payoutData = await InitiateIntasendPayout({
-      fullname: "john doe",
-      amount,
-    });
-
-    if (!payoutData.success) {
-      throw new Error(
-        payoutData.message || "Failed to initiate payout.",
-        payoutData.error
-      );
+    if (!updatedWallet.success) {
+      return {
+        ...prevState,
+        error: "Failed to update wallet.",
+        pending: false,
+      };
     }
+
+    if (!transaction.success) {
+      return {
+        ...prevState,
+        error: "Failed to create transaction.",
+        pending: false,
+      };
+    }
+
+    // Create M-Pesa payout transaction
     const {
       tracking_id,
       request_reference_id,
-      transactionAmount,
+      transactions,
       status,
       currency,
-      estimatedCharges,
+      charge_estimate: estimatedCharges,
     } = payoutData.data;
 
     if (!updatedWallet.data) {
-      throw new Error("Failed to update wallet.");
+      return {
+        ...prevState,
+        error: "Wallet data is undefined.",
+        pending: false,
+      };
     }
-    if (!transaction.data) {
-      throw new Error("Failed to update wallet.");
-    }
-    const { _id: walletId } = updatedWallet.data;
 
+    const { _id: walletId } = updatedWallet.data;
     const { _id: transactionId } = transaction.data;
 
     const newTransaction = await createMpesaPaymentPayout({
       tracking_id,
       request_reference_id,
-      transactionAmount,
+      transactionAmount: parseFloat(transactions[0].amount),
       status,
       currency,
       estimatedCharges,
@@ -162,8 +214,21 @@ export async function processWithdrawal(formData: FormData): Promise<void> {
     console.log("Withdrawal processed successfully:", {
       transaction,
       updatedWallet,
+      newTransaction,
     });
+
+    return {
+      ...prevState,
+      success: true,
+      pending: false,
+      transactionId: transactionId.toString(),
+    };
   } catch (error) {
     console.error("Error processing withdrawal:", error);
+    return {
+      ...prevState,
+      error: "An unexpected error occurred. Please try again.",
+      pending: false,
+    };
   }
 }

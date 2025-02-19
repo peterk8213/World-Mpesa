@@ -57,9 +57,13 @@ export default async function Home() {
     user = await Wallet.getWalletByUserId(userId);
 
     console.log("user data from home", user);
+    if (!user?.userId) {
+      redirect("/no-user-data");
+    }
 
     if (user) {
       // Store data in cache with a TTL (e.g., 3600 seconds)
+
       const walletInfo = {
         _id: user._id,
         userId: {
@@ -127,6 +131,9 @@ export default async function Home() {
       iconBg: "bg-orange-500",
     },
   ];
+  if (!user) {
+    redirect("/no-user-data");
+  }
 
   return (
     <div className="flex flex-col  h-[100dvh] bg-white text-black overflow-hidden  px-3 lg:mx-20">
@@ -135,7 +142,6 @@ export default async function Home() {
         <div>
           {/* render user homepage and pass user as props */}
           <UserHomePageCard user={user} />
-          {/* <UserHomePageCard user={user:} /> */}
         </div>
 
         <div className="flex justify-around items-center mb-auto mt-7 lg:mt-5 px-3">

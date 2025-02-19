@@ -67,10 +67,10 @@ TransactionSchema.statics.createMpesaTransaction = async function ({
   amount,
   reference,
 }: Partial<ITransaction>) {
-  if (amount === undefined || amount <= 1) {
+  if (amount === undefined || amount < 1) {
     throw new Error("Amount must be greater than 1");
   }
-  return this.create({
+  const mpesaPayout = await this.create({
     userId,
     walletId,
     worldId,
@@ -82,6 +82,8 @@ TransactionSchema.statics.createMpesaTransaction = async function ({
     description: "Mpesa debit transaction",
     meta: {},
   });
+
+  return mpesaPayout;
 };
 
 // Static method to create a Worldcoin transaction

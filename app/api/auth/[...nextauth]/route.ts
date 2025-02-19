@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
                 .hSet(redisKey, "userInfo", JSON.stringify(newuser))
                 // Set TTL for the entire key (in seconds)
                 // Expires after 10 hours
-                .expire(redisKey, 36000)
+                .expire(redisKey, 600)
                 .exec();
 
               console.log("new User signed in  ", newuser);

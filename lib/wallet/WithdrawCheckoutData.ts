@@ -2,6 +2,8 @@ import { getConversionRate } from "@/lib/wallet/conversion";
 import { InitiateWithdrawData } from "@/types";
 
 import { calculateWithdrawFee } from "@/lib/wallet/getFees";
+import { PaymentAccount } from "@/models/PaymentAccount";
+import { Wallet } from "@/models/Wallet";
 
 const getOrderDetails = async ({
   amount: userAmount,
@@ -15,29 +17,46 @@ const getOrderDetails = async ({
   const { netAmount, totalFee } = fees;
 
   const fiatAmount = netAmount * conversionRate;
-  const estimatedTime = "Instant";
+
   const walletBalance = 100;
   const orderDetails = {
     amount,
     fees,
     totalAmount: netAmount,
     walletBalance,
-    estimatedTime,
+
     method,
     fiatAmount,
     conversionRate,
   };
-  console.log("orderDetails done");
+
   return orderDetails;
 };
-const getAccountDetails = async ({ accountId }: { accountId: string }) => {
-  const accountHolderName = "John Doe";
-  const phoneNumber = "+254 712 345 678";
-  const provider = "mpesa";
+const getAccountDetails = async ({
+  accountId,
+  userId,
+}: {
+  accountId: string;
+  userId: string;
+}) => {
+  const account = await PaymentAccount.findOne({
+    _id: accountId,
+    userId,
+  }).populate({
+    path: "providerId",
+    select: "shortname processingTime",
+  });
+  if (!account) {
+    throw new Error("Account not found");
+  }
+
+  const { fullName: accountHolderName, phoneNumber, providerId } = account;
+
   const accountdetails = {
     accountHolderName,
     phoneNumber,
-    provider,
+    provider: providerId.shortname,
+    estimatedTime: providerId.processingTime,
   };
 
   return accountdetails;
@@ -47,16 +66,18 @@ export async function getWithdrawCheckoutPageData({
   amount,
   method,
   accountId,
+  userId,
 }: {
   amount: string;
   method: string;
   accountId: string;
+  userId: string;
 }) {
   //resolve the requests concurrently
 
   const [orderDetails, accountDetails] = await Promise.all([
-    getOrderDetails({ amount, method, accountId }),
-    getAccountDetails({ accountId }),
+    getOrderDetails({ amount, method, accountId, userId }),
+    getAccountDetails({ accountId, userId }),
   ]);
 
   return {

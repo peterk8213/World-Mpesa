@@ -7,14 +7,17 @@ import type { WithdrawalMethod as WithdrawalMethodType } from "@/types";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { toastInfo } from "@/lib/toast";
 
 export function WithdrawalMethod({ method }: { method: WithdrawalMethodType }) {
   const router = useRouter();
 
   const handleSelect = () => {
     if (method.available) {
-      router.push(`/withdraw/account?method=${method.id}`);
+      toastInfo(`{method.name} selected ⚡⚡`);
+      router.push(`/withdraw/account?method=${method._id}`);
     }
+    toastInfo("This withdrawal method is coming soon!");
   };
 
   return (

@@ -17,10 +17,10 @@ export default function WithdrawAccountCard({
 }: AccountProps) {
   const {
     _id,
-    provider: { shortname, name },
+    providerId: { _id: providerId, shortname: name },
     phoneNumber,
-    holderName,
-    addedOn,
+    fullName: holderName,
+    createdAt: addedOn,
   } = account;
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -37,12 +37,12 @@ export default function WithdrawAccountCard({
           badge: "bg-[#E8F5E9] text-green-700",
           card: "bg-green-50/40",
         };
-      case "airtel":
+      case "airtel-money":
         return {
           badge: "bg-[#FFEBEE] text-red-700",
           card: "bg-red-50/40",
         };
-      case "bank":
+      case "bank-transfer":
         return {
           badge: "bg-[#E3F2FD] text-blue-700",
           card: "bg-blue-50/40",
@@ -70,7 +70,7 @@ export default function WithdrawAccountCard({
       onClick={onSelect}
     >
       <div className="space-y-3">
-        <h3 className="text-base font-medium">{holderName}</h3>
+        <h3 className="text-base font-medium">{holderName.toUpperCase()}</h3>
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <p className="text-sm text-black/70">{phoneNumber}</p>
@@ -78,7 +78,7 @@ export default function WithdrawAccountCard({
               <span
                 className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${styles.badge}`}
               >
-                {shortname}
+                {name}
               </span>
               <span className="text-xs text-black/50">
                 Added {formatDate(addedOn)}

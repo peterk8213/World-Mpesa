@@ -1,4 +1,4 @@
-import { Schema, model, models, Document, Model } from "mongoose";
+import mongoose, { Schema, model, models, Document, Model } from "mongoose";
 
 // Define TypeScript interface for PaymentAccount
 export interface IPaymentAccount extends Document {
@@ -6,10 +6,8 @@ export interface IPaymentAccount extends Document {
   fullName: string;
   phoneNumber: string;
   walletId: Schema.Types.ObjectId;
-  provider: {
-    _id: Schema.Types.ObjectId;
-    shortname: string;
-  };
+  providerId: Schema.Types.ObjectId;
+
   isdefault: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -23,7 +21,7 @@ export interface IPaymentAccountStatics
     fullName: string;
     phoneNumber: string;
     walletId: Schema.Types.ObjectId;
-    provider: { _id: Schema.Types.ObjectId; shortname: string };
+    providerId: Schema.Types.ObjectId;
     isdefault?: boolean;
   }): Promise<IPaymentAccount>;
   getPaymentAccountById(
@@ -49,13 +47,11 @@ const PaymentAccountSchema = new Schema<
     fullName: { type: String, required: true }, // User's name from Worldcoin
     phoneNumber: { type: String, required: true, unique: true }, // Unique phone number
     walletId: { type: Schema.Types.ObjectId, ref: "Wallet", required: true }, // Reference to Wallet
-    provider: {
-      _id: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: "PayoutProvider",
-      }, // Reference to PayoutProvider
-      shortname: { type: String, required: true },
+    providerId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "Provider",
+      // Reference to PayoutProvider
     },
     isdefault: { type: Boolean, default: false }, // Indicates default payment method
   },
@@ -68,14 +64,14 @@ PaymentAccountSchema.statics.addPaymentAccount = async function ({
   fullName,
   phoneNumber,
   walletId,
-  provider,
+  providerId,
   isdefault = false,
 }: {
   userId: Schema.Types.ObjectId;
   fullName: string;
   phoneNumber: string;
   walletId: Schema.Types.ObjectId;
-  provider: { _id: Schema.Types.ObjectId; shortname: string };
+  providerId: Schema.Types.ObjectId;
   isdefault?: boolean;
 }) {
   return this.create({
@@ -83,24 +79,36 @@ PaymentAccountSchema.statics.addPaymentAccount = async function ({
     fullName,
     phoneNumber,
     walletId,
-    provider,
+    providerId,
     isdefault,
   });
 };
 
 // Static method to get a payment account by ID
-PaymentAccountSchema.statics.getPaymentAccountById = async function (
-  accountId: string,
-  userId: Schema.Types.ObjectId
-) {
-  return this.findOne({ _id: accountId, userId });
+PaymentAccountSchema.statics.getPaymentAccountById = async function ({
+  accountId,
+  userId,
+}: {
+  accountId: Schema.Types.ObjectId;
+  userId: Schema.Types.ObjectId;
+}) {
+  return this.findOne({
+    _id: accountId,
+    userId,
+  }).populate({
+    path: "providerId",
+    select: "shortname processingTime",
+  });
 };
 
 // Static method to get all payment accounts by user ID
 PaymentAccountSchema.statics.getPaymentAccountsByUserId = async function (
   userId: Schema.Types.ObjectId
 ) {
-  return this.find({ userId }).sort({ isdefault: -1 });
+  return this.find({ userId }).sort({ isdefault: -1 }).populate({
+    path: "providerId",
+    select: "shortname",
+  });
 };
 
 // Use models to check if 'PaymentAccount' already exists to prevent recompilation issues

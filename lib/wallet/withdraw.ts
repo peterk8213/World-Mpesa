@@ -15,11 +15,13 @@ export const addTransaction = async ({
   amount,
   method,
   walletId,
+  worldId,
 }: {
   userId: string;
   amount: number;
   method: string;
   walletId: string;
+  worldId: string;
 }): Promise<{
   success: boolean;
   error?: any;
@@ -30,9 +32,9 @@ export const addTransaction = async ({
     const newTransaction = await Transaction.createMpesaTransaction({
       userId,
       amount,
-      method,
       walletId,
       reference: uuid,
+      worldId,
     });
     if (!newTransaction) {
       throw new Error("Transaction not created.");
@@ -62,18 +64,21 @@ export const validatePaymentAccount = async ({
   error?: any;
   data?: PaymentAccountType;
 }> => {
-  const account: PaymentAccountType =
-    await PaymentAccount.getPaymentAccountById(accountId);
+  const account = await PaymentAccount.findOne({
+    _id: accountId,
+    userId,
+  });
   if (!account) {
     return {
       success: false,
       error: "Payment account not found.",
     };
   }
-  if (account.provider && account.provider._id !== method) {
+  if (JSON.parse(JSON.stringify(account.providerId)) !== method) {
     return {
       success: false,
-      error: "Invalid payment method",
+      error:
+        "Invalid payment method. Please select a valid payment method/account.",
     };
   }
   return {
@@ -107,15 +112,39 @@ export const updateWallet = async ({
   };
 };
 
-export const createMpesaPaymentPayout = async (
-  data: MpesaPaymentType
-): Promise<{
+export const createMpesaPaymentPayout = async ({
+  tracking_id,
+  request_reference_id,
+  transactionAmount,
+  status,
+  currency,
+  estimatedCharges,
+  transactionId,
+  paymentAccountId,
+  userId,
+  walletId,
+}: MpesaPaymentType): Promise<{
   success: boolean;
   error?: any;
   data?: MpesaPaymentType;
 }> => {
   try {
-    const newPayment = await MpesaPayment.createPayment(data);
+    if (status !== "completed") {
+      status = "pending";
+    }
+
+    const newPayment = await MpesaPayment.createPayment({
+      tracking_id,
+      request_reference_id,
+      transactionAmount,
+      status: status === "completed" ? "completed" : "pending",
+      currency,
+      estimatedCharges,
+      transactionId,
+      paymentAccountId,
+      userId,
+      walletId,
+    });
     if (!newPayment) {
       throw new Error("Payment not created.");
     }

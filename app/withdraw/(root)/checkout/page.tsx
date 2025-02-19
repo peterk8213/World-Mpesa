@@ -16,7 +16,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 async function getWithdrawalDetails(
   InitiateWithdrawData: InitiateWithdrawData
 ) {
-  const { accountId, method, amount } = InitiateWithdrawData;
+  const { accountId, method, amount, userId } = InitiateWithdrawData;
   const processdata = {
     amount,
     accountId,
@@ -27,6 +27,7 @@ async function getWithdrawalDetails(
       amount,
       method,
       accountId,
+      userId,
     });
 
   return {
@@ -81,6 +82,7 @@ async function WithdrawAmountPageWrapper({
     amount,
     method,
     accountId,
+    userId,
   };
   const withdrawCheckoutData = await getWithdrawalDetails(withdrawRequestData);
   console.log("withdrawCheckoutData", withdrawCheckoutData);
