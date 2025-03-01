@@ -15,6 +15,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Transaction } from "@/models/Transaction";
 import { InitiateIntasendPayout } from "@/lib/wallet/payout";
 import { Wallet as WalletDataType } from "@/types";
+import { revalidatePath } from "next/cache";
 
 interface State {
   success?: boolean;
@@ -216,6 +217,8 @@ export async function processWithdrawal(
       updatedWallet,
       newTransaction,
     });
+
+    revalidatePath("/home");
 
     return {
       ...prevState,

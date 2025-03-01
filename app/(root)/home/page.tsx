@@ -1,23 +1,18 @@
 // import { PayBlock } from "@/components/Pay";
 // import { VerifyBlock } from "@/components/Verify";
 import Link from "next/link";
-import NavBar from "@/components/TopNavBar";
 import { Wallet } from "@/models/Wallet";
 import dbConnect from "@/lib/mongodb";
 
 import getRedisClient from "@/lib/redis";
-import { getServerSession } from "next-auth";
+import { getServerSession, Session } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { AppServices } from "@/components/Services";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface CryptoData {
-  name: string;
-  symbol: string;
-  price: string;
-  change: string;
-  icon: string;
-  iconBg: string;
-}
+import { Bot } from "lucide-react";
+
 // Define the User type
 type User = {
   name: string;
@@ -25,23 +20,13 @@ type User = {
   baseCurrency: string;
 };
 
-import { CirclePlus, CircleArrowOutUpRight, Send } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 
-import CryptoList from "@/components/CryptoList";
 import UserHomePageCard from "@/components/UserHomePage";
+import { HomePageAnalytics } from "@/components/HomepageAnalytics";
+import { Suspense } from "react";
 
-export default async function Home() {
-  const session = await getServerSession(authOptions);
-
-  console.log("session from home", session);
-  console.log("session", session);
-
-  if (!session) {
-    redirect("/");
-  }
-
+const getUser = async (session: Session) => {
   const { userId, worldId } = session;
 
   // there is a twist for the wallet info cache i will add wlt flag so that i can be able to query using the user id
@@ -52,145 +37,178 @@ export default async function Home() {
 
   let user;
 
+  if (cachedData) {
+    console.info("walletinfo from cache ");
+    user = JSON.parse(cachedData);
+    console.log("user from cache");
+  }
+
   if (!cachedData) {
-    await dbConnect();
     user = await Wallet.getWalletByUserId(userId);
 
     console.log("user data from home", user);
-    if (!user?.userId) {
+    if (!user) {
       redirect("/no-user-data");
     }
 
-    if (user) {
-      // Store data in cache with a TTL (e.g., 3600 seconds)
+    // Store data in cache with a TTL (e.g., 3600 seconds)
 
-      const walletInfo = {
-        _id: user._id,
-        userId: {
-          _id: user.userId._id,
-          name: user.userId.name,
-        },
-        worldId: user.worldId,
-        balance: user.balance,
-        currency: user.currency,
-      };
-      await redis
-        .multi()
-        .hSet(redisKey, "walletInfo", JSON.stringify(walletInfo))
-        // Set TTL for the entire key (in seconds)
-        // Expires after 10 hours
-        .expire(redisKey, 60)
-        .exec();
-    }
-
-    console.log("user dashboard", user);
-  } else {
-    console.info("walletinfo from cache ");
-    user = JSON.parse(cachedData);
+    const walletInfo = {
+      _id: user._id,
+      userId: {
+        _id: user.userId._id,
+        name: user.userId.name,
+      },
+      worldId: user.worldId,
+      balance: user.balance,
+      currency: user.currency,
+    };
+    await redis
+      .multi()
+      .hSet(redisKey, "walletInfo", JSON.stringify(walletInfo))
+      // Set TTL for the entire key (in seconds)
+      // Expires after 10 hours
+      .expire(redisKey, 60)
+      .exec();
   }
 
-  // Use the session.user.id to query user-specific data
+  return user;
+};
 
-  // const user = await Wallet.findOne({
-  //   userId,
-  // }).populate("userId");
+const getUserWallet = async ({ userId }: { userId: string }) => {
+  const user = await Wallet.getWalletByUserId(userId);
+  const {
+    userId: { userName },
 
-  // console.log("user", user);
-  // // const user = { name: "John Doe", balance: 100, baseCurrency: "USD" };
-  const cryptoData = [
-    {
-      name: "Worldcoin",
-      symbol: "WLD",
-      price: "0.02",
-      change: "1.34%",
-      icon: "WLD",
-      iconBg: "bg-gray-800",
-    },
-    {
-      name: "Dollars",
-      symbol: "USDC.E",
-      price: "3",
-      change: "-0.01%",
-      icon: "$",
-      iconBg: "bg-green-500",
-    },
-    {
-      name: "Ethereum",
-      symbol: "WETH",
-      price: "0",
-      change: "-0.62%",
-      icon: "ETH",
-      iconBg: "bg-blue-500",
-    },
-    {
-      name: "Bitcoin",
-      symbol: "WBTC",
-      price: "0",
-      change: "+0.37%",
-      icon: "₿",
-      iconBg: "bg-orange-500",
-    },
-  ];
+    balance,
+    currency,
+  } = user;
+
+  return {
+    userName,
+    balance,
+    currency,
+  };
+};
+
+const getUserAnalytics = async ({
+  userId,
+  timeframe,
+}: {
+  userId: string;
+  timeframe: string;
+}) => {
+  const sampleData = {
+    daily: [
+      { name: "12AM", amount: 2 },
+      { name: "4AM", amount: 1398 },
+      { name: "8AM", amount: 9 },
+      { name: "12PM", amount: 3908 },
+      { name: "4PM", amount: 4800 },
+      { name: "8PM", amount: 3800 },
+      { name: "11PM", amount: 4 },
+    ],
+    weekly: [
+      { name: "Mon", amount: 4000 },
+      { name: "Tue", amount: 3000 },
+      { name: "Wed", amount: 6000 },
+      { name: "Thu", amount: 4000 },
+      { name: "Fri", amount: 5000 },
+      { name: "Sat", amount: 4500 },
+      { name: "Sun", amount: 4800 },
+    ],
+    monthly: [
+      { name: "Jan", amount: 12000 },
+      { name: "Feb", amount: 13500 },
+      { name: "Mar", amount: 11800 },
+      { name: "Apr", amount: 14200 },
+      { name: "May", amount: 15000 },
+      { name: "Jun", amount: 13800 },
+    ],
+  };
+
+  return sampleData[timeframe] || [];
+};
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ timeframe?: string }>;
+}) {
+  const session = await getServerSession(authOptions);
+
+  const { userId } = session;
+
+  if (!session) {
+    redirect("/authentication");
+  }
+  await dbConnect();
+
+  const timeframe = (await searchParams).timeframe || "weekly"; // Default to "weekly"
+  const validTimeframes = ["daily", "weekly", "monthly"];
+
+  if (!validTimeframes.includes(timeframe)) {
+    notFound(); // Handle invalid timeframe values
+  }
+
+  return (
+    <div className="flex flex-col  bg-white text-black overflow-auto  lg:mx-20 gap-[3rem] pb-4 ">
+      <div className="flex flex-col lg:flex-row lg:space-x-4 px-2 ">
+        {/* render user homepage and pass user as props */}
+        <Suspense fallback={<div>Loading...</div>}>
+          <HomePageWrapper userId={userId} />
+        </Suspense>
+      </div>
+
+      <div className="px-2">
+        <AppServices />
+      </div>
+      {/* <div className="flex flex-col lg:flex-row lg:space-x-4 px-2 ">
+        <Suspense fallback={<div>Loading...</div>} key={timeframe}>
+          <HomePageAnalyticsWrapper userId={userId} timeframe={timeframe} />
+        </Suspense>
+      </div> */}
+      <div></div>
+    </div>
+  );
+}
+
+const HomePageWrapper = async ({ userId }: { userId: string }) => {
+  //// delay for 3 seconds
+
+  const user = await getUserWallet({ userId });
+
   if (!user) {
     redirect("/no-user-data");
   }
 
   return (
-    <div className="flex flex-col  h-[100dvh] bg-white text-black overflow-hidden  px-3 lg:mx-20">
-      <NavBar />
-      <main className="flex-1 flex flex-col px-1 overflow-auto mt-3">
-        <div>
-          {/* render user homepage and pass user as props */}
-          <UserHomePageCard user={user} />
-        </div>
-
-        <div className="flex justify-around items-center mb-auto mt-7 lg:mt-5 px-3">
-          <Link href={"/deposit"}>
-            <div className="text-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full bg-gray-900 text-white w-10 h-10 p-0"
-              >
-                <CirclePlus className="h-4 w-4" />
-              </Button>
-              <p className="mt-1 text-xs">Deposit</p>
-            </div>
-          </Link>
-          <Link href={"/withdraw"}>
-            <div className="text-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full bg-gray-900 text-white w-10 h-10 p-0"
-              >
-                <CircleArrowOutUpRight className="h-4 w-4" />
-              </Button>
-              <p className="mt-1 text-xs">Withdraw</p>
-            </div>
-          </Link>
-          <Link href={"/send"}>
-            <div className="text-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full bg-gray-900 text-white w-10 h-10 p-0"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-              <p className="mt-1 text-xs">Send</p>
-            </div>
-          </Link>
-        </div>
-
-        <div className="flex-1  mt-10  lg:mt-5 p-1 overflow-auto scrollbar-hide  mb-5 lg:px-8">
-          <div className="h-full overflow-y-auto scrollbar-hide">
-            {cryptoData.map((crypto: CryptoData) => (
-              <CryptoList key={crypto.symbol} crypto={crypto} />
-            ))}
-          </div>
-        </div>
-      </main>
-    </div>
+    <>
+      <div className="">
+        <UserHomePageCard user={user} />
+      </div>
+    </>
   );
-}
+};
+
+const HomePageAnalyticsWrapper = async ({
+  userId,
+  timeframe,
+}: {
+  userId: string;
+  timeframe: string;
+}) => {
+  const data: {
+    name: string;
+    amount: number;
+  }[] = await getUserAnalytics({ userId, timeframe });
+  ///// delay for 3 seconds
+
+  return (
+    <>
+      <div className="">
+        <HomePageAnalytics data={data} />
+      </div>
+    </>
+  );
+};

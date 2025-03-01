@@ -1,70 +1,72 @@
 // app/profile/page.tsx
 
-import { ArrowLeft, HelpCircle, ChevronRight } from "lucide-react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import { Button } from "@/components/ui/button";
 
 import { VerifyBlock } from "@/components/Verify";
 import { Card, CardContent } from "@/components/ui/card";
-import ProfileNavBar from "@/components/ProfileNavBar";
+
 import ProfileCard from "@/components/ProfileCard";
 import PaymenMethods from "@/components/PaymentMethods";
 import Link from "next/link";
 
-// Define the User type
-type User = {
-  name: string;
-  balance: number;
-  baseCurrency: string;
+import { ProfileNotification } from "@/components/ProfileNotification";
+import { UsefulLinks } from "@/components/UsefulLinks";
+import { redirect } from "next/navigation";
+
+import { User } from "@/models/User";
+import dbConnect from "@/lib/mongodb";
+
+import { PaymentAccount } from "@/models/PaymentAccount";
+import { Suspense } from "react";
+import { AichatBotComponent } from "@/components/AichatBotComponent";
+
+const getUserAccountCount = async ({ userId }: { userId: string }) => {
+  //// should query a user and return the number of payment accounts
+
+  const paymentAccounts = await PaymentAccount.find({ userId: userId });
+
+  return paymentAccounts.length || 0;
 };
 
-export default function ProfilePage() {
-  // const { data: session } = useSession();
-  // const user = session?.user;
-  // const [isVerified, setIsVerified] = useState(false);
+const getUserById = async ({
+  userId,
+}: {
+  userId: string;
+}): Promise<{
+  userName: string;
+  verificationLevel: string;
+}> => {
+  //// should query a user and return the user object
+  const user = await User.findOne({ _id: userId }).select(
+    "userName  verificationLevel"
+  );
 
-  // if (!user) {
-  //   router.push("/");
-  // }
+  return JSON.parse(JSON.stringify(user));
+};
 
-  const user: User = {
-    name: "John Doe",
-    balance: 5000.75,
-    baseCurrency: "KES",
-  };
+export default async function ProfilePage() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/");
+  }
+
+  const { userId } = session;
+
+  await dbConnect();
 
   return (
     <div className="flex flex-col min-h-screen   p-2 lg:p-12 lg:mx-20 ">
-      <main className="flex-1 flex flex-col px-4 py-6 space-y-6">
-        <div>
-          <ProfileNavBar />
-        </div>
-        <div className="">
-          <ProfileCard user={user} />
-        </div>
-        <PaymenMethods />
-        <Card className="bg-white bg-opacity-10  border-none ">
-          <CardContent className="p-6 space-y-4">
-            <Link href={`/settings/${user?.name}`}>
-              <Button
-                variant="ghost"
-                className="w-full justify-between py-2  hover:bg-white hover:bg-opacity-20"
-              >
-                <span>Settings</span>
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href={`/help/${user?.name}`}>
-              <Button
-                variant="ghost"
-                className="w-full justify-between py-2  hover:bg-white hover:bg-opacity-20"
-              >
-                <span>Help & Support</span>
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <main className="flex-1 flex flex-col px-4 py-6 space-y-6 gap-3">
+        <Suspense fallback={<div>Loading...</div>}>
+          <ProfilePageWrapper userId={userId} />
+        </Suspense>
+
+        <ProfileNotification />
+        <AichatBotComponent />
+        <UsefulLinks />
 
         <div className="flex-1" />
       </main>
@@ -72,21 +74,23 @@ export default function ProfilePage() {
   );
 }
 
-// import { PayBlock } from "@/components/Pay";
-// import { VerifyBlock } from "@/components/Verify";
-// import { Button } from "@/components/ui/button";
-// import { signIn, signOut, useSession } from "next-auth/react";
+const ProfilePageWrapper = async ({ userId }: { userId: string }) => {
+  //// delay for 3 seconds
 
-// export default function Profile() {
-//   return (
-//     <main className="flex flex-col items-center justify-center p-4">
-//       <h1 className="text-2xl font-bold">Profile</h1>
-//       <VerifyBlock />
-//       {/* Content for the user profile */}
-//     </main>
-//   );
-// }
+  const [user, PaymentMethodsCount] = await Promise.all([
+    getUserById({ userId }),
+    getUserAccountCount({ userId }),
+  ]);
 
-// // <Button onClick={() => signOut()} className="w-full">
-// //   <p>sign out</p>
-// // </Button>
+  return (
+    <>
+      <div className="">
+        <ProfileCard
+          userName={user.userName}
+          verificationLevel={user.verificationLevel}
+        />
+      </div>
+      <PaymenMethods paymentMethodsCount={PaymentMethodsCount} />
+    </>
+  );
+};

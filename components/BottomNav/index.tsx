@@ -44,7 +44,9 @@ export function BottomNav({ className }: BottomNavProps) {
   return (
     <nav
       className={cn(
-        "fixed bottom-0 left-0 w-full bg-white border-t border-gray-00",
+        "fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-md",
+        "bg-white/10 backdrop-blur-2xl backdrop-filter",
+        "rounded-xl shadow-lg shadow-black/10 border-t border-white/20  z-50",
         className
       )}
     >

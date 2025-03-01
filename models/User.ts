@@ -10,6 +10,11 @@ const UserSchema = new Schema(
     worldChainAddress: { type: String }, // User's Worldcoin address
     avatar: { type: String }, // Avatar URL
     createdAt: { type: Date, default: Date.now }, // User's creation date
+    userName: { type: String, max: 30, min: 3, trim: true }, // User's username
+    notifications: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

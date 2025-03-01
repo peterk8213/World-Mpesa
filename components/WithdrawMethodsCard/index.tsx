@@ -14,8 +14,10 @@ export function WithdrawalMethod({ method }: { method: WithdrawalMethodType }) {
 
   const handleSelect = () => {
     if (method.available) {
-      toastInfo(`{method.name} selected ⚡⚡`);
       router.push(`/withdraw/account?method=${method._id}`);
+      toastInfo(`${method.name} selected ⚡⚡`);
+
+      return;
     }
     toastInfo("This withdrawal method is coming soon!");
   };
