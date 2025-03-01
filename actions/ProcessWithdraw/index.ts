@@ -86,10 +86,10 @@ export async function processWithdrawal(
     const { amount, method, userId, accountId } = await getFormData(formData);
 
     // Validate the withdrawal details
-    if (amount < 2) {
+    if (amount < 1) {
       return {
         ...prevState,
-        error: "Invalid amount. Amount must be greater than 2 USD.",
+        error: "Invalid amount. Amount must be greater than 1 USD.",
         pending: false,
       };
     }

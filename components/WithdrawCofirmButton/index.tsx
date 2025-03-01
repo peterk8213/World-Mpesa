@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { toastLoading, toastSuccess } from "@/lib/toast";
+import { toastError, toastLoading, toastSuccess } from "@/lib/toast";
 
 const MotionButton = motion.create(Button);
 
@@ -43,6 +43,11 @@ export function WithdrawConfirmButton({
     // }]
     if (state.success === true) {
       toastSuccess("Withdrawal Successful  redirecting 🚥🚧");
+      router.push(`/withdraw/success?transactionId=${state.transactionId}`);
+    }
+    if (state.error) {
+      toastError("Withdrawal Failed 🛑💀");
+      toastError(state.error);
     }
     return;
   }, [isPending]);
