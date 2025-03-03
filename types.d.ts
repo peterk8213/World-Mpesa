@@ -23,8 +23,8 @@ export interface WithdrawalMethod {
   shortname: string;
   iconUrl: string;
   available: boolean;
-  minAmount?: number;
-  maxAmount?: number;
+  minAmount: number;
+  maxAmount: number;
   processingTime: string;
   fees?: string;
   description?: string;

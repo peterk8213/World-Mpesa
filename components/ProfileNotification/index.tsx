@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Bell,
-  ChevronRight,
-  HelpCircle,
-  Info,
-  Lock,
-  MessageSquare,
-  Settings,
-  Shield,
-  Volume2,
-} from "lucide-react";
+import { Bell } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 import { useState } from "react";
@@ -52,6 +42,8 @@ export function ProfileNotification() {
               onCheckedChange={(checked) =>
                 setNotifications((prev) => ({ ...prev, all: checked }))
               }
+              name="notifications"
+              id="notifications"
             />
           </div>
         </div>

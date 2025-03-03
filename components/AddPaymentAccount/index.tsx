@@ -87,6 +87,7 @@ export function AddPaymentAccountForm({
     }
     if (state?.error) {
       toastError(state.error);
+      state.error = undefined;
     }
   }, [state]);
 

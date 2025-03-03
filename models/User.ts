@@ -35,6 +35,21 @@ UserSchema.statics.addNewUser = async function ({
   return this.create({ worldId, name, email, verificationLevel });
 };
 
+/// static method to add a username
+UserSchema.statics.addUserName = async function ({
+  userId,
+  userName,
+}: {
+  userId: string;
+  userName: string;
+}) {
+  return this.findOneAndUpdate(
+    { _id: userId },
+    { userName },
+    { new: true, runValidators: true }
+  );
+};
+
 UserSchema.post("save", async function (doc) {
   try {
     await Wallet.create({

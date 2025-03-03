@@ -4,6 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Button as MinikitButton } from "@worldcoin/mini-apps-ui-kit-react/Button";
+
 import { WithdrawKeypadProps } from "@/types";
 import { toastInfo } from "@/lib/toast";
 
@@ -11,6 +13,8 @@ import { Delete } from "lucide-react";
 
 /// motion() is deprecated. Use motion.create() instead.
 const MotionButton = motion.create(Button);
+const MotionButtonMinikit = motion.create(MinikitButton);
+
 // const MotionButton = motion(Button);
 
 export default function WithdrawKeypad({
@@ -215,7 +219,7 @@ export default function WithdrawKeypad({
       </div>
 
       <div className="fixed bottom-5 left-0 right-0 p-4 bg-background border-t">
-        <MotionButton
+        <MotionButtonMinikit
           className="w-full text-xl rounded-lg py-6"
           disabled={!isAmountValid}
           onClick={handleSubmit}
@@ -223,7 +227,7 @@ export default function WithdrawKeypad({
           transition={{ type: "spring", stiffness: 300 }}
         >
           Continue
-        </MotionButton>
+        </MotionButtonMinikit>
       </div>
     </motion.div>
   );

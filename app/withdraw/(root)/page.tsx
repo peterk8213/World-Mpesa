@@ -5,7 +5,7 @@ import { WithdrawalMethod } from "@/types";
 
 import { Provider } from "@/models/provider";
 
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { Phone, Banknote } from "lucide-react";
 
 // export const getWithdrawalMethods = cache(async () => {
@@ -24,15 +24,18 @@ import { Phone, Banknote } from "lucide-react";
 // });
 
 // Dummy implementation
+
 const getWithdrawalMethods = async (): Promise<WithdrawalMethod[]> => {
   const withdrawProviders = await Provider.find().sort({ available: -1 });
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  console.log("Withdrawal methods no caching");
   return JSON.parse(JSON.stringify(withdrawProviders));
 };
 
 export default async function WithdrawPage() {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <main className="flex-grow flex items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col ">
+      <main className=" p-4">
         <Suspense fallback={<div>Loading withdrawal methods...</div>}>
           <WithdrawalMethodsWrapper />
         </Suspense>
@@ -42,7 +45,12 @@ export default async function WithdrawPage() {
 }
 
 async function WithdrawalMethodsWrapper() {
-  const methods = await getWithdrawalMethods();
+  const getCachedPayoutMethods = unstable_cache(
+    getWithdrawalMethods,
+    ["withdrawal-methods"],
+    { revalidate: 60 }
+  );
+  const methods = await getCachedPayoutMethods();
 
   return <WithdrawalMethods methods={methods} />;
 }

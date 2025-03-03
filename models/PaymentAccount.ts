@@ -102,13 +102,19 @@ PaymentAccountSchema.statics.getPaymentAccountById = async function ({
 };
 
 // Static method to get all payment accounts by user ID
-PaymentAccountSchema.statics.getPaymentAccountsByUserId = async function (
-  userId: Schema.Types.ObjectId
-) {
-  return this.find({ userId }).sort({ isdefault: -1 }).populate({
-    path: "providerId",
-    select: "shortname",
-  });
+PaymentAccountSchema.statics.getPaymentAccountsByUserId = async function ({
+  userId,
+  method,
+}: {
+  userId: Schema.Types.ObjectId;
+  method: string;
+}) {
+  return this.find({ userId, providerId: method })
+    .sort({ isdefault: -1 })
+    .populate({
+      path: "providerId",
+      select: "shortname",
+    });
 };
 
 // Use models to check if 'PaymentAccount' already exists to prevent recompilation issues

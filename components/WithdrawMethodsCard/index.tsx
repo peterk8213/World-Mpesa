@@ -2,114 +2,100 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Clock, CreditCard, Info, ArrowRight } from "lucide-react";
+import { Clock, ChevronRight, Zap } from "lucide-react";
 import type { WithdrawalMethod as WithdrawalMethodType } from "@/types";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { toastInfo } from "@/lib/toast";
+import { toastInfo, toastSuccess } from "@/lib/toast";
 
 export function WithdrawalMethod({ method }: { method: WithdrawalMethodType }) {
   const router = useRouter();
-
   const handleSelect = () => {
-    if (method.available) {
-      router.push(`/withdraw/account?method=${method._id}`);
-      toastInfo(`${method.name} selected ⚡⚡`);
-
+    if (!method.available) {
+      toastInfo("This withdrawal method is coming soon!");
       return;
     }
-    toastInfo("This withdrawal method is coming soon!");
+    router.push(`/withdraw/account?method=${encodeURIComponent(method._id)}`);
+    toastSuccess(`${method.name} selected  ⚡⚡`);
+    return;
   };
 
   return (
     <motion.div
       whileHover={method.available ? { scale: 1.02 } : {}}
       whileTap={method.available ? { scale: 0.98 } : {}}
+      onClick={() => {
+        handleSelect();
+      }}
+      className={`${
+        method.available
+          ? "hover:shadow-sm cursor-pointer bg-neutral-50"
+          : "bg-muted/60"
+      } rounded-3xl  border z-10 flex items-center p-8  border-white  `}
     >
-      <Card
-        className={`relative overflow-hidden transition-all duration-300 ${
-          method.available
-            ? "bg-card hover:shadow-md cursor-pointer"
-            : "bg-muted/50"
-        }`}
-        onClick={handleSelect}
+      {/* Icon container */}
+      <div
+        className={
+          "flex-shrink-0 w-12 h-20 rounded-lg overflow-hidden flex items-center justify-center  transition-transform duration-200 "
+        }
       >
-        <div className="relative p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div
-                className={`p-2 rounded-full ${
-                  method.available ? "bg-primary/10" : "bg-muted"
-                }`}
-              >
-                <Image
-                  src={method.iconUrl || "https://placehold.co/32x32"}
-                  alt={`${method.name.slice(0, 2)}`}
-                  width={32}
-                  height={32}
-                />
-              </div>
-              <h3
-                className={`text-lg font-medium ${
-                  method.available ? "text-foreground" : "text-muted-foreground"
-                }`}
-              >
-                {method.name}
-              </h3>
-            </div>
-            {!method.available && (
-              <Badge
-                variant="secondary"
-                className="bg-secondary text-secondary-foreground"
-              >
-                Coming Soon
-              </Badge>
-            )}
-          </div>
+        <div className="relative w-12 h-20 z-50">
+          <Image
+            src={
+              method.iconUrl ||
+              "https://kzmncqd2l1uepckz6iq7.lite.vusercontent.net/placeholder.svg?height=48&width=48"
+            }
+            alt={method.name.slice(0, 4)}
+            fill
+            className="object-contain"
+          />
+        </div>
+      </div>
 
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {method.description}
-          </p>
+      <div className="flex-1 min-w-0 ml-4">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <h3 className="text-base font-medium font-rubik">{method.name}</h3>
 
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            {method.minAmount && method.maxAmount && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <CreditCard className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">
-                  ${method.minAmount.toLocaleString()} - $
-                  {method.maxAmount.toLocaleString()}
-                </span>
-              </div>
-            )}
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="w-4 h-4 flex-shrink-0" />
-              <span className="truncate">{method.processingTime}</span>
-            </div>
-            {method.fees && (
-              <div className="flex items-center gap-2 text-muted-foreground col-span-2">
-                <Info className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">Fees: {method.fees}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center justify-end">
-            {method.available ? (
-              <Badge
-                variant="secondary"
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                Select <ArrowRight className="w-4 h-4 ml-1" />
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="text-muted-foreground">
-                Unavailable
-              </Badge>
-            )}
+            <p className="mt-0.5 text-sm text-gray-500 font-rubik line-clamp-1">
+              {method.description}
+            </p>
           </div>
         </div>
-      </Card>
+
+        {/* Details row */}
+        <div className="mt-2 flex items-center gap-4 ">
+          {/* Processing time with icon */}
+          <span className="flex items-center text-sm  ">
+            {method.processingTime.includes("Instant") ? (
+              <Zap className="w-3.5 h-3.5 mr-1 text-green-600" />
+            ) : (
+              <Clock className="w-3.5 h-3.5 mr-1 text-amber-700" />
+            )}
+            {method.processingTime}
+          </span>
+
+          {method.available && (
+            <span className="text-sm text-gray-500">
+              ${method.minAmount.toLocaleString()} - $
+              {method.maxAmount.toLocaleString()}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Right arrow for enabled methods */}
+      {method.available && (
+        <ChevronRight className="flex-shrink-0 w-5 h-5 text-gray-400 ml-2 transition-transform duration-200" />
+      )}
+
+      {/* Coming soon label */}
+      {!method.available && (
+        <span className="ml-auto text-sm font-medium text-gray-500">
+          Coming Soon!
+        </span>
+      )}
     </motion.div>
   );
 }

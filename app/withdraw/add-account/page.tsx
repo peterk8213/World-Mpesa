@@ -75,7 +75,7 @@ async function AddPaymentAccountFormWrapper() {
         />
       ) : (
         <div>
-          <NoPaymentMethodsPage />
+          <h1> No payment methods available</h1>
         </div>
       )}
     </>

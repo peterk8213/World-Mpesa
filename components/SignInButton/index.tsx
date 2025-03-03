@@ -63,7 +63,6 @@ const handleSignIn = async () => {
 
 export default function SignInButton() {
   const { data: session, status } = useSession();
-  console.log(status);
 
   return (
     <div>

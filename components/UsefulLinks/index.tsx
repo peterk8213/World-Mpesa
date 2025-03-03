@@ -66,7 +66,7 @@ const supportLinks = [
   {
     title: "Account Settings",
     icon: Settings,
-    href: "/settings",
+    href: "#",
   },
 ];
 

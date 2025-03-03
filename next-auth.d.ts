@@ -5,6 +5,6 @@ declare module "next-auth" {
     userId: string;
     worldId: string;
 
-    isNewUser: boolean;
+    isnewUser: boolean;
   }
 }

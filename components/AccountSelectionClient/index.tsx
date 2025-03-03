@@ -77,14 +77,14 @@ export default function AccountSelectionClient({
         <FloatingAddButton />
       </div>
 
-      <div className="fixed bottom-5 left-0 right-0 p-4 bg-background border-t">
+      <div className="fixed bottom-5 left-0 right-0 p-4 bg-transparent items-center justify-center flex">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
         >
           <MotionButton
-            className="w-full text-xl rounded-lg py-6"
+            className="w-full text-xl rounded-3xl py-6 "
             onClick={handleSubmit}
             disabled={!selectedAccount}
             whileTap={{ scale: 0.95 }}

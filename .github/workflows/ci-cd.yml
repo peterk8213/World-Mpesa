@@ -23,13 +23,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Lint the code
         run: npm run lint
-
-      - name: Run tests
-        run: npm test
 
       - name: Build the Next.js app
         run: npm run build

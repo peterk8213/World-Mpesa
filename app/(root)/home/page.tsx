@@ -136,12 +136,12 @@ export default async function Home({
   searchParams: Promise<{ timeframe?: string }>;
 }) {
   const session = await getServerSession(authOptions);
-
-  const { userId } = session;
-
   if (!session) {
     redirect("/authentication");
   }
+
+  const { userId } = session;
+
   await dbConnect();
 
   const timeframe = (await searchParams).timeframe || "weekly"; // Default to "weekly"
