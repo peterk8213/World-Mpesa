@@ -51,7 +51,7 @@ const WalletSchema = new Schema<WalletDocument, WalletModel>(
 );
 
 WalletSchema.methods.verifyWithdrawRequest = function (amount: number) {
-  return this.balance >= amount && !this.isFrozen && amount > 1;
+  return false;
 };
 
 WalletSchema.statics.withdraw = async function ({ userId, amount }) {

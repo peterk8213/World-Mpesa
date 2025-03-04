@@ -218,11 +218,12 @@ export default function WithdrawKeypad({
         </div>
       </div>
 
-      <div className="fixed bottom-5 left-0 right-0 p-4 bg-background border-t">
+      <div className="fixed bottom-5 left-0 right-0 p-4 bg-transparent  flex items-center justify-center">
         <MotionButtonMinikit
-          className="w-full text-xl rounded-lg py-6"
+          className=" text-xl rounded-lg py-6 mx-auto"
           disabled={!isAmountValid}
           onClick={handleSubmit}
+          fullWidth
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 300 }}
         >

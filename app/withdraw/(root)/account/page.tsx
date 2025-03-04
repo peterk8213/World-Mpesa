@@ -44,7 +44,7 @@ export default async function AccountSelectionPage({
   const { userId } = session;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] pb-24">
+    <div className="min-h-screen flex-col p-4  bg-neutral-100">
       <Suspense fallback={<div> loading accounts.......</div>}>
         <AccountSelectionClientWrapper method={method} userId={userId} />
       </Suspense>
@@ -67,7 +67,7 @@ async function AccountSelectionClientWrapper({
   return (
     <>
       {accounts.length > 0 ? (
-        <div className="flex items-center justify-center h-screen">
+        <div>
           <AccountSelectionClient accounts={accounts} method={method} />
         </div>
       ) : (

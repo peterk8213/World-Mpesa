@@ -21,6 +21,7 @@ async function getWithdrawalDetails(
     amount,
     accountId,
     method,
+    userId,
   };
   const { orderDetails, accountDetails: accountdetails } =
     await getWithdrawCheckoutPageData({
@@ -50,6 +51,8 @@ export default async function WithdrawPage({
   if (!session) {
     redirect("/");
   }
+
+  await dbConnect();
 
   const { userId } = session;
 

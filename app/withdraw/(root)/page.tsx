@@ -7,6 +7,7 @@ import { Provider } from "@/models/provider";
 
 import { unstable_cache } from "next/cache";
 import { Phone, Banknote } from "lucide-react";
+import dbConnect from "@/lib/mongodb";
 
 // export const getWithdrawalMethods = cache(async () => {
 //   try {
@@ -33,6 +34,7 @@ const getWithdrawalMethods = async (): Promise<WithdrawalMethod[]> => {
 };
 
 export default async function WithdrawPage() {
+  await dbConnect();
   return (
     <div className="min-h-screen flex flex-col ">
       <main className=" p-4">

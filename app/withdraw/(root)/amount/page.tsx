@@ -31,7 +31,7 @@ export default async function WithdrawAmountPage({
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:p-10 lg:p-5 md:overflow-auto">
-      <main className="flex-grow flex items-center justify-center p-4">
+      <main className="flex-grow flex items-center justify-center p-4 mt-20">
         <Suspense fallback={<div>Loading...</div>}>
           <WithdrawAmountPageWrapper
             method={method}

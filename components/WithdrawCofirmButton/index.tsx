@@ -7,6 +7,13 @@ import { toastError, toastLoading, toastSuccess } from "@/lib/toast";
 
 const MotionButton = motion.create(Button);
 
+interface State {
+  success?: boolean;
+  error?: string;
+  pending?: boolean;
+  transactionId?: string;
+}
+
 export function WithdrawConfirmButton({
   accountId,
   amount,
@@ -22,12 +29,12 @@ export function WithdrawConfirmButton({
 }) {
   const router = useRouter();
   /////// use Action state for the loading and error and success state
-  const [state, formAction, isPending] = useActionState(processWithdrawal, {
-    success: false,
-    error: "",
-    pending: true,
-    transactionId: "",
-  });
+  const [state, formAction, isPending] = useActionState<State>(
+    processWithdrawal,
+    {
+      success: false,
+    }
+  );
 
   useEffect(() => {
     if (isPending) {
@@ -44,10 +51,11 @@ export function WithdrawConfirmButton({
     if (state.success === true) {
       toastSuccess("Withdrawal Successful  redirecting 🚥🚧");
       router.push(`/withdraw/success?transactionId=${state.transactionId}`);
+      return;
     }
     if (state.error) {
-      toastError("Withdrawal Failed 🛑💀");
       toastError(state.error);
+      state.error = undefined;
     }
     return;
   }, [isPending]);
@@ -64,7 +72,7 @@ export function WithdrawConfirmButton({
           whileHover={{ scale: 1.05 }}
           disabled={isPending}
           type="submit"
-          className="w-full bg-black text-white py-6 rounded-lg font-medium text-lg hover:scale-95 transition-transform"
+          className="w-full bg-black text-white py-6 rounded-2xl font-medium text-lg hover:scale-95 transition-transform"
         >
           CONFIRM
         </MotionButton>

@@ -15,7 +15,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Transaction } from "@/models/Transaction";
 import { InitiateIntasendPayout } from "@/lib/wallet/payout";
 import { Wallet as WalletDataType } from "@/types";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 interface State {
   success?: boolean;
@@ -55,8 +55,18 @@ const verifyWithdrawRequest = async (
         error: "Wallet not found.",
       };
     }
-    const WithdrawRequestValid = wallet.verifyWithdrawRequest(amount);
-    if (!WithdrawRequestValid) {
+    const WithdrawRequestValid = async () => {
+      if (wallet.balance < amount) {
+        return false;
+      }
+      if (wallet.isFrozen === true) {
+        return false;
+      }
+      return true;
+    };
+    const WithdrawRequestValidResponse = await WithdrawRequestValid();
+
+    if (!WithdrawRequestValidResponse) {
       return {
         success: false,
         error: "Invalid withdrawal request.",
@@ -86,7 +96,7 @@ export async function processWithdrawal(
     const { amount, method, userId, accountId } = await getFormData(formData);
 
     // Validate the withdrawal details
-    if (amount < 1) {
+    if (!(amount >= 1)) {
       return {
         ...prevState,
         error: "Invalid amount. Amount must be greater than 1 USD.",
@@ -218,7 +228,7 @@ export async function processWithdrawal(
       newTransaction,
     });
 
-    revalidatePath("/home");
+    revalidatePath("/home /history");
 
     return {
       ...prevState,

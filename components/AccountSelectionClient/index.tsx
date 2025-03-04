@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from "@worldcoin/mini-apps-ui-kit-react/Button";
 import WithdrawAccountCard from "@/components/PaymentAccountCard";
 import { PaymentAccount as PaymentAccountType } from "@/types";
 import FloatingAddButton from "@/components/FloatingAddAccount";
@@ -45,10 +45,10 @@ export default function AccountSelectionClient({
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] pb-24">
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto">
-          <h1 className="text-xl font-medium mb-8">Select Payment Method</h1>
+    <div className="min-h-screen  pb-5">
+      <main className="container ">
+        <div className="max-w-lg mx-auto">
+          <h1 className="text-xl font-medium p-4">Select Payment Account</h1>
           <motion.div
             className="space-y-4  "
             initial={{ opacity: 0 }}
@@ -72,27 +72,27 @@ export default function AccountSelectionClient({
               ))}
           </motion.div>
         </div>
+        <div className="fixed bottom-5 left-0 right-0 p-4 bg-transparent ">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <MotionButton
+              onClick={handleSubmit}
+              className="text-xl rounded-lg py-6 mx-auto w-full"
+              fullWidth
+              disabled={!selectedAccount}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              Continue
+            </MotionButton>
+          </motion.div>
+        </div>
       </main>
       <div className=" fixed bottom-[7rem]  z-10 right-12">
         <FloatingAddButton />
-      </div>
-
-      <div className="fixed bottom-5 left-0 right-0 p-4 bg-transparent items-center justify-center flex">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          <MotionButton
-            className="w-full text-xl rounded-3xl py-6 "
-            onClick={handleSubmit}
-            disabled={!selectedAccount}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            Continue
-          </MotionButton>
-        </motion.div>
       </div>
     </div>
   );
