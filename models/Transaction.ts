@@ -36,7 +36,7 @@ const TransactionSchema = new Schema<ITransaction, ITransactionStatics>(
     worldId: { type: String, required: true },
     amount: { type: Number, required: true, min: 0.2 },
     method: { type: String, enum: ["worldcoin", "mpesa"], required: true },
-    type: { type: String, enum: ["credit", "debit"], required: true },
+    type: { type: String, enum: ["credit", "debit", "send"], required: true },
     status: {
       type: String,
       enum: ["pending", "submitted", "completed", "failed"],

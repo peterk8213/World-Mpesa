@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Check,
   ChevronRight,
@@ -14,9 +14,12 @@ import { Button } from "@worldcoin/mini-apps-ui-kit-react/Button";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { toastError, toastLoading, toastSuccess } from "@/lib/toast";
+
 import { PhoneField } from "@worldcoin/mini-apps-ui-kit-react/PhoneField";
 import { ProcessSendMoney } from "@/actions/ProcessSendMoney";
 import { useActionState } from "react";
+import { isValid } from "date-fns";
 
 interface State {
   success?: boolean;
@@ -25,7 +28,13 @@ interface State {
   transactionId?: string;
 }
 
-export function SendMoneyPage() {
+export function SendMoneyPage({
+  walletBalance,
+  userId,
+}: {
+  walletBalance: number;
+  userId: string;
+}) {
   const [selectedOption, setSelectedOption] = useState<
     "mpesa" | "airtel" | null
   >(null);
@@ -34,9 +43,10 @@ export function SendMoneyPage() {
   const [amount, setAmount] = useState("");
   const [phoneConfirmed, setPhoneConfirmed] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Mock balance - in real app this would come from your API
-  const balance = 5000;
+  //  assign wallet balance to a variable balance
+  const balance = parseFloat(walletBalance.toFixed(2));
 
   const handleAmountChange = (value: string) => {
     // Allow any positive number to be entered, validation will be shown instead of prevented
@@ -81,6 +91,33 @@ export function SendMoneyPage() {
       success: false,
     }
   );
+
+  useEffect(() => {
+    if (isPending) {
+      toastLoading("Processing ⚡⚡");
+    }
+    // if (state.success) {
+    //   router.push("/withdraw/success");
+    // }
+
+    if (state.error) {
+      toastError(state.error);
+      state.error = undefined;
+    }
+    if (state.success === true) {
+      toastSuccess("Withdrawal Successful  redirecting 🚥🚧");
+      state.success = false;
+      console.log(state.error);
+
+      return;
+    }
+    if (state.error) {
+      toastError(state.error);
+      state.error = undefined;
+    }
+    return;
+  }, [isPending]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -108,7 +145,9 @@ export function SendMoneyPage() {
               </Label>
               <div className="grid grid-cols-2 gap-4">
                 <motion.button
-                  onClick={() => setSelectedOption("mpesa")}
+                  onClick={() => {
+                    setSelectedOption("mpesa");
+                  }}
                   className={`group overflow-hidden rounded-2xl border-2 p-4 transition-all hover:shadow-lg ${
                     selectedOption === "mpesa"
                       ? "border-green-500 bg-green-50/50"
@@ -157,7 +196,9 @@ export function SendMoneyPage() {
                 </motion.button>
 
                 <motion.button
-                  onClick={() => setSelectedOption("airtel")}
+                  onClick={() => {
+                    setSelectedOption("airtel");
+                  }}
                   className={`group overflow-hidden rounded-2xl border-2 p-4 transition-all hover:shadow-lg ${
                     selectedOption === "airtel"
                       ? "border-red-600 bg-red-50/50"
@@ -230,14 +271,18 @@ export function SendMoneyPage() {
                     id="amount"
                     type="number"
                     value={amount}
-                    onChange={(e) => handleAmountChange(e.target.value)}
+                    onChange={(e) => {
+                      handleAmountChange(e.target.value);
+                    }}
                     className="h-full flex-1 border-0 bg-transparent text-lg focus:outline-none focus:ring-0"
                     placeholder="0.00"
                   />
                   {amount && (
                     <div className="flex items-center gap-2 p-2">
                       <button
-                        onClick={() => setAmount("")}
+                        onClick={() => {
+                          setAmount("");
+                        }}
                         className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
                         type="button"
                         aria-label="Clear amount"
@@ -287,11 +332,14 @@ export function SendMoneyPage() {
                   required
                   min={10}
                   hideDialCode
-                  error={!isPhoneValid()}
+                  error={!isPhoneValid() && isEditing}
                   defaultCountryCode="KE"
                   isValid={isPhoneValid()} // check if the phone number is valid
                   value={phoneNumber}
-                  onChange={(value) => setPhoneNumber(value)}
+                  onChange={(value) => {
+                    setPhoneNumber(value);
+                    setIsEditing(true);
+                  }}
                 />
               </div>
             </div>
@@ -379,7 +427,8 @@ export function SendMoneyPage() {
                     !isAmountValid ||
                     !phoneConfirmed ||
                     isPending ||
-                    !isPhoneValid()
+                    !isPhoneValid() ||
+                    !selectedOption
                   }
                   type="submit"
                   fullWidth

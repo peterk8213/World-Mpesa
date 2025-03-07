@@ -107,7 +107,7 @@ export async function processWithdrawal(
     if (!accountId || !userId || !method || !amount) {
       return {
         ...prevState,
-        error: "No credentials provided for withdrawal.",
+        error: " Please provide all required fields.",
         pending: false,
       };
     }

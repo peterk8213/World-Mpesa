@@ -39,7 +39,7 @@ const getTransactionHistory = async ({
       } else if (type === "expense") {
         return "debit";
       } else {
-        return { $in: ["credit", "debit"] };
+        return { $in: ["credit", "debit", "send"] };
       }
     })(),
     status: type === "pending" ? "pending" : { $ne: "pending" },
@@ -137,7 +137,7 @@ const HistoryListWrapper = async ({
   const getCachedTransactions = unstable_cache(
     getTransactionHistory,
     ["transactions", userId, type],
-    { revalidate: 60 * 1.5 }
+    { revalidate: 60 }
   );
 
   const transactions = await getCachedTransactions({ userId, type });

@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, Send } from "lucide-react";
 import { Chip } from "@worldcoin/mini-apps-ui-kit-react/Chip";
 
 interface TransactionItemProps {
@@ -34,14 +34,23 @@ export function TransactionItem({
   );
 }
 
-function TransactionIcon({ type }: { type: "debit" | "credit" }) {
+function TransactionIcon({ type }: { type: "debit" | "credit" | "send" }) {
   return (
     <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#F5F5F5] text-[#333]">
-      {type === "debit" ? (
+      {(() => {
+        if (type === "send") {
+          return <Send className="h-4 w-4" />;
+        } else if (type === "credit") {
+          return <ArrowDown className="h-4 w-4" />;
+        } else {
+          return <ArrowUp className="h-4 w-4" />;
+        }
+      })()}
+      {/* {type === "debit" ? (
         <ArrowUp className="h-4 w-4" />
       ) : (
         <ArrowDown className="h-4 w-4" />
-      )}
+      )} */}
     </div>
   );
 }

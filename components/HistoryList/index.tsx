@@ -58,6 +58,9 @@ export function HistoryList({ transactions }: { transactions: any[] }) {
                               transaction.method == "worldcoin"
                             ) {
                               return `Worldcoin Deposit`;
+                            }
+                            if (transaction.type === "send") {
+                              return `Send  Money Transaction`;
                             } else {
                               return "";
                             }

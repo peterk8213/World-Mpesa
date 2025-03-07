@@ -71,7 +71,7 @@ export const InitiateIntasendPayout = async ({
 
     const { netAmount } = fees;
     const fiatAmount = (netAmount * conversionRate).toFixed(2);
-    console.log("fiatAmount", fiatAmount);
+    console.log("fiatAmount", fiatAmount, conversionRate, netAmount);
 
     const transaction = await PayoutIntasend({ fullname, amount: fiatAmount });
     return transaction;

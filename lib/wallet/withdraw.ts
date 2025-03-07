@@ -16,12 +16,14 @@ export const addTransaction = async ({
   method,
   walletId,
   worldId,
+  description,
 }: {
   userId: string;
   amount: number;
   method: string;
   walletId: string;
   worldId: string;
+  description?: string;
 }): Promise<{
   success: boolean;
   error?: any;
@@ -129,10 +131,6 @@ export const createMpesaPaymentPayout = async ({
   data?: MpesaPaymentType;
 }> => {
   try {
-    if (status !== "completed") {
-      status = "pending";
-    }
-
     const newPayment = await MpesaPayment.createPayment({
       tracking_id,
       request_reference_id,

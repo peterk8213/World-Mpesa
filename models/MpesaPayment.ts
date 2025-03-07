@@ -11,6 +11,7 @@ export interface IPayment extends Document {
   transactionId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
   paymentAccountId?: Schema.Types.ObjectId;
+  phoneNumber?: string;
   currency: string;
   walletId: Schema.Types.ObjectId;
   actualCharges: number;
@@ -67,6 +68,7 @@ const MpesaPaymentSchema = new Schema<
     walletId: { type: Schema.Types.ObjectId, ref: "Wallet", required: true },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     paymentAccountId: { type: Schema.Types.ObjectId, ref: "PaymentAccount" },
+    phoneNumber: { type: String },
     currency: { type: String, default: "KES" },
     actualCharges: { type: Number, default: 0 },
     estimatedCharges: { type: Number, default: 0 },
