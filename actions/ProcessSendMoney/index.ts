@@ -266,18 +266,12 @@ export async function ProcessSendMoney(
       phoneNumber,
     });
 
-    revalidatePath("/home /profile /history /send");
-
-    console.log("Send money processed successfully:", {
-      transaction,
-      updatedWallet,
-      payment,
-    });
+    revalidatePath("/profile /history /send");
 
     return {
       ...prevState,
       success: true,
-      transactionId: transactionId,
+      transactionId: transactionId.toString(),
     };
   } catch (error) {
     console.error("Error processing send money:", error);

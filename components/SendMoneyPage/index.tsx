@@ -20,6 +20,7 @@ import { PhoneField } from "@worldcoin/mini-apps-ui-kit-react/PhoneField";
 import { ProcessSendMoney } from "@/actions/ProcessSendMoney";
 import { useActionState } from "react";
 import { isValid } from "date-fns";
+import { formatWithoutRounding } from "@/lib/formatBalance";
 
 interface State {
   success?: boolean;
@@ -46,7 +47,7 @@ export function SendMoneyPage({
   const [isEditing, setIsEditing] = useState(false);
 
   //  assign wallet balance to a variable balance
-  const balance = parseFloat(walletBalance.toFixed(2));
+  const balance = parseFloat(formatWithoutRounding(walletBalance, 2));
 
   const handleAmountChange = (value: string) => {
     // Allow any positive number to be entered, validation will be shown instead of prevented
@@ -107,7 +108,7 @@ export function SendMoneyPage({
     if (state.success === true) {
       toastSuccess("Withdrawal Successful  redirecting 🚥🚧");
       state.success = false;
-      console.log(state.error);
+      console.log(state.transactionId);
 
       return;
     }
@@ -400,7 +401,7 @@ export function SendMoneyPage({
               </label>
             </div>
 
-            <div className="fixed bottom-3 left-0 right-0 p-4 z-10">
+            <div className="fixed bottom-0 left-0 right-0 p-4 z-10">
               {/* Submit Button */}
 
               {/* for me to use form  and server actions i will need to hide the user input in inputs hidden. that will have the data needeed from that route

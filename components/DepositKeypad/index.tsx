@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Delete } from "lucide-react";
+import { Button as MinikitButton } from "@worldcoin/mini-apps-ui-kit-react/Button";
 
 import { ConversionRate as ConversionRateType } from "@/types";
 
@@ -13,6 +14,7 @@ import { triggerHapticFeedback } from "@/lib/haptics";
 import { toastInfo, toastError, toastLoading } from "@/lib/toast";
 
 const MotionButton = motion.create(Button);
+const MotionMinikitButton = motion.create(MinikitButton);
 
 export function DepositKeypad({ conversionRate }: ConversionRateType) {
   const [amount, setAmount] = useState("");
@@ -22,9 +24,12 @@ export function DepositKeypad({ conversionRate }: ConversionRateType) {
 
   const handleNumberClick = useCallback(
     (num: string) => {
-      triggerHapticFeedback();
       if (num === "backspace") {
         setAmount((prev) => prev.slice(0, -1) || "");
+        if (!isAmountValid) {
+          setShake(true);
+          setTimeout(() => setShake(false), 500);
+        }
       } else if (num === "." && (amount.includes(".") || amount === "")) {
         return;
       } else if (amount.includes(".") && amount.split(".")[1]?.length >= 2) {
@@ -32,6 +37,11 @@ export function DepositKeypad({ conversionRate }: ConversionRateType) {
         setTimeout(() => setShake(false), 500);
         return;
       } else {
+        if (Number.parseFloat(amount) >= 1000) {
+          setShake(true);
+          setTimeout(() => setShake(false), 500);
+          return;
+        }
         setAmount((prev) => prev + num);
       }
     },
@@ -41,6 +51,10 @@ export function DepositKeypad({ conversionRate }: ConversionRateType) {
   const handleContinue = useCallback(() => {
     if (!amount || Number.parseFloat(amount) < 0.2) {
       toastError("Enter a valid amount greater than 0.2");
+      return;
+    }
+    if (Number.parseFloat(amount) > 1000) {
+      toastError("Max deposit is 1000");
       return;
     }
     toastLoading("Proceeding to checkout...");
@@ -61,7 +75,12 @@ export function DepositKeypad({ conversionRate }: ConversionRateType) {
     return (cryptoValue * (conversionRate || 0)).toFixed(0);
   }, []);
 
-  const isAmountValid = Number.parseFloat(amount) >= 0.2;
+  // min 0.2 max  1000
+
+  const isAmountValid =
+    Number.parseFloat(amount) >= 0.2 && Number.parseFloat(amount) <= 1000;
+
+  console.log("isAmountValid", isAmountValid, amount);
 
   return (
     <motion.div
@@ -69,6 +88,7 @@ export function DepositKeypad({ conversionRate }: ConversionRateType) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
     >
       <div className="flex-1 flex flex-col justify-center items-center space-y-2">
         <AnimatePresence mode="wait">
@@ -123,16 +143,17 @@ export function DepositKeypad({ conversionRate }: ConversionRateType) {
         </div>
       </div>
 
-      <div className="fixed bottom-5 left-0 right-0 p-4 bg-background border-t">
-        <MotionButton
+      <div className="fixed bottom-5 left-0 right-0 p-4 bg-transparent ">
+        <MotionMinikitButton
           className="w-full text-xl rounded-lg py-6"
           disabled={!isAmountValid}
           onClick={handleContinue}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 300 }}
+          fullWidth
         >
           Continue
-        </MotionButton>
+        </MotionMinikitButton>
       </div>
     </motion.div>
   );

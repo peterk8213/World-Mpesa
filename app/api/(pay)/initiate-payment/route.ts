@@ -20,11 +20,21 @@ export async function POST(req: NextRequest) {
     const { depositAmount } = await req.json();
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { sucess: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
-    if (!depositAmount) {
-      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
+    if (
+      parseFloat(depositAmount) < 0.1 ||
+      !depositAmount ||
+      isNaN(parseFloat(depositAmount))
+    ) {
+      return NextResponse.json(
+        { sucess: false, error: "Invalid amount" },
+        { status: 400 }
+      );
     }
 
     const uuid = crypto.randomUUID().replace(/-/g, "");
@@ -38,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     const cryptoAmount: Amount = await convertToCrypto(depositAmount);
 
-    console.log("Crypto amount:", cryptoAmount);
+    //console.log("Crypto amount:", cryptoAmount);
 
     await dbConnect();
     const existingUser = await Wallet.findOne({
@@ -47,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     if (existingUser) {
       // await redis.setEx(worldId, 3600, JSON.stringify(existingUser));
-      console.log(existingUser);
+      //console.log("existingUser", existingUser);
       const worldTransaction = await Transaction.createWorldcoinTransaction({
         userId,
         walletId: existingUser._id,
@@ -58,14 +68,40 @@ export async function POST(req: NextRequest) {
       });
 
       console.log("new User transaction created   ", worldTransaction);
-    }
 
-    return NextResponse.json({
-      id: uuid,
-      cryptoAmount,
-      wallet: "0x0c892815f0B058E69987920A23FBb33c834289cf",
-    });
+      if (!worldTransaction) {
+        return NextResponse.json(
+          { success: false, error: "Failed to initiate payment" },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          sucess: true,
+
+          data: {
+            id: uuid,
+            cryptoAmount,
+            wallet: process.env.ETHERIUM_ADDRESS,
+            transactionId: worldTransaction._id,
+          },
+        },
+        {
+          status: 201,
+        }
+      );
+    }
   } catch (error) {
     console.error("Failed to initiate payment", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error || "Failed to initiate payment",
+      },
+      {
+        status: 500,
+      }
+    );
   }
 }

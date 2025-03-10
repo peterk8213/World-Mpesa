@@ -34,7 +34,7 @@ const TransactionSchema = new Schema<ITransaction, ITransactionStatics>(
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     walletId: { type: Schema.Types.ObjectId, ref: "Wallet", required: true },
     worldId: { type: String, required: true },
-    amount: { type: Number, required: true, min: 0.2 },
+    amount: { type: Number, required: true, min: 0 },
     method: { type: String, enum: ["worldcoin", "mpesa"], required: true },
     type: { type: String, enum: ["credit", "debit", "send"], required: true },
     status: {
@@ -95,8 +95,8 @@ TransactionSchema.statics.createWorldcoinTransaction = async function ({
   reference,
   meta = {},
 }: Partial<ITransaction>) {
-  if (amount === undefined || amount <= 1) {
-    throw new Error("Amount must be greater than 1");
+  if (amount === undefined || amount < 0.1) {
+    throw new Error("Amount must be atleast 0.1");
   }
   return this.create({
     userId,

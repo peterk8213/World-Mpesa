@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { formatWithoutRounding } from "@/lib/formatBalance";
+
 import { Button } from "@/components/ui/button";
 import { Button as MinikitButton } from "@worldcoin/mini-apps-ui-kit-react/Button";
 
@@ -64,7 +66,7 @@ export default function WithdrawKeypad({
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      const newAmount = (balance * percentage).toFixed(2);
+      const newAmount = formatWithoutRounding(balance * percentage, 2);
       setAmount(newAmount);
       setError(null);
     },
@@ -180,7 +182,7 @@ export default function WithdrawKeypad({
               KES {calculateFiatEquivalent(formatAmount(amount))}
             </div>
             <p className="text-sm text-gray-500 mt-2">
-              Available balance: ${balance.toFixed(2)}
+              Available balance: ${formatWithoutRounding(balance, 2)}
             </p>
             {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
           </motion.div>

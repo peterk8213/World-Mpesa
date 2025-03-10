@@ -17,7 +17,6 @@ import { getConversionRate } from "@/lib/wallet/conversion";
 export async function CheckoutForm({ userAmount }: { userAmount: string }) {
   const conversionRate = await getConversionRate();
 
-  console.log("running on server");
   const formattedAmount = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -38,18 +37,18 @@ export async function CheckoutForm({ userAmount }: { userAmount: string }) {
   };
 
   return (
-    <main className="flex-col  justify-around items-center bg-white p-2 px-4 py-8 ">
+    <main className="flex-col  justify-around items-center  p-2 px-4 py-8 ">
       <div className="flex justify-center items-center overflow-auto">
         <div className="flex flex-col  w-full lg:w-1/2 pt-6 mt-4">
-          <Card className="w-full lg:w-auto   xs:mt-6 ">
+          <Card className="w-full lg:w-auto   xs:mt-6  border-none ">
             <CardHeader>
               <CardTitle>Summary</CardTitle>
-              <CardDescription>Confirm payment details</CardDescription>
+              <CardDescription>Confirm payment detail</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-6 p-4">
                 <div className="flex items-center gap-3">
-                  <div className="bg-red-500 p-2 rounded-lg">
+                  <div className="  bg-red-400 p-2 rounded-xl">
                     <WalletMinimal className="h-6 w-6 text-white" />
                   </div>
                   <span className="font-semibold">
@@ -88,10 +87,10 @@ export async function CheckoutForm({ userAmount }: { userAmount: string }) {
             </CardContent>
           </Card>
         </div>
-        <div className="fixed bottom-12 left-0 right-0 p-5 ">
+        <div className="fixed bottom-12 left-0 right-0 p-5 bg-transparent ">
           <CompanyFooter />
         </div>
-        <div className="justify-center  items-center mt-2 space-y-4">
+        <div className="justify-center  items-center mt-2 space-y-4 bg-transparent">
           <PayBlock userAmount={userAmount} />
         </div>
       </div>

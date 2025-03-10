@@ -2,6 +2,7 @@ import { Wallet } from "@/models/Wallet";
 import { PaymentAccount } from "@/models/PaymentAccount";
 
 import MpesaPayment from "@/models/MpesaPayment";
+import { formatWithoutRounding } from "@/lib/formatBalance";
 
 import { Transaction } from "@/models/Transaction";
 import {
@@ -102,6 +103,31 @@ export const updateWallet = async ({
   data?: WalletDataType;
 }> => {
   const wallet = await Wallet.withdraw({ userId, amount });
+  if (!wallet) {
+    return {
+      success: false,
+      message: "Wallet not found.",
+    };
+  }
+  return {
+    success: true,
+    data: wallet,
+  };
+};
+
+export const depositUpdateWallet = async ({
+  userId,
+  amount,
+}: {
+  userId: string;
+  amount: number;
+}): Promise<{
+  error?: any;
+  success: boolean;
+  message?: string;
+  data?: WalletDataType;
+}> => {
+  const wallet = await Wallet.deposit({ userId, amount });
   if (!wallet) {
     return {
       success: false,

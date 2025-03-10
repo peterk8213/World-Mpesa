@@ -7,13 +7,13 @@ export default async function Home() {
   return (
     <div className="max-h-screen bg-white">
       <Suspense fallback={<div>Loading deposit keypad...</div>}>
-        <HomeWrapper />
+        <DepositKeypadWrapper />
       </Suspense>
     </div>
   );
 }
 
-const HomeWrapper = async () => {
+const DepositKeypadWrapper = async () => {
   const { conversionRate } = await getConversionRate();
 
   return <DepositKeypad conversionRate={conversionRate} />;
