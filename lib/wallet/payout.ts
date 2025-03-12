@@ -1,24 +1,20 @@
 import IntaSend from "intasend-node";
 import { calculateWithdrawFee } from "@/lib/wallet/getFees";
 import { getConversionRate } from "@/lib/wallet/conversion";
-
-const { PUBLISHABLE_KEY, INTASEND_API_KEY: SECRET_KEY } = process.env;
-
-if (!PUBLISHABLE_KEY || !SECRET_KEY) {
-  throw new Error(
-    "IntaSend API keys are missing. Check environment variables."
-  );
-}
-
-const intasend = new IntaSend(PUBLISHABLE_KEY, SECRET_KEY, true); // Set test_mode to true/false as needed
-const payouts = intasend.payouts();
+import { formatWithoutRounding } from "@/lib/formatBalance";
 
 async function PayoutIntasend({
   fullname,
   amount,
+  phoneNumber,
+  description,
+  method,
 }: {
-  fullname: string;
+  fullname?: string;
   amount: string;
+  phoneNumber: string;
+  description: string;
+  method: string;
 }): Promise<{
   success: boolean;
   message: string;
@@ -26,7 +22,25 @@ async function PayoutIntasend({
   error?: any;
 }> {
   try {
+    /////// IntaSend Payouts ///////
+    const { PUBLISHABLE_KEY, INTASEND_API_KEY: SECRET_KEY } = process.env;
+
+    if (!PUBLISHABLE_KEY || !SECRET_KEY) {
+      throw new Error(
+        "IntaSend API keys are missing. Check environment variables."
+      );
+    }
+
+    const intasend = new IntaSend(PUBLISHABLE_KEY, SECRET_KEY, true); // Set test_mode to true/false as needed
+    const payouts = intasend.payouts();
+
     const req_approval = "NO"; // Set to 'NO' to avoid manual approval
+
+    /////// Initiate Payout with IntaSend //////
+
+    console.log(
+      `🚀 Initiating IntaSend payout to ${phoneNumber} for ${amount} KES...`
+    );
 
     const response = await payouts.mpesa({
       currency: "KES",
@@ -36,12 +50,14 @@ async function PayoutIntasend({
           name: fullname,
           account: "254708374149", // Ensure this is dynamic
           amount,
-          narrative: "salary",
+          narrative: description,
         },
       ],
     });
 
     console.log(`✅ Payouts successful:`, response);
+
+    //////////////// Process response
 
     return {
       success: true,
@@ -49,6 +65,7 @@ async function PayoutIntasend({
       data: response,
     };
   } catch (error) {
+    ////// Handle errors //////
     console.error(`❌ Payouts error:`, error);
     return {
       success: false,
@@ -61,21 +78,48 @@ async function PayoutIntasend({
 export const InitiateIntasendPayout = async ({
   fullname,
   amount,
+  phoneNumber,
+  description,
+  method,
 }: {
-  fullname: string;
+  fullname?: string;
   amount: number;
+  phoneNumber: string;
+  description: string;
+  method: string;
 }) => {
   try {
+    //////////////////////// Initiate Payout with IntaSend ////////////////////////
+
     const { conversionRate } = await getConversionRate();
     const fees = calculateWithdrawFee({ amount });
 
     const { netAmount } = fees;
-    const fiatAmount = (netAmount * conversionRate).toFixed(2);
-    console.log("fiatAmount", fiatAmount, conversionRate, netAmount);
+    const fiatAmount = formatWithoutRounding(netAmount * conversionRate, 1);
 
-    const transaction = await PayoutIntasend({ fullname, amount: fiatAmount });
+    // what is it has no decimal point
+
+    const truncated = fiatAmount.toString().split(".")[0];
+
+    console.log("fiatAmount", fiatAmount, truncated, conversionRate, netAmount);
+
+    ////// Initiate Payout with IntaSend //////
+
+    const transaction = await PayoutIntasend({
+      fullname,
+      amount: truncated,
+      phoneNumber,
+      description,
+      method,
+    });
+
+    ////// Handle response from IntaSend //////
     return transaction;
+
+    ///////////////
   } catch (error) {
+    ////// Handle errors //////
+
     console.error("Error initiating IntaSend payout:", error);
     return {
       success: false,
@@ -98,6 +142,18 @@ export async function checkPayoutStatus({
   }
 
   try {
+    /////// IntaSend Payouts ///////
+    const { PUBLISHABLE_KEY, INTASEND_API_KEY: SECRET_KEY } = process.env;
+
+    if (!PUBLISHABLE_KEY || !SECRET_KEY) {
+      throw new Error(
+        "IntaSend API keys are missing. Check environment variables."
+      );
+    }
+
+    const intasend = new IntaSend(PUBLISHABLE_KEY, SECRET_KEY, true); // Set test_mode to true/false as needed
+    const payouts = intasend.payouts();
+
     const resp = await payouts.status({ tracking_id: trackingId });
 
     console.log("Payout Status:", resp);

@@ -37,7 +37,7 @@ const getTransactionHistory = async ({
       if (type === "deposits") {
         return "credit";
       } else if (type === "expense") {
-        return "debit";
+        return { $in: ["debit", "send"] };
       } else {
         return { $in: ["credit", "debit", "send"] };
       }

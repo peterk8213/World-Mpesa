@@ -14,7 +14,7 @@ export const convertCrypto = async (
 }> => {
   try {
     const response = await fetch(
-      `https://app-backend.worldcoin.dev/public/v1/miniapps/prices?cryptoCurrencies=${inputToken}&fiatCurrencies=USD`,
+      `https://app-backend.worldcoin.dev/public/v1/miniapps/prices?cryptoCurrencies=WLD,USDCE&fiatCurrencies=USD`,
       {
         method: "GET",
       }
@@ -26,8 +26,8 @@ export const convertCrypto = async (
 
     const { result } = await response.json();
     const rates = result.prices[inputToken].USD.amount;
-    const ratesNumber = parseFloat(rates) || 0;
-    let amountInUSD = 0;
+    const ratesNumber = parseFloat(rates) / Math.pow(10, 6);
+    let amountInUSD;
 
     if (inputToken == "WLD") {
       amountInUSD = (inputTokenAmount / Math.pow(10, 18)) * ratesNumber;

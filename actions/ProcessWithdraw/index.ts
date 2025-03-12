@@ -143,13 +143,21 @@ export async function processWithdrawal(
         pending: false,
       };
     }
+    if (!accountValidation.data) {
+      return {
+        ...prevState,
+        error: accountValidation.error || "Invalid payment account.",
+        pending: false,
+      };
+    }
 
     // Initiate payout
     const payoutData = await InitiateIntasendPayout({
       amount,
       method,
-      phoneNumber: accountValidation.data?.phoneNumber || "",
-      accountHolderName: accountValidation.data?.fullName || "",
+      phoneNumber: accountValidation.data.phoneNumber,
+      fullname: accountValidation.data.fullName,
+      description: "Withdrawal",
     });
 
     if (!payoutData.success) {

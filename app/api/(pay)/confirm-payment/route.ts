@@ -13,6 +13,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { WorldcoinTransaction } from "@/models/WldTransaction";
 import { depositUpdateWallet as updateWallet } from "@/lib/wallet/withdraw";
 import { convertCrypto } from "@/lib/wallet/convertCrytpo";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 interface IRequestPayload {
   payload: MiniAppPaymentSuccessPayload;
@@ -177,6 +178,7 @@ export async function POST(req: NextRequest) {
         updatedTransaction,
         updatedWallet,
       });
+      revalidateTag(`transactions ${userId} all`);
       return NextResponse.json({ success: true });
     } else {
       return NextResponse.json({ success: false });

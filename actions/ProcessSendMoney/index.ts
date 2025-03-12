@@ -81,7 +81,7 @@ const addSendTransaction = async function ({
       method: "mpesa",
       type: "send",
       status: "pending",
-      description: description ? description : "Mpesa send transaction",
+      description: description || "Mpesa send transaction",
       meta: {},
     });
     return {
@@ -193,6 +193,7 @@ export async function ProcessSendMoney(
       amount,
       method,
       phoneNumber,
+      description,
     });
 
     if (!payoutData.success) {

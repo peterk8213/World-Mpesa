@@ -1,4 +1,7 @@
-//// i need a function that takes a number and decimal points and formants without formating
+//// i need a function that takes a number and decimal points and formants without  rounding
+// this is balance and amout and i need to format it without rounding
+/// also should allow to format to 0 db ed 999.99 to 999
+
 export function formatWithoutRounding(num: number, decimals: number): string {
   if (!Number.isFinite(num) || decimals < 0) {
     throw new Error(
