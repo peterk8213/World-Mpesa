@@ -151,6 +151,7 @@ export const createMpesaPaymentPayout = async ({
   paymentAccountId,
   userId,
   walletId,
+  phoneNumber,
 }: MpesaPaymentType): Promise<{
   success: boolean;
   error?: any;

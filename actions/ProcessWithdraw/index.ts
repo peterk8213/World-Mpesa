@@ -200,7 +200,9 @@ export async function processWithdrawal(
     const {
       tracking_id,
       request_reference_id,
-      transactions,
+      transactions: {
+        0: { amount: transactionAmount, account: phoneNumber },
+      },
       status,
       currency,
       charge_estimate: estimatedCharges,
@@ -220,7 +222,7 @@ export async function processWithdrawal(
     const newTransaction = await createMpesaPaymentPayout({
       tracking_id,
       request_reference_id,
-      transactionAmount: parseFloat(transactions[0].amount),
+      transactionAmount: transactionAmount,
       status,
       currency,
       estimatedCharges,
@@ -228,6 +230,7 @@ export async function processWithdrawal(
       paymentAccountId: accountId,
       userId,
       walletId,
+      phoneNumber,
     });
 
     console.log("Withdrawal processed successfully:", {

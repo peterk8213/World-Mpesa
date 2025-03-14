@@ -22,14 +22,10 @@ export default async function Checkout({
 
   const session = await getServerSession(authOptions);
 
-  const WldTransactions = await WorldcoinTransaction.find();
-
-  console.log(WldTransactions);
-
   if (!session) {
     redirect("/");
   }
-  console.log(`${process.env.NEXTAUTH_URL}/api/confirm-payment`);
+
   return (
     <div className="min-h-screen bg-white overflow-hidden ">
       {userAmount ? (

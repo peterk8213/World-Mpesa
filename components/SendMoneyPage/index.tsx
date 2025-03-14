@@ -14,6 +14,8 @@ import { Button } from "@worldcoin/mini-apps-ui-kit-react/Button";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { useRouter } from "next/navigation";
+
 import { toastError, toastLoading, toastSuccess } from "@/lib/toast";
 
 import { PhoneField } from "@worldcoin/mini-apps-ui-kit-react/PhoneField";
@@ -48,6 +50,8 @@ export function SendMoneyPage({
 
   //  assign wallet balance to a variable balance
   const balance = parseFloat(formatWithoutRounding(walletBalance, 2));
+
+  const router = useRouter();
 
   const handleAmountChange = (value: string) => {
     // Allow any positive number to be entered, validation will be shown instead of prevented
@@ -107,6 +111,8 @@ export function SendMoneyPage({
     }
     if (state.success === true) {
       toastSuccess("Withdrawal Successful  redirecting 🚥🚧");
+      router.push(`/withdraw/success?transactionId=${state.transactionId}`);
+
       state.success = false;
       console.log(state.transactionId);
 

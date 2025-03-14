@@ -9,6 +9,8 @@ import dynamic from "next/dynamic";
 import NextAuthProvider from "@/components/next-auth-provider";
 import { ErudaClient } from "@/components/Eruda/ErudaClient";
 
+import { PostHogProvider } from "@/components/posthog-provider";
+
 const rubik = Rubik({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,27 +27,29 @@ export default function RootLayout({
     <html lang="en">
       <body className={rubik.className}>
         <NextAuthProvider>
-          <ErudaClient>
-            <MiniKitProvider>
-              {/* Main content area */}
-              <main className="min-h-screen overflow-hidden overscroll-none">
-                <ToastContainer
-                  position="top-center"
-                  autoClose={2000}
-                  hideProgressBar
-                  newestOnTop
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                  theme="light"
-                  transition={Bounce}
-                />
-                {children}
-              </main>
-            </MiniKitProvider>
-          </ErudaClient>
+          <PostHogProvider>
+            <ErudaClient>
+              <MiniKitProvider>
+                {/* Main content area */}
+                <main className="min-h-screen overflow-hidden overscroll-none">
+                  <ToastContainer
+                    position="top-center"
+                    autoClose={2000}
+                    hideProgressBar
+                    newestOnTop
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                    transition={Bounce}
+                  />
+                  {children}
+                </main>
+              </MiniKitProvider>
+            </ErudaClient>
+          </PostHogProvider>
         </NextAuthProvider>
       </body>
     </html>

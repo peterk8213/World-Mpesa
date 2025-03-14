@@ -178,9 +178,10 @@ export interface MpesaPayment {
   paymentAccountId?: Schema.Types.ObjectId;
   currency: string;
   actualCharges?: number;
-  estimatedCharges: number;
+  estimatedCharges?: number;
   ReceiverPartyPublicName?: string;
   paid_amount?: string;
   resultCode?: string;
   resultDesc?: string;
+  phoneNumber?: string;
 }

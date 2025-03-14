@@ -4,6 +4,7 @@ import { InfoItem } from "@/components/InfoItem";
 import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import { WithdrawRequestCheckout } from "@/types";
 import { User, Phone, Briefcase, DollarSign, Barcode } from "lucide-react";
+import { formatWithoutRounding } from "@/lib/formatBalance";
 
 import { Separator } from "@/components/ui/separator";
 
@@ -29,7 +30,7 @@ export function WithdrawCheckoutpage({
   } = withdrawCheckoutData;
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: -10 }}
       animate={{
         y: 0,
         opacity: 1,
@@ -75,7 +76,7 @@ export function WithdrawCheckoutpage({
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Fees</span>
                     <span className="font-sm">
-                      {fees.toFixed(2)}
+                      {formatWithoutRounding(fees, 1)}
                       <span className="text-xs"> USD</span>
                     </span>
                   </div>
@@ -89,7 +90,7 @@ export function WithdrawCheckoutpage({
                       <span className="font-medium">Total</span>
                     </div>
                     <span className="font-semibold ">
-                      {totalAmount.toFixed(2)}
+                      {formatWithoutRounding(totalAmount, 2)}
                       <span className="text-xs"> USD</span>
                     </span>
                   </div>

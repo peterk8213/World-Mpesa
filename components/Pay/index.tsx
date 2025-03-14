@@ -14,7 +14,6 @@ import { Amount } from "@/types";
 import { Button } from "@worldcoin/mini-apps-ui-kit-react/Button";
 // import { useSession } from "next-auth/react";
 import { toastError, toastInfo, toastSuccess, toastWarning } from "@/lib/toast";
-import { Transaction } from "@/models/Transaction";
 
 type PaymentResponse = {
   success: boolean;
@@ -34,7 +33,7 @@ const sendPayment = async ({ userAmount }: { userAmount: string }) => {
     const res = await fetch(`/api/initiate-payment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ depositAmount: 0.1 }),
+      body: JSON.stringify({ depositAmount: userAmount }),
       // body: JSON.stringify({ depositAmount }),
       // body: JSON.stringify({ payload: session }),
     });

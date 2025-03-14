@@ -1,13 +1,14 @@
 import { WithdrawSuccess } from "@/components/withdrawSuccess";
 
-import { Transaction } from "@/models/Transaction";
+import MpesaPayment from "@/models/MpesaPayment";
 
-import { getServerSession, Session } from "next-auth";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import { notFound, redirect } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
 import { getConversionRate } from "@/lib/wallet/conversion";
+import { Suspense } from "react";
 
 export default async function SuccessPage({
   searchParams,
@@ -15,12 +16,11 @@ export default async function SuccessPage({
   searchParams: Promise<{ transactionId?: string }>;
 }) {
   const session = await getServerSession(authOptions);
-
-  const { userId } = session;
-
   if (!session) {
     redirect("/");
   }
+
+  const { userId } = session;
 
   const transactionId = (await searchParams).transactionId; // Default to "weekly"
 
@@ -29,14 +29,18 @@ export default async function SuccessPage({
   }
 
   await dbConnect();
-  const transaction = await getTransactionData({ transactionId, userId });
-  console.log(transaction);
 
   return (
     <>
-      <main className="flex flex-col items-center justify-center h-screen">
-        <WithdrawSuccess transaction={transaction} />
-        <div></div>
+      <main className="flex flex-col h-screen">
+        <div>
+          <Suspense fallback={<div>Loading...</div>}>
+            <WithdrawSuccessWrapper
+              userId={userId}
+              transactionId={transactionId}
+            />
+          </Suspense>
+        </div>
       </main>
     </>
   );
@@ -49,15 +53,33 @@ const getTransactionData = async ({
   transactionId: string;
   userId: string;
 }) => {
-  const transaction = await Transaction.findOne({
-    _id: transactionId,
+  const transaction = await MpesaPayment.findOne({
+    transactionId,
     userId,
-  }).select("status amount currency createdAt description method type -_id");
+  })
+    .select("phoneNumber transactionAmount -_id")
+    .populate({
+      path: "transactionId",
+      select:
+        "status amount currency transactionAmount  createdAt description method type -_id",
+    });
 
   const { conversionRate } = await getConversionRate();
 
   return {
-    ...transaction.toObject(),
+    ...transaction.toJSON(),
     conversionRate,
   };
+};
+
+const WithdrawSuccessWrapper = async ({
+  transactionId,
+  userId,
+}: {
+  transactionId: string;
+  userId: string;
+}) => {
+  const transaction = await getTransactionData({ transactionId, userId });
+  console.log(transaction);
+  return <WithdrawSuccess transaction={transaction} />;
 };

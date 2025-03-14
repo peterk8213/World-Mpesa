@@ -38,7 +38,7 @@ export function WithdrawConfirmButton({
 
   useEffect(() => {
     if (isPending) {
-      toastLoading("Processing...🧲🧭");
+      toastLoading("Processing ⚡⚡");
     }
     // if (state.success) {
     //   router.push("/withdraw/success");

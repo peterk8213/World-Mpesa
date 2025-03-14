@@ -1,10 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@worldcoin/mini-apps-ui-kit-react/Button";
-
-import { Home } from "lucide-react";
+import { Home, Star, MoreVertical } from "lucide-react";
 import Link from "next/link";
 
 interface CheckmarkProps {
@@ -78,221 +77,156 @@ export function Checkmark({
 }
 
 interface TransactionProps {
-  transaction: {
-    _id: string;
+  _id?: string;
+  transactionId: {
     amount: number;
     type: string;
-    status: string;
+    status?: string;
     description: string;
     createdAt: string;
     method: string;
-    conversionRate: number;
+
+    recipient?: string;
   };
+  transactionAmount: number;
+
+  phoneNumber?: string;
+  conversionRate: number;
 }
 
-export function WithdrawSuccess({ transaction }: TransactionProps) {
+export function WithdrawSuccess({
+  transaction,
+}: {
+  transaction: TransactionProps;
+}) {
+  // Default values for all properties
   const {
     _id,
-    amount,
-    type,
-    status,
-    description,
-    createdAt,
-    method,
+
+    transactionId: { amount, type, status, description, createdAt, method },
+    phoneNumber,
+    transactionAmount,
     conversionRate,
   } = transaction;
+
+  console.log(transaction);
   return (
-    <Card className="w-full max-w-sm mx-auto p-6 h-screen flex flex-col justify-center bg-zinc-900 dark:bg-white border-zinc-800 dark:border-zinc-200 backdrop-blur-sm rounded-none">
-      <CardContent className="space-y-4 flex flex-col items-center justify-center">
-        <motion.div
-          className="flex justify-center"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            duration: 0.4,
-            ease: [0.4, 0, 0.2, 1],
-            scale: {
-              type: "spring",
-              damping: 15,
-              stiffness: 200,
-            },
-          }}
-        >
-          <div className="relative">
-            <motion.div
-              className="absolute inset-0 blur-xl bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                delay: 0.2,
-                duration: 0.8,
-                ease: "easeOut",
-              }}
-            />
-            <Checkmark
-              size={80}
-              strokeWidth={4}
-              color="rgb(16 185 129)"
-              className="relative z-10 dark:drop-shadow-[0_0_10px_rgba(0,0,0,0.1)]"
-            />
+    <div className=" h-full w-full flex items-center justify-center">
+      <Card className="w-full max-w-sm mx-auto  rounded-lg overflow-visible shadow-none border-none">
+        <CardContent className="p-6">
+          {/* Checkmark */}
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <div className="absolute inset-0 blur-xl bg-emerald-500/20 rounded-full" />
+              <Checkmark
+                size={80}
+                strokeWidth={4}
+                color="rgb(16 185 129)"
+                className="relative z-10"
+              />
+            </div>
           </div>
-        </motion.div>
-        <motion.div
-          className="space-y-2 text-center w-full"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: 0.2,
-            duration: 0.6,
-            ease: [0.4, 0, 0.2, 1],
-          }}
-        >
-          <motion.h2
-            className="text-lg text-zinc-100 dark:text-zinc-900 tracking-tighter font-semibold uppercase"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.4 }}
-          >
+
+          {/* Title */}
+          <h2 className="text-lg text-zinc-900 font-semibold text-center mb-6">
             Transfer Successful
-          </motion.h2>
-          <div className="flex items-center gap-4">
-            <motion.div
-              className="flex-1 bg-zinc-800/50 dark:bg-zinc-50/50 rounded-xl p-3 border border-zinc-700/50 dark:border-zinc-200/50 backdrop-blur-md"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                delay: 1.2,
-                duration: 0.4,
-                ease: [0.4, 0, 0.2, 1],
-              }}
-            >
-              <div className="flex flex-col items-start gap-2">
-                <div className="space-y-1.5">
-                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                    <svg
-                      className="w-3 h-3"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <title>From</title>
-                      <path d="M12 19V5M5 12l7-7 7 7" />
-                    </svg>
-                    From
-                  </span>
-                  <div className="flex items-center gap-2.5 group transition-all">
-                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 dark:bg-white shadow-lg border border-zinc-700 dark:border-zinc-300 text-sm font-medium text-zinc-100 dark:text-zinc-900 group-hover:scale-105 transition-transform">
-                      $
-                    </span>
-                    <span className="font-medium text-zinc-100 dark:text-zinc-900 tracking-tight">
-                      Wallet
-                    </span>
-                  </div>
-                </div>
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-zinc-700 dark:via-zinc-300 to-transparent" />
-                <div className="space-y-1.5">
-                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                    <svg
-                      className="w-3 h-3"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <title>Amount</title>
-                      <path d="M12 5v14M5 12l7 7 7-7" />
-                    </svg>
-                    Amount
-                  </span>
-                  <div className="flex items-center gap-2.5 group transition-all">
-                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 dark:bg-white shadow-lg border border-zinc-700 dark:border-zinc-300 text-sm font-medium text-zinc-100 dark:text-zinc-900 group-hover:scale-105 transition-transform">
-                      €
-                    </span>
-                    <span className="font-medium text-zinc-100 dark:text-zinc-900 tracking-tight">
-                      {amount.toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      })}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <div className="space-y-1.5">
-                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                        <svg
-                          className="w-3 h-3"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <title>Method</title>
-                          <path d="M12 19V5M5 12l7-4 3 4" />
-                        </svg>
-                        Method
-                      </span>
-                      <div className="flex items-center gap-2.5 group transition-all">
-                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 dark:bg-white shadow-lg border border-zinc-700 dark:border-zinc-300 text-sm font-medium text-zinc-100 dark:text-zinc-900 group-hover:scale-105 transition-transform">
-                          {method.charAt(0).toUpperCase()}
-                        </span>
-                        <span className="font-medium text-zinc-100 dark:text-zinc-900 tracking-tight">
-                          {method.charAt(0).toUpperCase()}{" "}
-                          {method.slice(1).toLowerCase()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400 py-4">
-                      {createdAt.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
+          </h2>
+
+          {/* Transaction Details */}
+          <div className="bg-zinc-50 rounded-xl p-4 border border-zinc-200 mb-4">
+            {/* From */}
+            <div className="mb-3">
+              <span className="text-xs font-medium text-zinc-500 block mb-1">
+                From
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white shadow-sm border border-zinc-300 text-sm font-medium text-zinc-900">
+                  $
+                </span>
+                <span className="font-medium text-zinc-900">Wallet</span>
               </div>
-            </motion.div>
+            </div>
+
+            <div className="w-full h-px bg-zinc-200 my-3" />
+
+            {/* To */}
+            <div className="mb-3">
+              <span className="text-xs font-medium text-zinc-500 block mb-1">
+                To
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white shadow-sm border border-zinc-300 text-sm font-medium text-zinc-900">
+                  {phoneNumber?.charAt(0).toUpperCase() || "P"}
+                </span>
+                <span className="font-medium text-zinc-900">
+                  {phoneNumber || "1234567890"}
+                </span>
+              </div>
+            </div>
+
+            <div className="w-full h-px bg-zinc-200 my-3" />
+
+            {/* Amount */}
+            <div className="mb-3">
+              <span className="text-xs font-medium text-zinc-500 block mb-1">
+                Amount
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white shadow-sm border border-zinc-300 text-sm font-medium text-zinc-900">
+                  $
+                </span>
+                <span className="font-medium text-zinc-900">
+                  {amount.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  })}
+                </span>
+              </div>
+              <div className="text-xs text-zinc-500 ml-9 mt-1">
+                ≈ {transactionAmount}
+              </div>
+            </div>
+
+            <div className="w-full h-px bg-zinc-200 my-3" />
+
+            {/* Method */}
+            <div className="mb-2">
+              <span className="text-xs font-medium text-zinc-500 block mb-1">
+                Method
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white shadow-sm border border-zinc-300 text-sm font-medium text-zinc-900">
+                  {method.charAt(0).toUpperCase()}
+                </span>
+                <span className="font-medium text-zinc-900">
+                  {method.charAt(0).toUpperCase()}
+                  {method.slice(1).toLowerCase()}
+                </span>
+              </div>
+            </div>
+
+            {/* Date */}
+            <div className="text-xs text-zinc-500 mt-3">
+              {createdAt.toLocaleString()}
+            </div>
           </div>
-          <motion.div
-            className="w-full text-xs text-zinc-500 dark:text-zinc-400 mt-2 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.4, duration: 0.4 }}
-          >
+
+          {/* Exchange Rate */}
+          <div className="text-xs text-zinc-600 text-center mb-4">
             Exchange Rate: 1 USD = {conversionRate.toFixed(2)} KES
-          </motion.div>
-        </motion.div>
-      </CardContent>
-      <CardFooter className=" ">
-        <div className="flex justify-between items-center fixed bottom-4 w-full p-6 right-0 left-0 xs:bottom-0">
-          <motion.div
-            className=" flex items-center gap-2 justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            whileTap={{ scale: 0.94 }}
-            whileHover={{ scale: 1.1 }}
-          >
-            <Link href={"/home"}>
-              <Button type="submit" variant="ghost" radius="md" fullWidth>
-                <div className="flex items-center gap-2 p-4">
-                  <Home className="w-6 h-6" />
-                  <span>Home</span>
-                </div>
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </CardFooter>
-    </Card>
+          </div>
+
+          {/* Home Button */}
+          <Link href="/home" className="w-full block">
+            <Button type="submit" variant="ghost" radius="md" fullWidth>
+              <div className="flex items-center justify-center gap-2 py-2">
+                <Home className="w-5 h-5" />
+                <span>Home</span>
+              </div>
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
