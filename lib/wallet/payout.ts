@@ -31,7 +31,7 @@ async function PayoutIntasend({
       );
     }
 
-    const intasend = new IntaSend(PUBLISHABLE_KEY, SECRET_KEY, true); // Set test_mode to true/false as needed
+    const intasend = new IntaSend(PUBLISHABLE_KEY, SECRET_KEY, false); // Set test_mode to true/false as needed
     const payouts = intasend.payouts();
 
     const req_approval = "NO"; // Set to 'NO' to avoid manual approval
@@ -48,7 +48,7 @@ async function PayoutIntasend({
       transactions: [
         {
           name: fullname,
-          account: "254708374149", // Ensure this is dynamic
+          account: phoneNumber, // Ensure this is dynamic
           amount,
           narrative: description,
         },
