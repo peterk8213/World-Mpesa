@@ -3,17 +3,11 @@
 import { useState, useRef } from "react";
 import { Copy, Check, Share2, ChevronLeft, LinkIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { shareData } from "@/lib/constants";
 
 export default function SharePage() {
   const [copied, setCopied] = useState(false);
   const linkRef = useRef<HTMLInputElement>(null);
-
-  // Mock share data - in a real app this would come from your API or state
-  const shareData = {
-    message:
-      "I just sent money using this fast and secure transfer app! Try it out.",
-    link: process.env.APP_URL ?? "https://example.com",
-  };
 
   const copyToClipboard = () => {
     if (linkRef.current) {
