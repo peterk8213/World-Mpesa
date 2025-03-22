@@ -1,3 +1,5 @@
+"use client";
+
 import { Check, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
