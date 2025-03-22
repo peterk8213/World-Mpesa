@@ -9,9 +9,6 @@ import { getServerSession, Session } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { notFound, redirect } from "next/navigation";
 import { AppServices } from "@/components/Services";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { Bot } from "lucide-react";
 
 // Define the User type
 type User = {
