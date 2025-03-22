@@ -25,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import UserHomePageCard from "@/components/UserHomePage";
 import { HomePageAnalytics } from "@/components/HomepageAnalytics";
 import { Suspense } from "react";
+import { HorizontalTimeline } from "@/components/HorizontalTimeline";
+import { onboardingSteps } from "@/lib/constants";
 
 const getUser = async (session: Session) => {
   const { userId, worldId } = session;
@@ -91,44 +93,17 @@ const getUserWallet = async ({ userId }: { userId: string }) => {
   };
 };
 
-const getUserAnalytics = async ({
-  userId,
-  timeframe,
-}: {
-  userId: string;
-  timeframe: string;
-}) => {
-  const sampleData = {
-    daily: [
-      { name: "12AM", amount: 2 },
-      { name: "4AM", amount: 1398 },
-      { name: "8AM", amount: 9 },
-      { name: "12PM", amount: 3908 },
-      { name: "4PM", amount: 4800 },
-      { name: "8PM", amount: 3800 },
-      { name: "11PM", amount: 4 },
-    ],
-    weekly: [
-      { name: "Mon", amount: 4000 },
-      { name: "Tue", amount: 3000 },
-      { name: "Wed", amount: 6000 },
-      { name: "Thu", amount: 4000 },
-      { name: "Fri", amount: 5000 },
-      { name: "Sat", amount: 4500 },
-      { name: "Sun", amount: 4800 },
-    ],
-    monthly: [
-      { name: "Jan", amount: 12000 },
-      { name: "Feb", amount: 13500 },
-      { name: "Mar", amount: 11800 },
-      { name: "Apr", amount: 14200 },
-      { name: "May", amount: 15000 },
-      { name: "Jun", amount: 13800 },
-    ],
-  };
+// const getUserAnalytics = async ({
+//   userId,
+//   timeframe,
+// }: {
+//   userId: string;
+//   timeframe: string;
+// }) => {
+//   const data = await Wallet.getWalletAnalytics(userId, timeframe);
 
-  return sampleData[timeframe] || [];
-};
+//   return data;
+// };
 
 export default async function Home({
   searchParams,
@@ -152,12 +127,16 @@ export default async function Home({
   }
 
   return (
-    <div className="flex flex-col  bg-white text-black overflow-auto  lg:mx-20 gap-[3rem] pb-4 ">
+    <div className="flex flex-col  bg-white text-black overflow-auto  lg:mx-20 gap-[3rem] pb-8">
       <div className="flex flex-col lg:flex-row lg:space-x-4 px-2 ">
         {/* render user homepage and pass user as props */}
         <Suspense fallback={<div>Loading...</div>}>
           <HomePageWrapper userId={userId} />
         </Suspense>
+      </div>
+
+      <div>
+        <HorizontalTimeline className="px-2" steps={onboardingSteps} />
       </div>
 
       <div className="px-2">
@@ -191,24 +170,24 @@ const HomePageWrapper = async ({ userId }: { userId: string }) => {
   );
 };
 
-const HomePageAnalyticsWrapper = async ({
-  userId,
-  timeframe,
-}: {
-  userId: string;
-  timeframe: string;
-}) => {
-  const data: {
-    name: string;
-    amount: number;
-  }[] = await getUserAnalytics({ userId, timeframe });
-  ///// delay for 3 seconds
+// const HomePageAnalyticsWrapper = async ({
+//   userId,
+//   timeframe,
+// }: {
+//   userId: string;
+//   timeframe: string;
+// }) => {
+//   const data: {
+//     name: string;
+//     amount: number;
+//   }[] = await getUserAnalytics({ userId, timeframe });
+//   ///// delay for 3 seconds
 
-  return (
-    <>
-      <div className="">
-        <HomePageAnalytics data={data} />
-      </div>
-    </>
-  );
-};
+//   return (
+//     <>
+//       <div className="">
+//         <HomePageAnalytics data={data} />
+//       </div>
+//     </>
+//   );
+// };

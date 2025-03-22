@@ -1,4 +1,11 @@
-// Mock share data - in a real app this would come from your API or state
+// Description: This file contains the constants used in the application.
+
+import {
+  CreditCard,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Shield,
+} from "lucide-react";
 export const shareData = {
   message:
     "I just sent money using this fast and secure transfer app! Try it out.",
@@ -6,3 +13,28 @@ export const shareData = {
     process.env.APP_URL ??
     "https://worldcoin.org/mini-app?app_id=app_d826abbcef7ac8a14db406b6d2f7562d",
 };
+
+export const onboardingSteps = [
+  {
+    id: "account",
+    title: "Create Account",
+    icon: Shield,
+    completed: true,
+  },
+  {
+    id: "link-payment",
+    title: "Link Payment",
+    icon: CreditCard,
+    current: true,
+  },
+  {
+    id: "deposit",
+    title: "First Deposit",
+    icon: ArrowDownToLine,
+  },
+  {
+    id: "withdraw",
+    title: "First Withdrawal",
+    icon: ArrowUpFromLine,
+  },
+];
