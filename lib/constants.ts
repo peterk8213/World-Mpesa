@@ -14,7 +14,14 @@ export const shareData = {
     "https://worldcoin.org/mini-app?app_id=app_d826abbcef7ac8a14db406b6d2f7562d",
 };
 
-export const onboardingSteps = [
+export const onboardingSteps: {
+  id: string;
+  title: string;
+  icon: any;
+  completed?: boolean;
+  current?: boolean;
+  link?: string;
+}[] = [
   {
     id: "account",
     title: "Create Account",
@@ -26,15 +33,18 @@ export const onboardingSteps = [
     title: "Link Payment",
     icon: CreditCard,
     current: true,
+    link: "/profile/payment",
   },
   {
     id: "deposit",
     title: "First Deposit",
     icon: ArrowDownToLine,
+    link: "/profile/deposit",
   },
   {
     id: "withdraw",
     title: "First Withdrawal",
     icon: ArrowUpFromLine,
+    link: "/profile/withdraw",
   },
 ];
