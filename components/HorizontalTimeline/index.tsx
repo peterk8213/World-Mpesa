@@ -21,8 +21,8 @@ export function HorizontalTimeline({
   className,
 }: HorizontalTimelineProps) {
   return (
-    <div className={cn("max-w-4xl overflow-x-hidden pb-2 px-4", className)}>
-      <div className="flex min-w-max">
+    <div className={cn("max-w-4xlpb-2 px-4", className)}>
+      <div className="flex ">
         {steps.map((step, index) => (
           <Link key={index} href={step.link ?? "#"}>
             <div key={step.id} className="flex flex-col items-center">

@@ -33,18 +33,18 @@ export const onboardingSteps: {
     title: "Link Payment",
     icon: CreditCard,
     current: true,
-    link: "/profile/payment",
+    link: "/withdraw/add-account",
   },
   {
     id: "deposit",
     title: "First Deposit",
     icon: ArrowDownToLine,
-    link: "/profile/deposit",
+    link: "/deposit",
   },
   {
     id: "withdraw",
     title: "First Withdrawal",
     icon: ArrowUpFromLine,
-    link: "/profile/withdraw",
+    link: "/withdraw",
   },
 ];
