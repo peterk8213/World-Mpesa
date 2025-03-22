@@ -135,8 +135,8 @@ export default async function Home({
         </Suspense>
       </div>
 
-      <div>
-        <HorizontalTimeline className="px-2" steps={onboardingSteps} />
+      <div className="px-2 ">
+        <HorizontalTimeline steps={onboardingSteps} />
       </div>
 
       <div className="px-2">
