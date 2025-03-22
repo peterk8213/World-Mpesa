@@ -33,7 +33,7 @@ export function HorizontalTimeline({
                 {/* Connector Line (before) */}
                 {index > 0 && (
                   <div
-                    className={`h-0.5 w-12 ${
+                    className={`h-0.5 w-8 ${
                       steps[index - 1].completed ? "bg-black" : "bg-gray-200"
                     }`}
                   />
@@ -59,7 +59,7 @@ export function HorizontalTimeline({
                 {/* Connector Line (after) */}
                 {index < steps.length - 1 && (
                   <div
-                    className={`h-0.5 w-12 ${
+                    className={`h-0.5 w-8 ${
                       step.completed ? "bg-black" : "bg-gray-200"
                     }`}
                   />
