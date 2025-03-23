@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 type Step = {
   id: string;
@@ -127,7 +128,7 @@ export function HorizontalTimeline({ className }: HorizontalTimelineProps) {
             <Link
               key={index}
               href={step.link ?? "#"}
-              className="timeline-step flex flex-col items-center px-1"
+              className="timeline-step flex flex-col items-center "
             >
               <div className="flex items-center">
                 {/* Connector Line (before) */}
@@ -140,7 +141,10 @@ export function HorizontalTimeline({ className }: HorizontalTimelineProps) {
                 )}
 
                 {/* Step Icon */}
-                <div
+                <motion.div
+                  whileHover={{ scale: 0.95 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
                   className={`flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full border transition-all ${
                     step.completed
                       ? "border-black bg-black text-white"
@@ -154,7 +158,7 @@ export function HorizontalTimeline({ className }: HorizontalTimelineProps) {
                   ) : (
                     step.icon
                   )}
-                </div>
+                </motion.div>
 
                 {/* Connector Line (after) */}
                 {index < steps.length - 1 && (
