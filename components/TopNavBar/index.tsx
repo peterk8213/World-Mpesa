@@ -1,20 +1,20 @@
-import { Cog, Share2 } from "lucide-react";
+import { Bell, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const NavBar = () => {
   return (
-    <div className="bg-white/20 bg-opacity-10 backdrop-blur-md border-none fixed top-0 left-0 right-0 z-30">
+    <div className="bg-white/80 bg-opacity-10 backdrop-blur-md border-none fixed top-0 left-0 right-0 z-30">
       <header className="flex justify-between items-center p-4 border-b border-gray-200 mb-4">
         <Link href={"/share"}>
           <Button variant="ghost" size="icon" className="rounded-full  ">
             <Share2 className="h-8 w-8 text-black" />
           </Button>
         </Link>
-        <h1 className="text-xl font-medium">MpesaWorld</h1>
-        <Link href={"/settings"}>
+        <h1 className="text-xl font-medium">NEKRON</h1>
+        <Link href={"#"}>
           <Button variant="ghost" size="icon" className="rounded-full  ">
-            <Cog className="h-10 w-10 text-black" />
+            <Bell className="h-10 w-10 text-black" />
           </Button>
         </Link>
       </header>
