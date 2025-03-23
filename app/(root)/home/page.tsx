@@ -23,7 +23,7 @@ import UserHomePageCard from "@/components/UserHomePage";
 import { HomePageAnalytics } from "@/components/HomepageAnalytics";
 import { Suspense } from "react";
 import { HorizontalTimeline } from "@/components/HorizontalTimeline";
-import { onboardingSteps } from "@/lib/constants";
+import { onboardingSteps } from "@/constants";
 
 const getUser = async (session: Session) => {
   const { userId, worldId } = session;

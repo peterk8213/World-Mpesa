@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { Copy, Check, Share2, ChevronLeft, LinkIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { shareData } from "@/lib/constants";
+import { shareData } from "@/constants";
 
 export default function SharePage() {
   const [copied, setCopied] = useState(false);
