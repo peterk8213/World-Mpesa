@@ -1,22 +1,22 @@
 "use client";
 
-import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import type React from "react";
 
 import {
+  Check,
   Receipt,
   ArrowDownToLine,
   ArrowUpFromLine,
   Shield,
 } from "lucide-react";
-
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 
 type Step = {
   id: string;
   title: string;
-  icon: any;
+  icon: React.ReactNode;
   completed?: boolean;
   current?: boolean;
   link?: string;
@@ -31,26 +31,26 @@ export function HorizontalTimeline({ className }: HorizontalTimelineProps) {
     {
       id: "account",
       title: "Create Account",
-      icon: <Shield />,
+      icon: <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4" />,
       completed: true,
     },
     {
       id: "link-payment",
       title: "Link Payment",
-      icon: <Receipt />,
+      icon: <Receipt className="h-3.5 w-3.5 sm:h-4 sm:w-4" />,
       current: true,
       link: "/withdraw/add-account",
     },
     {
       id: "deposit",
       title: "First Deposit",
-      icon: <ArrowDownToLine />,
+      icon: <ArrowDownToLine className="h-3.5 w-3.5 sm:h-4 sm:w-4" />,
       link: "/deposit",
     },
     {
       id: "withdraw",
       title: "First Withdrawal",
-      icon: <ArrowUpFromLine />,
+      icon: <ArrowUpFromLine className="h-3.5 w-3.5 sm:h-4 sm:w-4" />,
       link: "/withdraw",
     },
   ];
@@ -71,7 +71,7 @@ export function HorizontalTimeline({ className }: HorizontalTimelineProps) {
     checkScrollable();
     window.addEventListener("resize", checkScrollable);
     return () => window.removeEventListener("resize", checkScrollable);
-  }, [steps]);
+  }, []);
 
   // Scroll to current step
   useEffect(() => {
@@ -150,7 +150,7 @@ export function HorizontalTimeline({ className }: HorizontalTimelineProps) {
                   {step.completed ? (
                     <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   ) : (
-                    <step.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    step.icon
                   )}
                 </div>
 
