@@ -17,13 +17,17 @@ type User = {
   baseCurrency: string;
 };
 
-import { Button } from "@/components/ui/button";
+import {
+  Receipt,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Shield,
+} from "lucide-react";
 
 import UserHomePageCard from "@/components/UserHomePage";
 import { HomePageAnalytics } from "@/components/HomepageAnalytics";
 import { Suspense } from "react";
 import { HorizontalTimeline } from "@/components/HorizontalTimeline";
-import { onboardingSteps } from "@/constants";
 
 const getUser = async (session: Session) => {
   const { userId, worldId } = session;
@@ -122,6 +126,34 @@ export default async function Home({
   if (!validTimeframes.includes(timeframe)) {
     notFound(); // Handle invalid timeframe values
   }
+
+  const onboardingSteps = [
+    {
+      id: "account",
+      title: "Create Account",
+      icon: <Shield />,
+      completed: true,
+    },
+    {
+      id: "link-payment",
+      title: "Link Payment",
+      icon: <Receipt />,
+      current: true,
+      link: "/withdraw/add-account",
+    },
+    {
+      id: "deposit",
+      title: "First Deposit",
+      icon: <ArrowDownToLine />,
+      link: "/deposit",
+    },
+    {
+      id: "withdraw",
+      title: "First Withdrawal",
+      icon: <ArrowUpFromLine />,
+      link: "/withdraw",
+    },
+  ];
 
   return (
     <div className="flex flex-col  bg-white text-black overflow-auto  lg:mx-20 gap-[3rem] pb-8">

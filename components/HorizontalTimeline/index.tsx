@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, type LucideIcon } from "lucide-react";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import { useRef, useEffect, useState } from "react";
 type Step = {
   id: string;
   title: string;
-  icon: LucideIcon;
+  icon: any;
   completed?: boolean;
   current?: boolean;
   link?: string;
