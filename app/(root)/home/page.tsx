@@ -17,13 +17,6 @@ type User = {
   baseCurrency: string;
 };
 
-import {
-  Receipt,
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  Shield,
-} from "lucide-react";
-
 import UserHomePageCard from "@/components/UserHomePage";
 import { HomePageAnalytics } from "@/components/HomepageAnalytics";
 import { Suspense } from "react";
@@ -127,34 +120,6 @@ export default async function Home({
     notFound(); // Handle invalid timeframe values
   }
 
-  const onboardingSteps = [
-    {
-      id: "account",
-      title: "Create Account",
-      icon: <Shield />,
-      completed: true,
-    },
-    {
-      id: "link-payment",
-      title: "Link Payment",
-      icon: <Receipt />,
-      current: true,
-      link: "/withdraw/add-account",
-    },
-    {
-      id: "deposit",
-      title: "First Deposit",
-      icon: <ArrowDownToLine />,
-      link: "/deposit",
-    },
-    {
-      id: "withdraw",
-      title: "First Withdrawal",
-      icon: <ArrowUpFromLine />,
-      link: "/withdraw",
-    },
-  ];
-
   return (
     <div className="flex flex-col  bg-white text-black overflow-auto  lg:mx-20 gap-[3rem] pb-8">
       <div className="flex flex-col lg:flex-row lg:space-x-4 px-2 ">
@@ -165,7 +130,7 @@ export default async function Home({
       </div>
 
       <div className="px-2 ">
-        <HorizontalTimeline steps={onboardingSteps} />
+        <HorizontalTimeline />
       </div>
 
       <div className="px-2">

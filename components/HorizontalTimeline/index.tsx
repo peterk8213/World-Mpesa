@@ -2,6 +2,14 @@
 
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import {
+  Receipt,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Shield,
+} from "lucide-react";
+
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 
@@ -15,14 +23,38 @@ type Step = {
 };
 
 type HorizontalTimelineProps = {
-  steps: Step[];
   className?: string;
 };
 
-export function HorizontalTimeline({
-  steps,
-  className,
-}: HorizontalTimelineProps) {
+export function HorizontalTimeline({ className }: HorizontalTimelineProps) {
+  const steps: Step[] = [
+    {
+      id: "account",
+      title: "Create Account",
+      icon: <Shield />,
+      completed: true,
+    },
+    {
+      id: "link-payment",
+      title: "Link Payment",
+      icon: <Receipt />,
+      current: true,
+      link: "/withdraw/add-account",
+    },
+    {
+      id: "deposit",
+      title: "First Deposit",
+      icon: <ArrowDownToLine />,
+      link: "/deposit",
+    },
+    {
+      id: "withdraw",
+      title: "First Withdrawal",
+      icon: <ArrowUpFromLine />,
+      link: "/withdraw",
+    },
+  ];
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollIndicators, setShowScrollIndicators] = useState(false);
 
