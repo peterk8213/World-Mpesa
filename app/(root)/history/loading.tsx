@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6 flex flex-col items-center">
+    <div className="min-h-screen bg-background p-4 md:p-6 flex flex-col ">
       {/* Recent Activity */}
       <div className="space-y-4 mt-8">
         <Skeleton className="h-6 w-32" />
