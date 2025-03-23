@@ -14,14 +14,7 @@ export const shareData = {
     "https://worldcoin.org/mini-app?app_id=app_d826abbcef7ac8a14db406b6d2f7562d",
 };
 
-export const onboardingSteps: {
-  id: string;
-  title: string;
-  icon: any;
-  completed?: boolean;
-  current?: boolean;
-  link?: string;
-}[] = [
+export const onboardingSteps = [
   {
     id: "account",
     title: "Create Account",
