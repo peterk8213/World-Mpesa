@@ -32,19 +32,21 @@ export default function RootLayout({
               <MiniKitProvider>
                 {/* Main content area */}
                 <main className="min-h-screen overflow-hidden overscroll-none">
-                  <ToastContainer
-                    position="top-center"
-                    autoClose={2000}
-                    hideProgressBar
-                    newestOnTop
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="light"
-                    transition={Bounce}
-                  />
+                  <div className="px-6">
+                    <ToastContainer
+                      position="top-center"
+                      autoClose={2000}
+                      hideProgressBar
+                      newestOnTop
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                      theme="light"
+                      transition={Bounce}
+                    />
+                  </div>
                   {children}
                 </main>
               </MiniKitProvider>
