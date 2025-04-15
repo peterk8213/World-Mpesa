@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Typography } from "@worldcoin/mini-apps-ui-kit-react/Typography";
 
+import { formatWithoutRounding } from "@/lib/formatBalance";
+
 type User = {
   userName: string;
   balance: number;
@@ -39,7 +41,10 @@ export default function UserHomePageCard({ user }: { user: User }) {
               <div className="flex items-baseline gap-[2rem]">
                 <div className="flex items-baseline gap-2">
                   {(() => {
-                    const formattedBalance = balance.toFixed(2).split(".");
+                    const formattedBalance = formatWithoutRounding(
+                      balance,
+                      2
+                    ).split(".");
                     return (
                       <>
                         <h2 className="text-4xl font-semibold tracking-tight">

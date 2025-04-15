@@ -25,9 +25,17 @@ type Step = {
 
 type HorizontalTimelineProps = {
   className?: string;
+  progress: {
+    title: string;
+    completed: boolean;
+    current: boolean;
+  }[];
 };
 
-export function HorizontalTimeline({ className }: HorizontalTimelineProps) {
+export function HorizontalTimeline({
+  className,
+  progress,
+}: HorizontalTimelineProps) {
   const steps: Step[] = [
     {
       id: "account",

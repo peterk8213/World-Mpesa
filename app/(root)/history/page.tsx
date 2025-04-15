@@ -142,5 +142,9 @@ const HistoryListWrapper = async ({
 
   const transactions = await getCachedTransactions({ userId, type });
 
-  return <HistoryList transactions={transactions} />;
+  return transactions ? (
+    <HistoryList transactions={transactions} />
+  ) : (
+    <div className="text-black text-center mt-8">No transactions found</div>
+  );
 };

@@ -11,9 +11,6 @@ export default async function Entry() {
   if (session?.isnewUser) {
     redirect("/add-username");
   }
-  if (session) {
-    redirect("/home");
-  }
 
   // if (status === "unauthenticated") {
   //   redirect("/");
@@ -24,5 +21,8 @@ export default async function Entry() {
         <main>{<SplashScreen />}</main>
       </>
     );
+  }
+  if (session) {
+    redirect("/home");
   }
 }

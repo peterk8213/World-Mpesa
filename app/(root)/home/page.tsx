@@ -1,7 +1,11 @@
 // import { PayBlock } from "@/components/Pay";
 // import { VerifyBlock } from "@/components/Verify";
 import Link from "next/link";
+import { WorldcoinTransaction } from "@/models/WldTransaction";
 import { Wallet } from "@/models/Wallet";
+import { PaymentAccount } from "@/models/PaymentAccount";
+
+import MpesaPayment from "@/models/MpesaPayment";
 import dbConnect from "@/lib/mongodb";
 
 import getRedisClient from "@/lib/redis";
@@ -87,6 +91,22 @@ const getUserWallet = async ({ userId }: { userId: string }) => {
   };
 };
 
+const getTimelineData = async ({ userId }: { userId: string }) => {
+  /// resolve in parallel
+  const [linkedAccounts, deposits, withdrawals] = await Promise.all([
+    PaymentAccount.find({ userId: userId }),
+    WorldcoinTransaction.find({ userId: userId }),
+    MpesaPayment.find({ userId: userId }),
+  ])
+    .then((data) => {
+      return data;
+    })
+    .catch((err) => {
+      console.log("error fetching timeline data", err);
+      return [[], [], []];
+    });
+};
+
 // const getUserAnalytics = async ({
 //   userId,
 //   timeframe,
@@ -159,6 +179,22 @@ const HomePageWrapper = async ({ userId }: { userId: string }) => {
     <>
       <div className="">
         <UserHomePageCard user={user} />
+      </div>
+    </>
+  );
+};
+
+const HoricontalTimelineWrapper = async ({ userId }: { userId: string }) => {
+  const user = await getUserWallet({ userId });
+  if (!user) {
+    redirect("/no-user-data");
+  }
+  const { userName, balance, currency } = user;
+
+  return (
+    <>
+      <div className="">
+        <HorizontalTimeline />
       </div>
     </>
   );
