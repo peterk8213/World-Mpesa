@@ -85,10 +85,12 @@ const ProfilePageWrapper = async ({ userId }: { userId: string }) => {
   return (
     <>
       <div className="">
-        <ProfileCard
-          userName={user.userName}
-          verificationLevel={user.verificationLevel}
-        />
+        {user ? (
+          <ProfileCard
+            userName={user.userName}
+            verificationLevel={user.verificationLevel}
+          />
+        ) : null}
       </div>
       <PaymenMethods paymentMethodsCount={PaymentMethodsCount} />
     </>
