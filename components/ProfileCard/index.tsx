@@ -41,7 +41,7 @@ import { updateUsername } from "@/actions/UpdateUsername";
 import { toastError, toastSuccess } from "@/lib/toast";
 
 export default function Profile(user: {
-  userName: string;
+  userName: string | null;
   verificationLevel: string;
 }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -72,7 +72,7 @@ export default function Profile(user: {
           <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 blur-2xl" />
           <div className="relative h-full w-full overflow-hidden rounded-full bg-gradient-to-br from-gray-900 to-gray-800">
             <span className="absolute inset-0 flex items-center justify-center text-4xl font-semibold text-white/90">
-              {userName.charAt(0).toUpperCase() || "😊"}
+              {userName?.charAt(0).toUpperCase() ?? "😊"}
             </span>
           </div>
           {/* Online Status */}
