@@ -71,7 +71,7 @@ export function AddPaymentAccountForm({
 
   const [paymentAccount, setpaymentAccount] = useState({
     fullName: "",
-    phoneNumber: "",
+    phoneNumber: "254",
     provider: "",
     isDefault: false,
 

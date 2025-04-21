@@ -1,6 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
@@ -56,21 +57,25 @@ export function Spinner({
 }
 
 const MotionButton = motion.create(Button);
-const handleSignIn = async () => {
-  toast.info("Signing in with World ID");
-  await signIn("worldcoin");
-};
 
 export default function SignInButton() {
+  const handleSignIn = async () => {
+    toast.info("Signing in with World ID");
+    setIsLoading(true); // Set loading state to true
+
+    await signIn("worldcoin");
+  };
+
   const { data: session, status } = useSession();
+  const [isLoading, setIsLoading] = useState(status == "loading");
 
   return (
     <div>
-      <Spinner size="large" show={status == "loading"} />
+      <Spinner size="large" show={isLoading} />
       <MotionButton
         whileTap={{ scale: 0.95 }}
         whileHover={{ scale: 1.05 }}
-        disabled={status === "loading"}
+        disabled={isLoading}
         variant={"secondary"}
         onClick={handleSignIn}
         className="rounded-[1.15rem] px-8 py-6 text-lg font-semibold backdrop-blur-md 

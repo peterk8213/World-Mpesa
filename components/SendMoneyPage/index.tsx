@@ -155,7 +155,7 @@ export function SendMoneyPage({
                   onClick={() => {
                     setSelectedOption("mpesa");
                   }}
-                  className={`group overflow-hidden rounded-2xl border-2 p-4 transition-all hover:shadow-lg ${
+                  className={`group overflow-hidden rounded-2xl border-2 border-black p-4 transition-all hover:shadow-lg ${
                     selectedOption === "mpesa"
                       ? "border-green-500 bg-green-50/50"
                       : "border-white/60 bg-white/40 hover:border-green-200"
