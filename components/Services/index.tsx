@@ -20,12 +20,12 @@ const services = [
     description: "Transfer to anyone",
     href: "/send",
   },
-  {
-    icon: <Phone />,
-    title: "Airtime",
-    description: "Buy phone credit",
-    href: "/airtime",
-  },
+  // {
+  //   icon: <Phone />,
+  //   title: "Airtime",
+  //   description: "Buy phone credit",
+  //   href: "/airtime",
+  // },
 ];
 
 export function AppServices() {
