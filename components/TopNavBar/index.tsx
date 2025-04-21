@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const NavBar = () => {
   return (
-    <div className="bg-white/90 bg-opacity-40 backdrop-blur-sm border-none fixed top-0 left-0 right-0 z-10">
+    <div className="bg-white/90  backdrop-blur-sm border-none fixed top-0 left-0 right-0 z-10">
       <header className="flex justify-between items-center p-4 mb-4">
         <Link href={"/share"}>
           <Button variant="ghost" size="icon" className="rounded-full  ">
