@@ -150,7 +150,9 @@ export default async function Home({
       </div>
 
       <div className="px-2 ">
-        <HorizontalTimeline />
+        <Suspense fallback={<div>Loading...</div>}>
+          <HoricontalTimelineWrapper userId={userId} />
+        </Suspense>
       </div>
 
       <div className="px-2">

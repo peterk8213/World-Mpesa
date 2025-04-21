@@ -56,12 +56,12 @@ const supportLinks = [
   {
     title: "Help Center",
     icon: HelpCircle,
-    href: "/help",
+    href: "#",
   },
   {
     title: "Contact Support",
     icon: MessageSquare,
-    href: "/support",
+    href: "#",
   },
   {
     title: "Account Settings",
@@ -84,6 +84,6 @@ const legalLinks = [
   {
     title: "About Us",
     icon: Info,
-    href: "/about",
+    href: "#",
   },
 ];

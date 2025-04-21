@@ -41,7 +41,7 @@ export function HorizontalTimeline({
       id: "account",
       title: "Create Account",
       icon: <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4" />,
-      completed: true,
+      completed: false,
     },
     {
       id: "link-payment",
@@ -49,14 +49,14 @@ export function HorizontalTimeline({
       icon: <Receipt className="h-3.5 w-3.5 sm:h-4 sm:w-4" />,
 
       link: "/withdraw/add-account",
-      completed: true,
+      completed: false,
     },
     {
       id: "deposit",
       title: "First Deposit",
       icon: <ArrowDownToLine className="h-3.5 w-3.5 sm:h-4 sm:w-4" />,
       link: "/deposit",
-      current: true,
+      current: false,
     },
     {
       id: "withdraw",
