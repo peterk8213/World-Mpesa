@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
+import MpesaPayment from "@/models/MpesaPayment";
+import dbConnect from "@/lib/mongodb";
 
 export async function POST(req: Request) {
   try {
     const payload = await req.json();
-
+    const INTASEND_CHALLENGE_KEY = process.env.INTASEND_CHALLENGE_KEY;
     console.log("📩 Received Webhook Event:", payload);
 
     // ✅ Validate challenge token (IntaSend sends this during verification)
     if (payload.challenge) {
       return NextResponse.json({ challenge: payload.challenge });
     }
+
+    // ✅ Validate the webhook challenge key
 
     ////// ✅ Extract event details
     const { tracking_id, status, transactions } = payload;
