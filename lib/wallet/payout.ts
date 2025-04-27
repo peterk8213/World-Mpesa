@@ -48,7 +48,7 @@ async function PayoutIntasend({
       transactions: [
         {
           name: fullname,
-          account: phoneNumber, // Ensure this is dynamic
+          account: "+254708374149", //pnoneNumber // Ensure this is dynamic
           amount,
           narrative: description,
         },
