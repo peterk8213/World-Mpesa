@@ -91,21 +91,21 @@ const getUserWallet = async ({ userId }: { userId: string }) => {
   };
 };
 
-const getTimelineData = async ({ userId }: { userId: string }) => {
-  /// resolve in parallel
-  const [linkedAccounts, deposits, withdrawals] = await Promise.all([
-    PaymentAccount.find({ userId: userId }),
-    WorldcoinTransaction.find({ userId: userId }),
-    MpesaPayment.find({ userId: userId }),
-  ])
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => {
-      console.log("error fetching timeline data", err);
-      return [[], [], []];
-    });
-};
+// const getTimelineData = async ({ userId }: { userId: string }) => {
+//   /// resolve in parallel
+//   const [linkedAccounts, deposits, withdrawals] = await Promise.all([
+//     PaymentAccount.find({ userId: userId }),
+//     WorldcoinTransaction.find({ userId: userId }),
+//     MpesaPayment.find({ userId: userId }),
+//   ])
+//     .then((data) => {
+//       return data;
+//     })
+//     .catch((err) => {
+//       console.log("error fetching timeline data", err);
+//       return [[], [], []];
+//     });
+// };
 
 // const getUserAnalytics = async ({
 //   userId,
@@ -119,11 +119,7 @@ const getTimelineData = async ({ userId }: { userId: string }) => {
 //   return data;
 // };
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ timeframe?: string }>;
-}) {
+export default async function Home() {
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect("/authentication");
@@ -132,13 +128,6 @@ export default async function Home({
   const { userId } = session;
 
   await dbConnect();
-
-  const timeframe = (await searchParams).timeframe || "weekly"; // Default to "weekly"
-  const validTimeframes = ["daily", "weekly", "monthly"];
-
-  if (!validTimeframes.includes(timeframe)) {
-    notFound(); // Handle invalid timeframe values
-  }
 
   return (
     <div className="flex flex-col  bg-white text-black overflow-auto  lg:mx-20 gap-[3rem] pb-8">
@@ -149,11 +138,11 @@ export default async function Home({
         </Suspense>
       </div>
 
-      <div className="px-2 ">
+      {/* <div className="px-2 ">
         <Suspense fallback={<div>Loading...</div>}>
           <HoricontalTimelineWrapper userId={userId} />
         </Suspense>
-      </div>
+      </div> */}
 
       <div className="px-2">
         <AppServices />
@@ -186,21 +175,21 @@ const HomePageWrapper = async ({ userId }: { userId: string }) => {
   );
 };
 
-const HoricontalTimelineWrapper = async ({ userId }: { userId: string }) => {
-  const user = await getUserWallet({ userId });
-  if (!user) {
-    redirect("/no-user-data");
-  }
-  const { userName, balance, currency } = user;
+// const HoricontalTimelineWrapper = async ({ userId }: { userId: string }) => {
+//   const user = await getUserWallet({ userId });
+//   if (!user) {
+//     redirect("/no-user-data");
+//   }
+//   const { userName, balance, currency } = user;
 
-  return (
-    <>
-      <div className="">
-        <HorizontalTimeline />
-      </div>
-    </>
-  );
-};
+//   return (
+//     <>
+//       <div className="">
+//         <HorizontalTimeline />
+//       </div>
+//     </>
+//   );
+// };
 
 // const HomePageAnalyticsWrapper = async ({
 //   userId,
