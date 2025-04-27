@@ -29,7 +29,7 @@ const getUserWallet = async ({ userId }: { userId: string }) => {
     redirect("/no-user-data");
   }
   const {
-    userId: { name: userName },
+    userId: { userName },
     balance,
     currency,
   } = user;
