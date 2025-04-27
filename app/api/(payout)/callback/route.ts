@@ -6,9 +6,7 @@ export async function POST(req: Request) {
   try {
     const payload = await req.json();
     const INTASEND_CHALLENGE_KEY = process.env.INTASEND_CHALLENGE_KEY;
-    console.log("📩 Received Webhook Event:", payload);
-
-    await dbConnect(); // Connect to the database
+    console.log("📩 Received Webhook Event:", payload.tracking_id);
 
     // ✅ Validate the webhook challenge key
 
@@ -23,6 +21,8 @@ export async function POST(req: Request) {
       console.error("❌ Invalid challenge key:", challenge);
       return NextResponse.json({ success: false }, { status: 403 });
     }
+
+    await dbConnect(); // Connect to the database
 
     // Map IntaSend status to your system's status values
     let mappedStatus = "pending"; // Default value for unknown status
