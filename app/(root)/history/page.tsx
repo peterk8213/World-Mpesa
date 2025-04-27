@@ -8,7 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
-import { unstable_cache } from "next/cache";
+//import { unstable_cache } from "next/cache";
 import {
   startOfDay,
   startOfWeek,
@@ -134,13 +134,14 @@ const HistoryListWrapper = async ({
   type: string;
 }) => {
   ///// . Fetch the transaction history  and cache for 60 seconds using unsatable_cache
-  const getCachedTransactions = unstable_cache(
-    getTransactionHistory,
-    ["transactions", userId, type],
-    { revalidate: 60 }
-  );
+  // const getCachedTransactions = unstable_cache(
+  //   getTransactionHistory,
+  //   ["transactions", userId, type],
+  //   { revalidate: 60 }
+  // );
 
-  const transactions = await getCachedTransactions({ userId, type });
+  //const transactions = await getCachedTransactions({ userId, type });
+  const transactions = await getTransactionHistory({ userId, type });
 
   return transactions ? (
     <HistoryList transactions={transactions} />

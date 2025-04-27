@@ -8,15 +8,15 @@ const nextConfig = {
       },
     ],
   },
- eslint: {
+  eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  // experimental: {
-  //   ppr: "incremental",
-  // },
+  experimental: {
+    useCache: true, // Enable the use cache feature
+  },
 };
 
 export default nextConfig;
