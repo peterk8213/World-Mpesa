@@ -5,7 +5,6 @@ import NextAuth, {
 
 import { User } from "@/models/User";
 import dbConnect from "@/lib/mongodb";
-import getRedisClient from "@/lib/redis";
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -35,82 +34,46 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }) {
       try {
         const { id, name, verificationLevel, email } = user;
-        const redisKey = `user:${id}`;
+        await dbConnect();
+        const existingUser = await User.findOne({ worldId: id });
 
-        const redis = await getRedisClient();
-        const cachedData = await redis.hGet(redisKey, "userInfo");
-        if (!cachedData) {
-          await dbConnect();
-          const existingUser = await User.findOne({ worldId: id });
+        if (!existingUser) {
+          const newUser = await User.addNewUser({
+            worldId: id,
+            name,
+            email,
+            verificationLevel,
+          });
 
-          if (existingUser) {
-            // Store data in cache with a TTL (e.g., 3600 seconds)
-            await redis
-              .multi()
-              .hSet(redisKey, "userInfo", JSON.stringify(existingUser))
-              // Set TTL for the entire key (in seconds)
-              // Expires after 10 hours
-              .expire(redisKey, 36000)
-              .exec();
-
-            console.log("existing User signed in redis set", existingUser);
+          if (newUser) {
+            console.log("✅ New user signed in and created:", newUser);
+          } else {
+            console.error("❌ Failed to create new user during sign-in");
           }
-
-          if (!existingUser) {
-            const newuser = await User.addNewUser({
-              worldId: id,
-              name,
-              email,
-              verificationLevel,
-            });
-
-            // Store data in cache with a TTL (e.g., 3600 seconds)
-
-            if (newuser) {
-              await redis
-                .multi()
-                .hSet(redisKey, "userInfo", JSON.stringify(newuser))
-                // Set TTL for the entire key (in seconds)
-                // Expires after 10 hours
-                .expire(redisKey, 600)
-                .exec();
-
-              console.log("new User signed in  ", newuser);
-            }
-          }
+        } else {
+          console.log("✅ Existing user signed in:", existingUser);
         }
       } catch (error) {
-        console.log("error", error);
+        console.error("❌ Error during sign-in callback:", error);
       }
       return true;
     },
     async jwt({ token, account, profile }) {
       try {
         if (account && profile) {
-          const redis = await getRedisClient();
-          const redisKey = `user:${profile?.sub}`;
-          const cachedData = await redis.hGet(redisKey, "userInfo");
+          await dbConnect();
+          const existingUser = await User.findOne({ worldId: profile.sub });
 
-          if (!cachedData) {
-            await dbConnect();
-            const existingUser = await User.findOne({
-              worldId: profile?.sub,
-            });
-            if (existingUser) {
-              token.isnewUser = false;
-              token.userId = existingUser._id;
-            }
-          } else if (cachedData) {
-            token.userId = JSON.parse(cachedData)._id;
+          if (existingUser) {
             token.isnewUser = false;
+            token.userId = existingUser._id;
           } else {
             token.isnewUser = true;
           }
         }
       } catch (error) {
-        console.log("error", error);
+        console.error("❌ Error during JWT callback:", error);
       }
-
       return token;
     },
     async session({ session, token }) {
