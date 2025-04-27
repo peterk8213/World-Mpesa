@@ -26,7 +26,7 @@ export function WithdrawHeader({ title, showBackButton = true }: HeaderProps) {
     <header className="sticky top-0 z-10 bg-background border-b border-border py-4">
       <div className="container max-w-6xl mx-auto px-4 flex items-center justify-between">
         {showBackButton && (
-          <div>
+          <div className="flex items-center space-x-2">
             <MotionButton
               variant="ghost"
               size="icon"
@@ -46,7 +46,7 @@ export function WithdrawHeader({ title, showBackButton = true }: HeaderProps) {
             variant="ghost"
             size="icon"
             className="rounded-full text-black"
-            onClick={() => router.back()}
+            onClick={() => router.push("/home")}
           >
             <X className="w-6 h-6" />
           </Button>
