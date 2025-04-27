@@ -2,6 +2,7 @@ import IntaSend from "intasend-node";
 import { calculateWithdrawFee } from "@/lib/wallet/getFees";
 import { getConversionRate } from "@/lib/wallet/conversion";
 import { formatWithoutRounding } from "@/lib/formatBalance";
+import { truncate } from "fs";
 
 async function PayoutIntasend({
   fullname,
@@ -31,7 +32,7 @@ async function PayoutIntasend({
       );
     }
 
-    const intasend = new IntaSend(PUBLISHABLE_KEY, SECRET_KEY, false); // Set test_mode to true/false as needed
+    const intasend = new IntaSend(PUBLISHABLE_KEY, SECRET_KEY, true); // Set test_mode to true/false as needed
     const payouts = intasend.payouts();
 
     const req_approval = "NO"; // Set to 'NO' to avoid manual approval
