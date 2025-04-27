@@ -1,4 +1,7 @@
 // app/history/page.tsx
+
+"use cache";
+
 import { Suspense } from "react";
 import { HistoryList } from "@/components/HistoryList";
 import { HistoryHeader } from "@/components/HistoryHeader";
