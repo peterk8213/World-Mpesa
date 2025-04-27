@@ -1,7 +1,5 @@
 // app/history/page.tsx
 
-"use cache";
-
 import { Suspense } from "react";
 import { HistoryList } from "@/components/HistoryList";
 import { HistoryHeader } from "@/components/HistoryHeader";
@@ -142,6 +140,7 @@ const HistoryListWrapper = async ({
   //   ["transactions", userId, type],
   //   { revalidate: 60 }
   // );
+  "use cache";
 
   //const transactions = await getCachedTransactions({ userId, type });
   const transactions = await getTransactionHistory({ userId, type });
