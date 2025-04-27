@@ -77,6 +77,9 @@ const getUser = async (session: Session) => {
 
 const getUserWallet = async ({ userId }: { userId: string }) => {
   const user = await Wallet.getWalletByUserId(userId);
+  if (!user) {
+    redirect("/no-user-data");
+  }
   const {
     userId: { userName },
 

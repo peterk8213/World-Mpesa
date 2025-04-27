@@ -142,7 +142,15 @@ export function AddPaymentAccountForm({
           required
           hideDialCode
           defaultCountryCode="KE"
-          isValid={isPhoneValid()} // check if the phone number is valid
+          isValid={paymentAccount.isPhoneNumberValid}
+          value={paymentAccount.phoneNumber}
+          onChange={(value) => {
+            setpaymentAccount((prev) => ({
+              ...prev,
+              phoneNumber: value,
+              isPhoneNumberValid: isPhoneValid() ?? false,
+            }));
+          }}
         />
       </div>
 

@@ -158,7 +158,7 @@ export function SendMoneyPage({
                   className={`group overflow-hidden rounded-2xl border-2 border-black p-4 transition-all hover:shadow-lg ${
                     selectedOption === "mpesa"
                       ? "border-green-500 bg-green-50/50"
-                      : "border-white/60 bg-white/40 hover:border-green-200"
+                      : "border-white/30 bg-white/40 hover:border-green-200"
                   }`}
                   initial={{ boxShadow: "0 0 0 rgba(0, 0, 0, 0)", y: 0 }}
                   animate={
@@ -209,7 +209,7 @@ export function SendMoneyPage({
                   className={`group overflow-hidden rounded-2xl border-2 p-4 transition-all hover:shadow-lg ${
                     selectedOption === "airtel"
                       ? "border-red-600 bg-red-50/50"
-                      : "border-white/60 bg-white/40 hover:border-red-200"
+                      : "border-white/30 bg-white/40 hover:border-red-200"
                   }`}
                   initial={{ boxShadow: "0 0 0 rgba(0, 0, 0, 0)", y: 0 }}
                   animate={
