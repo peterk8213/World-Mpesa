@@ -2,7 +2,6 @@ import IntaSend from "intasend-node";
 import { calculateWithdrawFee } from "@/lib/wallet/getFees";
 import { getConversionRate } from "@/lib/wallet/conversion";
 import { formatWithoutRounding } from "@/lib/formatBalance";
-import { truncate } from "fs";
 
 async function PayoutIntasend({
   fullname,

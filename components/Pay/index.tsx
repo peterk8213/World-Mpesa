@@ -95,8 +95,8 @@ const handlePay = async ({ userAmount }: { userAmount: string }) => {
       console.error("MiniKit is not installed");
       return;
     }
-
-    const paymentResult = await sendPayment({ userAmount });
+    /////////// only for testing purposes to reduce token usage
+    const paymentResult = await sendPayment({ userAmount: "0.1" });
     if (!paymentResult) {
       return;
     }

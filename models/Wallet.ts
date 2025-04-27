@@ -80,9 +80,11 @@ WalletSchema.statics.getWalletByUserId = async function (userId) {
 };
 
 WalletSchema.statics.getWalletBalanceByUserId = async function (userId) {
-  return await this.findOne({ userId, isFrozen: false }).select(
+  const wallet = await this.findOne({ userId, isFrozen: false }).select(
     "balance currency"
   );
+  if (!wallet) throw new Error("Wallet not found.");
+  return wallet;
 };
 
 WalletSchema.statics.freezeWallet = async function (userId) {
