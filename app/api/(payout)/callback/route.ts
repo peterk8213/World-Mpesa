@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import MpesaPayment from "@/models/MpesaPayment";
+import MpesaPayment, { IPayment } from "@/models/MpesaPayment";
+import { Transaction } from "@/models/Transaction";
 import dbConnect from "@/lib/mongodb";
+import { updateWallet } from "@/lib/wallet/withdraw";
 
 export async function POST(req: Request) {
   try {
@@ -10,7 +12,6 @@ export async function POST(req: Request) {
 
     // ✅ Validate the webhook challenge key
 
-    ////// ✅ Extract event details
     const { tracking_id, status } = payload;
     const txn = payload.transactions[0];
     const actualCharges = parseFloat(payload.actual_charges ?? txn.charge);
@@ -21,6 +22,13 @@ export async function POST(req: Request) {
       console.error("❌ Invalid challenge key:", challenge);
       return NextResponse.json({ success: false }, { status: 403 });
     }
+
+    // if the status is pending ignore the request because the default status is pending
+    if (status === "Sending payment") {
+      console.log("❌ Ignoring pending status:", status);
+      return NextResponse.json({ success: false }, { status: 200 });
+    }
+    // Connect to the database
 
     await dbConnect(); // Connect to the database
 
@@ -43,21 +51,35 @@ export async function POST(req: Request) {
 
     // Call  static method to update the existing payment
 
-    const updateResult = await MpesaPayment.updatePaymentStatus(
+    const updateResult: {
+      success: boolean;
+      error?: any;
+      data?: IPayment | null;
+    } = await MpesaPayment.updatePaymentStatus(
       tracking_id,
       mappedStatus,
       actualCharges
     );
 
-    if (updateResult.matchedCount === 0) {
-      console.warn(`⚠️ No payment found for tracking_id=${tracking_id}`);
-      return NextResponse.json(
-        {
-          success: false,
-          message: `No payment record for ${tracking_id}`,
-        },
-        { status: 404 }
+    if (!updateResult.success) {
+      console.error("❌ Error updating payment status:", updateResult.error);
+      return;
+    }
+    const { userId, reference } = updateResult.data as IPayment;
+
+    const updatedTxn = await Transaction.findOneAndUpdate(
+      { userId, reference },
+      {
+        status: "completed",
+      },
+      { new: true, runValidators: true }
+    );
+    if (!updatedTxn) {
+      console.error(
+        "❌ Error updating transaction status:",
+        updateResult.error
       );
+      return;
     }
 
     console.log(

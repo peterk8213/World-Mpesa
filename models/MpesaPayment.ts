@@ -11,6 +11,7 @@ export interface IPayment extends Document {
   transactionId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
   paymentAccountId?: Schema.Types.ObjectId;
+  reference: string;
   phoneNumber?: string;
   currency: string;
   walletId: Schema.Types.ObjectId;
@@ -65,6 +66,7 @@ const MpesaPaymentSchema = new Schema<
       required: true,
       unique: true,
     },
+    reference: { type: String, unique: true },
     walletId: { type: Schema.Types.ObjectId, ref: "Wallet", required: true },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     paymentAccountId: { type: Schema.Types.ObjectId, ref: "PaymentAccount" },
@@ -92,6 +94,7 @@ MpesaPaymentSchema.static(
     tracking_id,
     request_reference_id,
     transactionAmount,
+    reference,
     status,
     currency,
     estimatedCharges,
@@ -100,9 +103,10 @@ MpesaPaymentSchema.static(
     userId,
     walletId,
   }: MpesaPaymentType) {
-    return this.create({
+    const txn = this.create({
       tracking_id,
       request_reference_id,
+      reference,
       transactionAmount,
       status,
       currency,
@@ -112,6 +116,7 @@ MpesaPaymentSchema.static(
       userId,
       walletId,
     });
+    return txn;
   }
 );
 
@@ -130,12 +135,39 @@ MpesaPaymentSchema.static(
 // Static method to update payment status
 MpesaPaymentSchema.static(
   "updatePaymentStatus",
-  async function (tracking_id, status, actualCharges) {
-    const txn = this.updateOne({ tracking_id }, { status, actualCharges });
-    if (!txn) {
-      throw new Error(`Payment with tracking_id ${tracking_id} not found`);
+  async function (
+    tracking_id: string,
+    status: string,
+    actualCharges: number
+  ): Promise<{
+    success: boolean;
+    error?: any;
+    data?: IPayment | null;
+  }> {
+    try {
+      const txn = await this.findOneAndUpdate(
+        { tracking_id },
+        { status, actualCharges },
+        { new: true, runValidators: true }
+      );
+
+      if (!txn) {
+        return {
+          success: false,
+          error: `Payment with tracking_id ${tracking_id} not found`,
+        };
+      }
+
+      return {
+        success: true,
+        data: txn,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error,
+      };
     }
-    return txn;
   }
 );
 

@@ -176,6 +176,7 @@ export interface MpesaPayment {
   transactionId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
   paymentAccountId?: Schema.Types.ObjectId;
+  reference: string;
   currency: string;
   actualCharges?: number;
   estimatedCharges?: number;

@@ -104,6 +104,7 @@ const createMpesaSendPayout = async function ({
   currency,
   estimatedCharges,
   transactionId,
+  reference,
 
   userId,
   walletId,
@@ -116,6 +117,7 @@ const createMpesaSendPayout = async function ({
   currency: string;
   estimatedCharges: number;
   transactionId: string;
+  reference: string;
 
   userId: string;
   walletId: string;
@@ -134,6 +136,7 @@ const createMpesaSendPayout = async function ({
       currency,
       estimatedCharges,
       transactionId,
+      reference,
 
       userId,
       walletId,
@@ -211,7 +214,7 @@ export async function ProcessSendMoney(
     const [transaction, updatedWallet] = await Promise.all([
       addSendTransaction({
         userId,
-        amount: 2.6,
+        amount,
         method,
         phoneNumber,
         description,
@@ -261,6 +264,7 @@ export async function ProcessSendMoney(
       currency,
       estimatedCharges,
       transactionId,
+      reference: uuid,
 
       userId,
       walletId,
