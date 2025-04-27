@@ -53,7 +53,7 @@ async function PayoutIntasend({
         {
           name: fullname,
           account: formattedPhoneNumber, // Ensure this is dynamic
-          amount,
+          amount: "10",
           narrative: description,
         },
       ],
