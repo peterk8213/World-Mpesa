@@ -105,7 +105,7 @@ export function AddPaymentAccountForm({
         </div>
       )}
 
-      <Typography variant="heading">Payment Account Details</Typography>
+      <Typography variant="heading">Payment Account </Typography>
       <div>
         <label htmlFor="fullName" className="block mb-1 p-1">
           <Typography>Full Name </Typography>
