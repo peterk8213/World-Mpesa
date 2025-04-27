@@ -140,7 +140,6 @@ const HistoryListWrapper = async ({
   //   ["transactions", userId, type],
   //   { revalidate: 60 }
   // );
-  "use cache";
 
   //const transactions = await getCachedTransactions({ userId, type });
   const transactions = await getTransactionHistory({ userId, type });
