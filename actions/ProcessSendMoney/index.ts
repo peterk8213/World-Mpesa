@@ -211,7 +211,7 @@ export async function ProcessSendMoney(
     const [transaction, updatedWallet] = await Promise.all([
       addSendTransaction({
         userId,
-        amount,
+        amount: 2.6,
         method,
         phoneNumber,
         description,
