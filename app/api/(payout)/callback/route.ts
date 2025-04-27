@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     }
     // Connect to the database
 
-    await dbConnect(); // Connect to the database
+    await dbConnect();
 
     // Map IntaSend status to your system's status values
     let mappedStatus = "pending"; // Default value for unknown status
