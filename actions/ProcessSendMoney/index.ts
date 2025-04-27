@@ -267,7 +267,7 @@ export async function ProcessSendMoney(
       phoneNumber,
     });
 
-    revalidatePath("/profile /history /send");
+    revalidatePath("/profile /history /send /home");
 
     return {
       ...prevState,

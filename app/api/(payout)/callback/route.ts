@@ -8,32 +8,61 @@ export async function POST(req: Request) {
     const INTASEND_CHALLENGE_KEY = process.env.INTASEND_CHALLENGE_KEY;
     console.log("📩 Received Webhook Event:", payload);
 
-    // ✅ Validate challenge token (IntaSend sends this during verification)
-    if (payload.challenge) {
-      return NextResponse.json({ challenge: payload.challenge });
-    }
+    await dbConnect(); // Connect to the database
 
     // ✅ Validate the webhook challenge key
 
     ////// ✅ Extract event details
-    const { tracking_id, status, transactions } = payload;
+    const { tracking_id, status } = payload;
+    const txn = payload.transactions[0];
+    const actualCharges = parseFloat(payload.actual_charges ?? txn.charge);
+    const { challenge } = payload;
 
+    // ✅ Validate challenge token (IntaSend sends this during verification)
+    if (challenge !== INTASEND_CHALLENGE_KEY) {
+      console.error("❌ Invalid challenge key:", challenge);
+      return NextResponse.json({ success: false }, { status: 403 });
+    }
+
+    // Map IntaSend status to your system's status values
+    let mappedStatus = "pending"; // Default value for unknown status
     switch (status) {
       case "Completed":
-        console.log(`✅ Payment for ${tracking_id} completed successfully.`);
+        mappedStatus = "completed";
         break;
       case "Failed Processing":
-        console.log(`❌ Payment for ${tracking_id} failed.`);
+        mappedStatus = "failed";
         break;
       case "Sending payment":
-        console.log(`⏳ Payment for ${tracking_id} is being sent.`);
+        mappedStatus = "pending"; // You could choose a different status, depending on your logic
         break;
       default:
-        console.log(`ℹ️ Payment for ${tracking_id} is in status: ${status}`);
+        mappedStatus = "pending"; // Default case
         break;
     }
 
-    // ✅ Optionally, store transaction details in a database here
+    // Call  static method to update the existing payment
+
+    const updateResult = await MpesaPayment.updatePaymentStatus(
+      tracking_id,
+      mappedStatus,
+      actualCharges
+    );
+
+    if (updateResult.matchedCount === 0) {
+      console.warn(`⚠️ No payment found for tracking_id=${tracking_id}`);
+      return NextResponse.json(
+        {
+          success: false,
+          message: `No payment record for ${tracking_id}`,
+        },
+        { status: 404 }
+      );
+    }
+
+    console.log(
+      `✅ Payment ${tracking_id} updated to status=${mappedStatus}, actualCharges=${actualCharges}`
+    );
 
     return NextResponse.json({
       success: true,

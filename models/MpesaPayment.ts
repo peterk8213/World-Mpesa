@@ -119,7 +119,11 @@ MpesaPaymentSchema.static(
 MpesaPaymentSchema.static(
   "getPaymentByTransactionId",
   async function (transactionId, userId) {
-    return this.findOne({ transactionId, userId });
+    const txn = this.findOne({ transactionId, userId });
+    if (!txn) {
+      throw new Error(`Payment with transactionId ${transactionId} not found`);
+    }
+    return txn;
   }
 );
 
@@ -127,7 +131,11 @@ MpesaPaymentSchema.static(
 MpesaPaymentSchema.static(
   "updatePaymentStatus",
   async function (tracking_id, status, actualCharges) {
-    return this.updateOne({ tracking_id }, { status, actualCharges });
+    const txn = this.updateOne({ tracking_id }, { status, actualCharges });
+    if (!txn) {
+      throw new Error(`Payment with tracking_id ${tracking_id} not found`);
+    }
+    return txn;
   }
 );
 
