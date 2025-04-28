@@ -22,5 +22,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/((?!/|api/auth/*|api/callback|_next|favicon.ico|static).*)", // Exclude paths like /api, /_next, and static files
+  matcher: "/((?!api/auth/*|api/callback|_next|favicon.ico|static).*)", // Exclude paths like /api, /_next, and static files
 };
