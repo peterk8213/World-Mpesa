@@ -96,7 +96,8 @@ const handlePay = async ({ userAmount }: { userAmount: string }) => {
       return;
     }
     /////////// only for testing purposes to reduce token usage
-    const paymentResult = await sendPayment({ userAmount: "0.1" });
+    //const paymentResult = await sendPayment({ userAmount: "0.1" });
+    const paymentResult = await sendPayment({ userAmount });
     if (!paymentResult) {
       return;
     }
