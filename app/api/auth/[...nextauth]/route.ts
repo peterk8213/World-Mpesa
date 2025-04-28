@@ -5,9 +5,10 @@ import NextAuth, {
 
 import { User } from "@/models/User";
 import dbConnect from "@/lib/mongodb";
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET;
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: NEXTAUTH_SECRET,
 
   providers: [
     {

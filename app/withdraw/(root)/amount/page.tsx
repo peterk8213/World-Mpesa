@@ -13,6 +13,8 @@ import { getUserBalance } from "@/lib/wallet/balance";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
+import dbConnect from "@/lib/mongodb";
+
 export default async function WithdrawAmountPage({
   searchParams,
 }: {
@@ -24,6 +26,8 @@ export default async function WithdrawAmountPage({
     redirect("/");
   }
   const { userId } = session;
+  ///// connect to the db
+  await dbConnect();
 
   const method = (await searchParams).method;
 

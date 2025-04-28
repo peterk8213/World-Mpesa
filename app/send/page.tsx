@@ -7,8 +7,15 @@ import { getConversionRate } from "@/lib/wallet/conversion";
 import { ConversionRate as ConversionRateType } from "@/types";
 import { getUserBalance } from "@/lib/wallet/balance";
 
+import dbConnect from "@/lib/mongodb";
+import { redirect } from "next/navigation";
+
 export default async function SendPage() {
   const session = await getServerSession(authOptions);
+
+  if (!session || session == null) {
+    redirect("/");
+  }
   const { userId } = session;
 
   return (

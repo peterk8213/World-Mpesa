@@ -6,7 +6,7 @@ const UserSchema = new Schema(
     worldId: { type: String, required: true, unique: true }, // User's World ID
     name: { type: String, required: true }, // User's name from Worldcoin
     verificationLevel: { type: String }, // User's verification level
-    email: { type: String }, // User's email
+    email: { type: String, unique: false }, // User's email
     worldChainAddress: { type: String }, // User's Worldcoin address
     avatar: { type: String }, // Avatar URL
     createdAt: { type: Date, default: Date.now }, // User's creation date

@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { HistoryList } from "@/components/HistoryList";
 import { HistoryHeader } from "@/components/HistoryHeader";
+import dbConnect from "@/lib/mongodb";
 
 import { Transaction } from "@/models/Transaction";
 import { getServerSession } from "next-auth";
@@ -96,6 +97,7 @@ export default async function HistoryPage({
   }
   ///// 2. Fetch the user ID from the session
   const { userId } = session;
+  await dbConnect();
 
   ///// 3. Fetch the search params
   const searchParamsData = await searchParams;

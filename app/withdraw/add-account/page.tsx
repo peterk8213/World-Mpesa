@@ -47,6 +47,8 @@ export default async function AddPaymentAccount() {
     redirect("/");
   }
 
+  await dbConnect();
+
   return (
     <main className="min-h-screen  max-w-md mx-auto flex flex-col px-6 pt-0">
       <Suspense>

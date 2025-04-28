@@ -8,14 +8,14 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export default async function Entry() {
   const session = await getServerSession(authOptions);
 
-  if (session?.isnewUser) {
-    redirect("/add-username");
-  }
+  // if (session?.isnewUser) {
+  //   redirect("/add-username");
+  // }
 
   // if (status === "unauthenticated") {
   //   redirect("/");
   // }
-  if (!session) {
+  if (!session || session == null) {
     return (
       <>
         <main>{<SplashScreen />}</main>
