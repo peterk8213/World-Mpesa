@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { WorldcoinTransaction } from "@/models/WldTransaction";
-import { Wallet } from "@/models/Wallet";
-import { PaymentAccount } from "@/models/PaymentAccount";
 
-import MpesaPayment from "@/models/MpesaPayment";
+import { Wallet } from "@/models/Wallet";
+import UserHomePageCardSkeleton from "@/components/UserHomePageCardSkeleton";
+
 import dbConnect from "@/lib/mongodb";
 
 import { getServerSession, Session } from "next-auth";
@@ -54,7 +53,13 @@ export default async function Home() {
   return (
     <div className="flex flex-col bg-white text-black overflow-auto lg:mx-20 gap-[3rem] pb-8">
       <div className="flex flex-col lg:flex-row lg:space-x-4 px-2">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <div>
+              <UserHomePageCardSkeleton />
+            </div>
+          }
+        >
           <HomePageWrapper userId={userId} />
         </Suspense>
       </div>
