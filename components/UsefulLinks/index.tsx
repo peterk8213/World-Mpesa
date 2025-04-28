@@ -12,7 +12,7 @@ export function UsefulLinks() {
   return (
     <div className="space-y-8 px-4">
       {/* Help & Support */}
-      <div className="space-y-3">
+      {/* <div className="space-y-3">
         <h3 className="text-sm font-medium text-gray-500">Help & Support</h3>
         <div className="space-y-1">
           {supportLinks.map((link) => (
@@ -28,7 +28,7 @@ export function UsefulLinks() {
             </Link>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Legal */}
       <div className="space-y-3">
@@ -53,21 +53,21 @@ export function UsefulLinks() {
 }
 
 const supportLinks = [
-  {
-    title: "Help Center",
-    icon: HelpCircle,
-    href: "#",
-  },
-  {
-    title: "Contact Support",
-    icon: MessageSquare,
-    href: "#",
-  },
-  {
-    title: "Account Settings",
-    icon: Settings,
-    href: "#",
-  },
+  // {
+  //   title: "Help Center",
+  //   icon: HelpCircle,
+  //   href: "#",
+  // },
+  // {
+  //   title: "Contact Support",
+  //   icon: MessageSquare,
+  //   href: "#",
+  // },
+  // {
+  //   title: "Account Settings",
+  //   icon: Settings,
+  //   href: "#",
+  // },
 ];
 
 const legalLinks = [
@@ -81,9 +81,9 @@ const legalLinks = [
     icon: Shield,
     href: "/terms",
   },
-  {
-    title: "About Us",
-    icon: Info,
-    href: "#",
-  },
+  // {
+  //   title: "About Us",
+  //   icon: Info,
+  //   href: "#",
+  // },
 ];
