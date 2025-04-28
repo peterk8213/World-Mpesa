@@ -1,21 +1,30 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Heart, MoreVertical, Coins } from "lucide-react";
+import { X, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+
 interface HeaderProps {
   title?: string;
   showLogo?: boolean;
   leftIcon?: React.ReactNode;
 }
+const MotionButton = motion.create(Button);
 
 export function Header({ title, showLogo = true, leftIcon }: HeaderProps) {
   const router = useRouter();
   return (
     <header className="flex items-center justify-between p-4 border-b  fixed top-0 left-0 right-0 z-50">
-      <Button variant="ghost" size="icon" onClick={() => router.back()}>
+      <MotionButton
+        variant="ghost"
+        size="icon"
+        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.05 }}
+        onClick={() => router.back()}
+      >
         {leftIcon}
-      </Button>
+      </MotionButton>
       {showLogo ? (
         <div className="flex items-center gap-2">
           <div className="bg-emerald-500 p-1.5 rounded-lg">
@@ -26,9 +35,16 @@ export function Header({ title, showLogo = true, leftIcon }: HeaderProps) {
       ) : (
         <h1 className="text-xl font-semibold">{title}</h1>
       )}
-      <Button variant="ghost" size="icon">
-        <MoreVertical className="h-6 w-6" />
-      </Button>
+      <div>
+        <MotionButton
+          variant="ghost"
+          size="icon"
+          className="rounded-full text-black"
+          onClick={() => router.push("/home")}
+        >
+          <X className="w-6 h-6" />
+        </MotionButton>
+      </div>
     </header>
   );
 }

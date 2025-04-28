@@ -61,7 +61,8 @@ export default function PaymentMethods({
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <Link href="/withdraw/manage/account">
+              {/* <Link href="/withdraw/manage/account"> */}
+              <Link href="#">
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10">
                     <Wallet className="h-6 w-6 text-gray-300" />
@@ -75,7 +76,8 @@ export default function PaymentMethods({
                 </div>
               </Link>
               <motion.div whileTap={{ rotate: 360 }}>
-                <Link href="/withdraw/manage/account">
+                {/* <Link href="/withdraw/manage/account"> */}
+                <Link href="#">
                   <Settings className="h-5 w-5 text-gray-300" />
                 </Link>
               </motion.div>

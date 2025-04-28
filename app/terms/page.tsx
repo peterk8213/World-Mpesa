@@ -14,7 +14,7 @@ export default function TermsOfUse() {
                 Back to Home
               </Button>
             </Link>
-            <Link href="/privacy-policy">
+            <Link href="/privacy">
               <Button variant="outline" size="sm">
                 Privacy Policy
               </Button>
