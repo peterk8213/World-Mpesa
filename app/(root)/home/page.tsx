@@ -12,9 +12,9 @@ import { notFound, redirect } from "next/navigation";
 import { AppServices } from "@/components/Services";
 
 import UserHomePageCard from "@/components/UserHomePage";
-import { HomePageAnalytics } from "@/components/HomepageAnalytics";
+//import { HomePageAnalytics } from "@/components/HomepageAnalytics";
 import { Suspense } from "react";
-import { HorizontalTimeline } from "@/components/HorizontalTimeline";
+//import { HorizontalTimeline } from "@/components/HorizontalTimeline";
 
 // Define the User type
 type User = {
@@ -44,7 +44,7 @@ const getUserWallet = async ({ userId }: { userId: string }) => {
 export default async function Home() {
   const session = await getServerSession(authOptions);
   if (!session) {
-    redirect("/authentication");
+    redirect("/");
   }
 
   const { userId } = session;
