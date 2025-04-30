@@ -34,7 +34,7 @@ export async function addUserName(prevState: State, formData: FormData) {
 
     await dbConnect();
 
-    //// i wwant to query and check if the userName exists it should be unique for each user
+    //// i want to query and check if the userName exists it should be unique for each user
 
     const user = await User.findOneAndUpdate(
       { _id: userId },
