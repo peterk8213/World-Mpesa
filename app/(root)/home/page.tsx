@@ -67,6 +67,14 @@ export default async function Home() {
       <div className="px-2">
         <AppServices />
       </div>
+
+      <div className="px-2">
+        <div> having trouble withdrawing funds??</div>
+
+        <a href="https://forms.gle/ipXM6GerssTCFv859">
+          <div> submit your issue here??</div>{" "}
+        </a>
+      </div>
     </div>
   );
 }
