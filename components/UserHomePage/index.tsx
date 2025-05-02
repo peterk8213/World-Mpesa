@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Plus, Settings, Wallet, Sparkles } from "lucide-react";
+import { Plus, Settings, Coins, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,34 +34,54 @@ export default function UserHomePageCard({ user }: { user: User }) {
 
               <span className="text-sm font-medium ">{userName}</span>
             </div>
-            <div className="space-y-1">
-              <div className="flex items-center  gap-[2rem]">
-                <p className="text-sm text-gray-400">Available Balance</p>
-              </div>
-              <div className="flex items-baseline gap-[2rem]">
-                <div className="flex items-baseline gap-2">
-                  {(() => {
-                    const formattedBalance = formatWithoutRounding(
-                      balance,
-                      2
-                    ).split(".");
-                    return (
-                      <>
-                        <h2 className="text-4xl font-semibold tracking-tight">
-                          {formattedBalance[0]}
-                        </h2>
-                        <span className="text-xs text-gray-400">
-                          .{formattedBalance[1]}
-                        </span>
-                      </>
-                    );
-                  })()}
+            {balance < 0 ? (
+              <div className="space-y-1">
+                <div className="flex items-center  gap-[2rem]">
+                  <p className="text-sm text-gray-400">Available Balance</p>
                 </div>
-                <span className="text-sm text-gray-400">
-                  {currency.toLocaleUpperCase()}
-                </span>
+                <div className="flex items-baseline gap-[2rem]">
+                  <div className="flex items-baseline gap-2">
+                    {(() => {
+                      const formattedBalance = formatWithoutRounding(
+                        balance,
+                        2
+                      ).split(".");
+                      return (
+                        <>
+                          <h2 className="text-4xl font-semibold tracking-tight">
+                            {formattedBalance[0]}
+                          </h2>
+                          <span className="text-xs text-gray-400">
+                            .{formattedBalance[1]}
+                          </span>
+                        </>
+                      );
+                    })()}
+                  </div>
+                  <span className="text-sm text-gray-400">
+                    {currency.toLocaleUpperCase()}
+                  </span>
+                </div>
               </div>
-            </div>
+            ) : (
+              // Show Deposit Feature
+              <div className="flex flex-col items-center justify-center text-center space-y-3 md:space-y-4 py-2 md:py-8">
+                <Coins className="h-10 w-10 md:h-12 md:w-12 text-gray-500" />
+
+                <p className="text-xs md:text-sm text-gray-400 max-w-xs px-4">
+                  Make your first deposit to start managing your funds.
+                </p>
+                <Button
+                  asChild
+                  variant="secondary" // Use a contrasting but fitting variant
+                  className="mt-3 md:mt-4 bg-white text-black hover:bg-gray-200 rounded-full px-6 py-2 text-sm md:text-base" // Style to match dark theme contrast, rounded-full
+                >
+                  <Link href="/deposit">
+                    <Plus className="mr-2 h-4 w-4" /> Deposit Now
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
           {/* Decorative Pattern */}
           <div className="absolute inset-0 opacity-[0.05]">
