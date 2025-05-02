@@ -34,7 +34,7 @@ export default function UserHomePageCard({ user }: { user: User }) {
 
               <span className="text-sm font-medium ">{userName}</span>
             </div>
-            {balance < 0 ? (
+            {balance > 0 ? (
               <div className="space-y-1">
                 <div className="flex items-center  gap-[2rem]">
                   <p className="text-sm text-gray-400">Available Balance</p>
