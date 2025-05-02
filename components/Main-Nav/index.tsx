@@ -30,7 +30,7 @@ export function MainNav({
             Users
           </Link>
           <Link
-            href="/admin/payments"
+            href="/admin-only-page/payout"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             Payments

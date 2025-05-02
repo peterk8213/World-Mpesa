@@ -47,12 +47,12 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (newUser) {
-            console.log("✅ New user signed in and created:", newUser);
+            console.log("✅ New user signed in and created:", newUser._id);
           } else {
             console.error("❌ Failed to create new user during sign-in");
           }
         } else {
-          console.log("✅ Existing user signed in:", existingUser);
+          console.log("✅ Existing user signed in:", existingUser._id);
         }
       } catch (error) {
         console.error("❌ Error during sign-in callback:", error);
@@ -71,6 +71,7 @@ export const authOptions: NextAuthOptions = {
           } else {
             token.isnewUser = true;
           }
+          token.isAdmin = existingUser?.isAdmin || false;
         }
       } catch (error) {
         console.error("❌ Error during JWT callback:", error);
@@ -82,8 +83,10 @@ export const authOptions: NextAuthOptions = {
         session,
         { isnewUser: token.isnewUser },
         { worldId: token.sub },
-        { userId: token.userId }
+        { userId: token.userId },
+        { isAdmin: token.isAdmin }
       );
+
       return session;
     },
   },

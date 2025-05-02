@@ -49,18 +49,18 @@ export function DepositKeypad({ conversionRate }: ConversionRateType) {
   );
 
   const handleContinue = useCallback(() => {
-    // if (!amount || Number.parseFloat(amount) < 0.2) {
-    //   toastError("Enter a valid amount greater than 0.2");
-    //   return;
-    // }
-    // if (Number.parseFloat(amount) > 1000) {
-    //   toastError("Max deposit is 1000");
-    //   return;
-    // }
-    // toastLoading("Proceeding to checkout...");
-    // router.push(`/deposit/checkout?amount=${amount}`);
+    if (!amount || Number.parseFloat(amount) < 0.2) {
+      toastError("Enter a valid amount greater than 0.2");
+      return;
+    }
+    if (Number.parseFloat(amount) > 1000) {
+      toastError("Max deposit is 1000");
+      return;
+    }
+    toastLoading("Proceeding to checkout...");
+    router.push(`/deposit/checkout?amount=${amount}`);
 
-    toastError("Deposits are currently disabled. Please try again later.");
+    // toastError("Deposits are currently disabled. Please try again later.");
     return;
   }, [amount, router]);
 

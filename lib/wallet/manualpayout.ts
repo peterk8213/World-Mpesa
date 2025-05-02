@@ -3,6 +3,9 @@ import { calculateWithdrawFee } from "@/lib/wallet/getFees";
 import { getConversionRate } from "@/lib/wallet/conversion";
 import { formatWithoutRounding } from "@/lib/formatBalance";
 import { Types } from "mongoose";
+import { Transaction } from "@/models/Transaction";
+import { User } from "@/models/User";
+import { sendWithdrawalEmail } from "@/lib/mail";
 
 export const initiateManualPayout = async ({
   userId,
@@ -44,6 +47,10 @@ export const initiateManualPayout = async ({
       fees: totalFee,
     });
 
+    // Send the email alert
+
+    await sendWithdrawalEmail(newPayout);
+
     return {
       success: true,
       message: "Payout request submitted and pending admin review.",
@@ -75,6 +82,13 @@ export const completeManualPayout = async ({
   actualCharges?: number;
 }) => {
   try {
+    const isAdmin = await User.findById(adminId);
+    if (!isAdmin || !isAdmin.isAdmin) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
     const updateData: Record<string, any> = {
       status,
       processedBy: new Types.ObjectId(adminId),
@@ -103,6 +117,18 @@ export const completeManualPayout = async ({
       return {
         success: false,
         message: "Manual payout not found",
+      };
+    }
+    const transactionId = updated.transactionId.toString();
+    const transaction = await Transaction.findByIdAndUpdate(
+      transactionId,
+      { status },
+      { new: true }
+    );
+    if (!transaction) {
+      return {
+        success: false,
+        message: "Transaction not found",
       };
     }
 

@@ -16,7 +16,8 @@ import ManualPayout from "@/models/ManualPayout";
 import UserHomePageCard from "@/components/UserHomePage";
 //import { HomePageAnalytics } from "@/components/HomepageAnalytics";
 import { Suspense } from "react";
-//import { HorizontalTimeline } from "@/components/HorizontalTimeline";
+
+//impor { HorizontalTimeline } from "@/components/HorizontalTimeline";
 
 // Define the User type
 type User = {
@@ -54,7 +55,7 @@ export default async function Home() {
   await dbConnect();
 
   return (
-    <div className="flex flex-col bg-white text-black overflow-auto lg:mx-20 gap-[3rem] pb-8">
+    <div className="flex flex-col bg-white text-black overflow-auto lg:mx-20 gap-[3rem] pb-10">
       <div className="flex flex-col lg:flex-row lg:space-x-4 px-2">
         <Suspense
           fallback={
@@ -74,7 +75,7 @@ export default async function Home() {
         </a>
       </div> */}
 
-      <div className="px-2">
+      <div className="px-2 w-full flex justify-start items-center">
         <Suspense fallback={<div></div>}>
           {await getPendingWithdrawalsCountWrapper(userId)}
         </Suspense>

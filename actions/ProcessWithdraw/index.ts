@@ -205,7 +205,8 @@ export async function processWithdrawal(
       kesEquivalent: payout.data.amountinKes,
     });
 
-    revalidatePath("/home /history");
+    revalidatePath("/home");
+    revalidatePath("/history");
 
     return {
       ...prevState,

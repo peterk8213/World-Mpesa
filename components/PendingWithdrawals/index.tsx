@@ -31,28 +31,35 @@ export default function PendingWithdrawals({ count }: PendingWithdrawalsProps) {
   if (count <= 0) return null;
 
   return (
-    <Link
-      href="/withdraw/pending"
-      className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:no-underline"
-    >
-      <Card
-        className={cn(
-          "inline-block w-auto cursor-pointer transition-shadow hover:shadow-md",
-          isAnimating && "animate-pulse"
-        )}
-      >
-        <CardContent className="flex items-center space-x-3 p-3">
-          <Hourglass className="h-5 w-5 text-muted-foreground" />
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium text-foreground">
-              Pending Withdrawals:
-            </span>
-            <Badge className="bg-accent text-accent-foreground hover:bg-accent/90">
-              {count}
-            </Badge>
+    <div className="  backdrop-blur-sm transition-colors w-full">
+      <div className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:no-underline w-full">
+        <div className="flex-row items-center justify-between gap-4 p-2">
+          <div className="flex flex-col space-y-2 py-2">
+            <h3 className="text-xl font-medium mb-6">Activity</h3>
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+
+          <Card
+            className={cn(
+              "inline-block  cursor-pointer transition-shadow hover:shadow-md w-full bg-transparent",
+              isAnimating && "animate-pulse"
+            )}
+          >
+            <CardContent className="flex items-center space-x-3 p-3">
+              <div className="flex items-center space-x-3 p-3 justify-between">
+                <Hourglass className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-center space-x-2 gap-6">
+                  <span className="text-sm font-medium text-foreground">
+                    Pending Withdrawals:
+                  </span>
+                  <Badge className="bg-accent text-accent-foreground hover:bg-accent/90">
+                    {count}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 }

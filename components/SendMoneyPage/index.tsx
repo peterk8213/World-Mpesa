@@ -44,6 +44,7 @@ export function SendMoneyPage({
   const [phoneNumber, setPhoneNumber] = useState("254");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
+  const[fullname,setFullname]=useState("")
   const [phoneConfirmed, setPhoneConfirmed] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -96,6 +97,8 @@ export function SendMoneyPage({
       success: false,
     }
   );
+
+
 
   useEffect(() => {
     if (isPending) {

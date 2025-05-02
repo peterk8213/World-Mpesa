@@ -10,7 +10,7 @@ import { addPaymentMethod } from "@/actions/AddPaymentMethod";
 
 export default async function AddPaymentMethod() {
   const session = await getServerSession(authOptions);
-  if (!session) {
+  if (!session?.isAdmin) {
     redirect("/");
   }
 

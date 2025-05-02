@@ -15,6 +15,7 @@ const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isAdmin: { type: Boolean, default: false }, // Admin flag
   },
   { timestamps: true }
 );

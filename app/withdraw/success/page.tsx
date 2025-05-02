@@ -1,6 +1,6 @@
 import { WithdrawSuccess } from "@/components/withdrawSuccess";
 
-import MpesaPayment from "@/models/MpesaPayment";
+import ManualPayout from "@/models/ManualPayout";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -53,33 +53,65 @@ const getTransactionData = async ({
   transactionId: string;
   userId: string;
 }) => {
-  const transaction = await MpesaPayment.findOne({
+  const transactiondoc = await ManualPayout.findOne({
     transactionId,
     userId,
   })
-    .select("phoneNumber transactionAmount -_id")
+    .select("phoneNumber amountinKes -_id")
     .populate({
       path: "transactionId",
       select:
         "status amount currency transactionAmount  createdAt description method type -_id",
     });
+  const transaction = transactiondoc?.toObject();
+  if (!transaction) {
+    notFound();
+  }
 
   const { conversionRate } = await getConversionRate();
 
   return {
-    ...transaction.toJSON(),
+    transaction,
     conversionRate,
   };
 };
 
-const WithdrawSuccessWrapper = async ({
+export const WithdrawSuccessWrapper = async ({
   transactionId,
   userId,
 }: {
   transactionId: string;
   userId: string;
 }) => {
-  const transaction = await getTransactionData({ transactionId, userId });
-  console.log(transaction);
+  const transaction: {
+    transaction: {
+      transactionId: {
+        amount: number;
+        type: string;
+        status?: string;
+        description: string;
+        createdAt: string;
+        method: string;
+      };
+      phoneNumber?: string;
+      amountinKes: number;
+    };
+    conversionRate: number;
+  } = await getTransactionData({ transactionId, userId });
+
+  const dummyTransaction = {
+    transactionId: {
+      amount: 1,
+      type: "withdraw",
+      status: "success",
+      description: "Withdraw to Mpesa",
+      createdAt: new Date().toString(),
+      method: "mpesa",
+    },
+    amountinKes: 100,
+    phoneNumber: "0712345678",
+    conversionRate: 1,
+  };
+
   return <WithdrawSuccess transaction={transaction} />;
 };

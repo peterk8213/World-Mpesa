@@ -77,20 +77,21 @@ export function Checkmark({
 }
 
 interface TransactionProps {
-  _id?: string;
-  transactionId: {
-    amount: number;
-    type: string;
-    status?: string;
-    description: string;
-    createdAt: string;
-    method: string;
+  transaction: {
+    transactionId: {
+      amount: number;
+      type: string;
+      status?: string;
+      description: string;
+      createdAt: string;
+      method: string;
 
-    recipient?: string;
+      recipient?: string;
+    };
+    amountinKes: number;
+
+    phoneNumber?: string;
   };
-  transactionAmount: number;
-
-  phoneNumber?: string;
   conversionRate: number;
 }
 
@@ -100,16 +101,17 @@ export function WithdrawSuccess({
   transaction: TransactionProps;
 }) {
   // Default values for all properties
-  const {
-    _id,
+  console.log(transaction, "transaction from client");
 
-    transactionId: { amount, type, status, description, createdAt, method },
-    phoneNumber,
-    transactionAmount,
+  const {
+    transaction: { transactionId, phoneNumber, amountinKes },
     conversionRate,
   } = transaction;
-
-  console.log(transaction);
+  const { amount, method, createdAt } = transactionId;
+  const transactionAmount = amountinKes.toLocaleString("en-US", {
+    style: "currency",
+    currency: "KES",
+  });
   return (
     <div className=" h-full w-full flex items-center justify-center">
       <Card className="w-full max-w-sm mx-auto  rounded-lg overflow-visible shadow-none border-none">
@@ -176,7 +178,7 @@ export function WithdrawSuccess({
                   $
                 </span>
                 <span className="font-medium text-zinc-900">
-                  {amount.toLocaleString("en-US", {
+                  {Number(amount).toLocaleString("en-US", {
                     style: "currency",
                     currency: "USD",
                   })}

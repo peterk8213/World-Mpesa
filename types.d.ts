@@ -17,6 +17,35 @@ type PaymentMethod = {
   provider: string;
 };
 
+export interface ManualPayout {
+  _id: string;
+  transactionId: string;
+  phoneNumber: string;
+  currency: string;
+  status: "pending" | "completed" | "failed";
+  fees?: number;
+  processedBy?: string; // Admin or system user ID (ObjectId as string)
+  amountinKes: number;
+  amountinUsd: number;
+  actualCharges?: number;
+  userId: string; // User ID (ObjectId as string)
+  confirmationCode?: string;
+  notes?: string;
+  ReceiverPartyPublicName?: string;
+  createdAt: string; // ISO Date string
+  updatedAt: string; // ISO Date string
+}
+
+// Input type for the completion form/action
+export interface CompletePayoutInput {
+  payoutId: string;
+  adminId: string; // Assuming this comes from session or context
+  status: "completed" | "failed";
+  confirmationCode?: string;
+  notes?: string;
+  actualCharges?: number;
+}
+
 export interface WithdrawalMethod {
   _id: string;
   name: string;
