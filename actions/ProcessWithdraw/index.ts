@@ -10,12 +10,12 @@ import {
   createMpesaPaymentPayout,
 } from "@/lib/wallet/withdraw";
 import { Wallet } from "@/models/Wallet";
-import { PaymentAccount } from "@/models/PaymentAccount";
+
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Transaction } from "@/models/Transaction";
-import { InitiateIntasendPayout } from "@/lib/wallet/payout";
+
 import { Wallet as WalletDataType } from "@/types";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { initiateManualPayout } from "@/lib/wallet/manualpayout";
 
 interface State {
   success?: boolean;
@@ -39,7 +39,7 @@ const getFormData = async (
   return { amount: parseFloat(amount), method, userId, accountId };
 };
 
-const verifyWithdrawRequest = async (
+export const verifyWithdrawRequest = async (
   userId: string,
   amount: number
 ): Promise<{
@@ -151,23 +151,6 @@ export async function processWithdrawal(
       };
     }
 
-    // Initiate payout
-    const payoutData = await InitiateIntasendPayout({
-      amount,
-      method,
-      phoneNumber: accountValidation.data.phoneNumber,
-      fullname: accountValidation.data.fullName,
-      description: "Withdrawal",
-    });
-
-    if (!payoutData.success) {
-      return {
-        ...prevState,
-        error: payoutData.message || "Failed to initiate payout.",
-        pending: false,
-      };
-    }
-
     // Process the withdrawal
     const [transaction, updatedWallet] = await Promise.all([
       addTransaction({
@@ -196,47 +179,30 @@ export async function processWithdrawal(
       };
     }
 
-    // Create M-Pesa payout transaction
-    const {
-      tracking_id,
-      request_reference_id,
-      transactions: {
-        0: { amount: transactionAmount, account: phoneNumber },
-      },
-      status,
-      currency,
-      charge_estimate: estimatedCharges,
-    } = payoutData.data;
+    const payout = await initiateManualPayout({
+      userId,
+      transactionId: transaction.data._id,
+      amount,
+      phoneNumber: accountValidation.data.phoneNumber,
+      fullname: accountValidation.data.fullName,
+      description: "Withdrawal",
+    });
 
-    if (!updatedWallet.data) {
+    if (!payout.success || !payout.data) {
+      console.log("Failed to initiate payout.");
+
       return {
         ...prevState,
-        error: "Wallet data is undefined.",
+        error: "Failed to initiate payout.",
         pending: false,
       };
     }
 
-    const { _id: walletId } = updatedWallet.data;
-    const { _id: transactionId } = transaction.data;
-
-    const newTransaction = await createMpesaPaymentPayout({
-      tracking_id,
-      request_reference_id,
-      transactionAmount: transactionAmount,
-      status,
-      currency,
-      estimatedCharges,
-      transactionId,
-      paymentAccountId: accountId,
-      userId,
-      walletId,
-      phoneNumber,
-    });
-
-    console.log("Withdrawal processed successfully:", {
-      transaction,
-      updatedWallet,
-      newTransaction,
+    console.log("Withdrawal processed and payout initiated", {
+      transactionId: transaction.data._id,
+      payoutId: payout.data._id,
+      amount,
+      kesEquivalent: payout.data.amountinKes,
     });
 
     revalidatePath("/home /history");
@@ -245,7 +211,7 @@ export async function processWithdrawal(
       ...prevState,
       success: true,
       pending: false,
-      transactionId: transactionId.toString(),
+      transactionId: transaction.data._id.toString(),
     };
   } catch (error) {
     console.error("Error processing withdrawal:", error);

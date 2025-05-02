@@ -10,6 +10,9 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { notFound, redirect } from "next/navigation";
 import { AppServices } from "@/components/Services";
 
+import PendingWithdrawals from "@/components/PendingWithdrawals";
+import ManualPayout from "@/models/ManualPayout";
+
 import UserHomePageCard from "@/components/UserHomePage";
 //import { HomePageAnalytics } from "@/components/HomepageAnalytics";
 import { Suspense } from "react";
@@ -63,12 +66,18 @@ export default async function Home() {
           <HomePageWrapper userId={userId} />
         </Suspense>
       </div>
-      <div className="px-2">
+      {/* <div className="px-2">
         <div> having trouble withdrawing funds??</div>
 
         <a href="https://forms.gle/ipXM6GerssTCFv859">
-          <div> submit your issue here??</div>{" "}
+          <div className="text-underline"> submit your issue here??</div>{" "}
         </a>
+      </div> */}
+
+      <div className="px-2">
+        <Suspense fallback={<div></div>}>
+          {await getPendingWithdrawalsCountWrapper(userId)}
+        </Suspense>
       </div>
 
       <div className="px-2">
@@ -89,6 +98,31 @@ const HomePageWrapper = async ({ userId }: { userId: string }) => {
     <div className="">
       <UserHomePageCard user={user} />
     </div>
+  );
+};
+
+const getPendingWithdrawalsCountWrapper = async (userId: string) => {
+  const getPendingWithdrawals = async (userId: string) => {
+    try {
+      const pendingWithdrawals = await ManualPayout.find({
+        userId: userId,
+        status: "pending",
+      });
+      return pendingWithdrawals.length;
+    } catch (error) {
+      console.error("Error fetching pending withdrawals:", error);
+      return 0;
+    }
+  };
+
+  const pendingWithdrawals = await getPendingWithdrawals(userId);
+
+  return (
+    pendingWithdrawals > 0 && (
+      <div className="">
+        <PendingWithdrawals count={pendingWithdrawals} />
+      </div>
+    )
   );
 };
 

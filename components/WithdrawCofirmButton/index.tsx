@@ -56,6 +56,7 @@ export function WithdrawConfirmButton({
     if (state.error) {
       toastError(state.error);
       state.error = undefined;
+      return;
     }
     return;
   }, [isPending]);
