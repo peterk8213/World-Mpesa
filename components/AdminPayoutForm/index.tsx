@@ -6,6 +6,17 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useActionState } from "react";
 import { useSession } from "next-auth/react"; // Assuming you're using next-auth for session management
+import { format } from "date-fns";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { History, Coins, RotateCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, Terminal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 import type { ManualPayout, CompletePayoutInput } from "@/types";
 import { completeManualPayoutAction } from "@/actions/Payout"; // Import the server action
@@ -40,15 +52,40 @@ interface State {
   error?: string;
   pending?: boolean;
 }
+interface PreviousDeposit {
+  _id: string;
+  createdAt: Date;
+  inputTokenAmount?: number;
+  inputToken?: string;
+  transactionStatus?: string;
+  transactionHash?: string;
+}
 
 interface CompletePayoutFormProps {
   payoutDetails: ManualPayout;
   payoutId: string;
+  deposits: PreviousDeposit[];
 }
+
+const formatTokenAmount = ({
+  inputTokenAmount,
+  inputToken,
+}: {
+  inputTokenAmount?: number;
+  inputToken?: string;
+}) => {
+  console.log("amount", inputTokenAmount, "inputToken", inputToken);
+  const decimals = inputToken === "WLD" ? 18 : inputToken === "USDCE" ? 6 : 0;
+  if (decimals === 0) return 0;
+
+  const Formattedamount = Number(inputTokenAmount) / Math.pow(10, decimals);
+  return Formattedamount;
+};
 
 const CompletePayoutForm: React.FC<CompletePayoutFormProps> = ({
   payoutDetails,
   payoutId,
+  deposits,
 }) => {
   const router = useRouter();
   const { data: session } = useSession(); // Assuming you have a session hook to get the current user session
@@ -153,9 +190,10 @@ const CompletePayoutForm: React.FC<CompletePayoutFormProps> = ({
   };
 
   const isFormDisabled = isPending || isAlreadyProcessed;
+  console.log("previous deposits", deposits);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Display Payout Details (Read-Only) */}
       <div>
         <h3 className="font-semibold mb-2">Payout Details</h3>
@@ -176,15 +214,98 @@ const CompletePayoutForm: React.FC<CompletePayoutFormProps> = ({
           <span className="font-medium text-foreground">
             {payoutDetails.amountinUsd.toFixed(2)}
           </span>
-          <span>Current Status:</span>
+
+          <span className="text-muted-foreground">Current Status:</span>
           <span className="font-medium text-foreground">
             {payoutDetails.status}
           </span>
+
           <span>Fees:</span>
           <span className="font-medium text-foreground">
             {payoutDetails.fees?.toFixed(2) || "0.00"}
           </span>
         </div>
+      </div>
+
+      {/* Recent Deposits Section */}
+      <div>
+        <h3 className="font-semibold mb-2 text-lg flex items-center gap-2">
+          <History className="h-5 w-5 text-primary" /> User Deposit History
+          (Last 5)
+        </h3>
+        {!deposits ? (
+          <div className="border p-4 rounded-md bg-card text-center">
+            <Coins className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+            <p className="text-muted-foreground text-sm">
+              No recent deposit history found for this user.
+            </p>
+          </div>
+        ) : (
+          <div className="border rounded-md overflow-hidden bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Token</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Txn Hash</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {deposits.map((deposit) => (
+                  <TableRow key={deposit._id}>
+                    <TableCell className="text-xs">
+                      {deposit.createdAt
+                        ? format(new Date(deposit.createdAt), "PPp")
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {formatTokenAmount({
+                        inputTokenAmount: deposit.inputTokenAmount,
+                        inputToken: deposit.inputToken,
+                      }) ?? "N/A"}
+                    </TableCell>
+                    <TableCell>{deposit.inputToken ?? "N/A"}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          deposit.transactionStatus === "completed"
+                            ? "default"
+                            : deposit.transactionStatus === "submitted"
+                            ? "secondary"
+                            : deposit.transactionStatus === "failed"
+                            ? "destructive"
+                            : "outline"
+                        }
+                        className="capitalize text-xs"
+                      >
+                        {deposit.transactionStatus ?? "Unknown"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs font-mono truncate max-w-[100px]">
+                      {deposit.transactionHash ? (
+                        <a
+                          href={`https://optimistic.etherscan.io/tx/${deposit.transactionHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          {deposit.transactionHash.substring(0, 6)}...
+                          {deposit.transactionHash.substring(
+                            deposit.transactionHash.length - 4
+                          )}
+                        </a>
+                      ) : (
+                        "N/A"
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </div>
 
       {/* Payout Completion Form */}

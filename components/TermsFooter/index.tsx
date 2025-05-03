@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const CompanyFooter = () => {
   return (
-    <footer className="mt-auto py-8  px-6 outline-1 border-t border-gray-50 rounded-full backdrop-blur bg-transparent">
+    <footer className=" py-8  px-6 outline-1 border-t border-gray-50 rounded-full  backdrop-blur-sm bg-transparent mt-5">
       <div className="container mx-auto px-4 text-gray-600">
         <div className="text-center text-sm ">
           <p className="font-semibold mb-2">Powered by Nekron</p>

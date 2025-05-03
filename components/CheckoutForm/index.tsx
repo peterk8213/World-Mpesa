@@ -1,6 +1,8 @@
 import { Heart, WalletMinimal } from "lucide-react";
 import { redirect } from "next/navigation";
 import { PayBlock } from "@/components/Pay";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 import CompanyFooter from "@/components/TermsFooter";
 
@@ -37,10 +39,30 @@ export async function CheckoutForm({ userAmount }: { userAmount: string }) {
   };
 
   return (
-    <main className="flex-col  justify-around items-center  p-2 px-4 py-8 ">
+    <main className="flex-col  justify-around items-center  p-2 px-4 py-8 h-full overflow-auto ">
       <div className="flex justify-center items-center overflow-auto">
-        <div className="flex flex-col  w-full lg:w-1/2 pt-6 mt-4">
-          <Card className="w-full lg:w-auto   xs:mt-6  border-none ">
+        <div className="flex flex-col  w-full lg:w-1/2 pt-6 mt-4 mb-10 gap-4">
+          {/* Added Alert */}
+          <Alert
+            variant="default"
+            className="mb-6 bg-yellow-50 border-yellow-200"
+          >
+            {" "}
+            {/* Adjusted styling */}
+            <AlertTriangle className="h-4 w-4 text-yellow-600" />{" "}
+            {/* Changed icon and color */}
+            <AlertTitle className="font-semibold text-yellow-800">
+              Important Withdrawal Information
+            </AlertTitle>{" "}
+            {/* Adjusted styling */}
+            <AlertDescription className="text-yellow-700">
+              {" "}
+              {/* Adjusted styling */}
+              Withdrawals are currently only available for Kenyan phone numbers
+              (+254). Attempts with other numbers will fail.
+            </AlertDescription>
+          </Alert>
+          <Card className="w-full lg:w-auto   xs:mt-6  border-none  mb-15">
             <CardHeader>
               <CardTitle>Summary</CardTitle>
               <CardDescription>Confirm payment detail</CardDescription>
@@ -87,10 +109,8 @@ export async function CheckoutForm({ userAmount }: { userAmount: string }) {
             </CardContent>
           </Card>
         </div>
-        <div className="fixed bottom-12 left-0 right-0 p-5 bg-transparent ">
-          <CompanyFooter />
-        </div>
-        <div className="justify-center  items-center mt-2 space-y-4 bg-transparent">
+
+        <div className="justify-center  items-center mt-2 space-y-4 bg-transparent py-2">
           <PayBlock userAmount={userAmount} />
         </div>
       </div>

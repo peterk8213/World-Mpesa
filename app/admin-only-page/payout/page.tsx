@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import dbConnect from "@/lib/mongodb";
+import { RefreshButton } from "@/components/RefreshButton";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -22,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import type { ManualPayout as ManualPayoutType } from "@/types";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronLeft } from "lucide-react";
 import { format } from "date-fns";
 import ManualPayout from "@/models/ManualPayout";
 import { redirect, notFound } from "next/navigation";
@@ -79,24 +80,24 @@ export default async function PayoutPage({
   const { payouts: pendingPayouts, totalCount } = await getPendingPayouts(
     currentPage
   );
+
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   return (
     <main className="flex min-h-screen flex-col items-center p-6 md:p-24">
-      <Button
-        variant="outline"
-        size="icon"
-        className="absolute top-4 left-4"
-        asChild
-      >
-        <Link href="/admin-only-page">
-          <ArrowLeft />
-          <span className="sr-only">Back to Home</span>
-        </Link>
-      </Button>
       <Card className="w-full max-w-4xl">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Manual Payouts</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            <div className="flex justify-between items-center">
+              <div>
+                <div>Manual Payouts</div>
+              </div>
+              <div>
+                <RefreshButton />
+              </div>
+            </div>
+          </CardTitle>
+
           <CardDescription>
             Review and process pending manual withdrawal requests.
           </CardDescription>
@@ -135,6 +136,7 @@ export default async function PayoutPage({
                       </TableCell>
                       <TableCell>
                         <Badge
+                          className="text-center rounded-xl"
                           variant={
                             payout.status === "pending"
                               ? "secondary"
@@ -145,7 +147,23 @@ export default async function PayoutPage({
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {format(new Date(payout.createdAt), "PPp")}
+                        {/* // i need it in locale format in the time zone of the
+                        user use to locale string  */}
+                        {new Date(payout.createdAt).toLocaleString("en-US", {})}
+                      </TableCell>
+                      <TableCell className="text-right rounded-lg">
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="sm"
+                          className="bg-accent rounded-lg text-black "
+                        >
+                          <Link
+                            href={`/admin-only-page/payout/refund?transactionId=${payout._id}`}
+                          >
+                            Refund
+                          </Link>
+                        </Button>
                       </TableCell>
                       <TableCell className="text-right rounded-md">
                         <Button
@@ -165,13 +183,26 @@ export default async function PayoutPage({
                   ))}
                 </TableBody>
               </Table>
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute top-4 left-4"
+              >
+                <Link href="/admin-only-page">
+                  <ArrowLeft />
+                  <span className="sr-only">Back to Home</span>
+                </Link>
+              </Button>
 
               <div className="flex justify-between items-center mt-6">
-                <Button asChild disabled={currentPage === 1} variant="outline">
+                <Button asChild disabled={currentPage === 1} variant="link">
                   <Link
                     href={`/admin-only-page/payout?page=${currentPage - 1}`}
                   >
-                    Previous
+                    <div className="flex items-center text-sm text-muted-foreground hover:text-black">
+                      <ChevronLeft className="ml-2" />
+                      <div>Previous</div>
+                    </div>
                   </Link>
                 </Button>
                 <span className="text-sm text-muted-foreground">
@@ -180,12 +211,15 @@ export default async function PayoutPage({
                 <Button
                   asChild
                   disabled={currentPage === totalPages}
-                  variant="outline"
+                  variant="link"
                 >
                   <Link
                     href={`/admin-only-page/payout?page=${currentPage + 1}`}
                   >
-                    Next
+                    <div className="flex items-center text-sm text-muted-foreground hover:text-black">
+                      <div>Next</div>
+                      <ChevronLeft className="rotate-180 ml-2" />
+                    </div>
                   </Link>
                 </Button>
               </div>

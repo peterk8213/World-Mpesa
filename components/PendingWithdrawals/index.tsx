@@ -1,65 +1,67 @@
 "use client";
 
+import type React from "react";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Hourglass } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { ChevronRight } from "lucide-react"; // Use ChevronRight for the arrow
+import { Card, CardContent } from "@/components/ui/card"; // Keep using Card for structure
 import { cn } from "@/lib/utils";
 
-type PendingWithdrawalsProps = {
+interface PendingWithdrawalsProps {
   count: number;
-};
+  balance?: number; // Optional balance prop
+}
 
-export default function PendingWithdrawals({ count }: PendingWithdrawalsProps) {
+const PendingWithdrawals: React.FC<PendingWithdrawalsProps> = ({
+  count,
+  balance,
+}) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const previousCountRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
+    // Only animate if the count has changed and is greater than 0
     if (
       previousCountRef.current !== undefined &&
       previousCountRef.current !== count &&
       count > 0
     ) {
       setIsAnimating(true);
-      const timer = setTimeout(() => setIsAnimating(false), 1000);
+      const timer = setTimeout(() => setIsAnimating(false), 1000); // Pulse for 1 second
       return () => clearTimeout(timer);
     }
     previousCountRef.current = count;
   }, [count]);
 
-  if (count <= 0) return null;
+  const withdrawalText = count === 1 ? "withdrawal" : "withdrawals";
 
   return (
-    <div className="  backdrop-blur-sm transition-colors w-full">
-      <div className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:no-underline w-full">
-        <div className="flex-row items-center justify-between gap-4 p-2">
-          <div className="flex flex-col space-y-2 py-2">
-            <h3 className="text-xl font-medium mb-6">Activity</h3>
-          </div>
-
-          <Card
-            className={cn(
-              "inline-block  cursor-pointer transition-shadow hover:shadow-md w-full bg-transparent",
-              isAnimating && "animate-pulse"
-            )}
-          >
-            <CardContent className="flex items-center space-x-3 p-3">
-              <div className="flex items-center space-x-3 p-3 justify-between">
-                <Hourglass className="h-5 w-5 text-muted-foreground" />
-                <div className="flex items-center space-x-2 gap-6">
-                  <span className="text-sm font-medium text-foreground">
-                    Pending Withdrawals:
-                  </span>
-                  <Badge className="bg-accent text-accent-foreground hover:bg-accent/90">
-                    {count}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+    <div>
+      <div className="flex flex-col space-y-2 py-2">
+        <h3 className="text-xl font-medium mb-6">Activity</h3>
       </div>
+      <Link
+        // href="/withdrawals/pending"
+        href={"#"}
+        className={cn(
+          "block w-full max-w-md mx-auto cursor-pointer rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-md ",
+          isAnimating && "animate-pulse"
+        )}
+      >
+        <Card className="bg-card text-card-foreground border-none">
+          <CardContent className="p-3 flex items-center justify-between space-x-3">
+            <div className="flex items-center space-x-2">
+              <span className="inline-block h-2 w-2 rounded-full bg-orange-500"></span>
+              <span className="text-sm font-medium text-foreground">
+                {count} {withdrawalText} processing
+              </span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
     </div>
   );
-}
+};
+
+export default PendingWithdrawals;

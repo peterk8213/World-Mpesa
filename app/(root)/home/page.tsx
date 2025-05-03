@@ -75,18 +75,14 @@ export default async function Home() {
         </a>
       </div> */}
 
-      <div className="px-2 w-full flex justify-start items-center">
-        <Suspense fallback={<div></div>}>
-          {await getPendingWithdrawalsCountWrapper(userId)}
-        </Suspense>
-      </div>
-
       <div className="px-2">
         <AppServices />
       </div>
     </div>
   );
 }
+
+//pass the balance as props to the user homepage card
 
 const HomePageWrapper = async ({ userId }: { userId: string }) => {
   const user = await getUserWallet({ userId });
@@ -96,13 +92,25 @@ const HomePageWrapper = async ({ userId }: { userId: string }) => {
   }
 
   return (
-    <div className="">
-      <UserHomePageCard user={user} />
+    <div>
+      <div className=" flex flex-col lg:flex-row lg:space-x-4 px-2 gap-4">
+        <UserHomePageCard user={user} />
+      </div>
+      <div className="px-2 w-full flex justify-start items-center pt-6">
+        <Suspense fallback={<div></div>}>
+          {await getPendingWithdrawalsCountWrapper({
+            userId,
+            balance: user.balance,
+          })}
+        </Suspense>
+      </div>
     </div>
   );
 };
 
-const getPendingWithdrawalsCountWrapper = async (userId: string) => {
+export const getPendingWithdrawalsCountWrapper = async (
+  { userId, balance }: { userId: string; balance?: number } // Optional balance prop
+) => {
   const getPendingWithdrawals = async (userId: string) => {
     try {
       const pendingWithdrawals = await ManualPayout.find({
@@ -112,19 +120,17 @@ const getPendingWithdrawalsCountWrapper = async (userId: string) => {
       return pendingWithdrawals.length;
     } catch (error) {
       console.error("Error fetching pending withdrawals:", error);
-      return 0;
+      return;
     }
   };
 
   const pendingWithdrawals = await getPendingWithdrawals(userId);
 
-  return (
-    pendingWithdrawals > 0 && (
-      <div className="">
-        <PendingWithdrawals count={pendingWithdrawals} />
-      </div>
-    )
-  );
+  return pendingWithdrawals && pendingWithdrawals > 0 ? (
+    <div className="">
+      <PendingWithdrawals count={pendingWithdrawals} balance={balance} />
+    </div>
+  ) : null;
 };
 
 // // import { PayBlock } from "@/components/Pay";

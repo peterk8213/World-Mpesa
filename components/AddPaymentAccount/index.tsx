@@ -21,6 +21,16 @@ import { motion } from "framer-motion";
 import { PayoutProvider } from "@/types";
 import { toastError, toastInfo } from "@/lib/toast";
 
+function isValidFullName(name: string): boolean {
+  const fullNameRegex = /^([A-Z][a-zA-Z'’-]{1,})(\s[A-Z][a-zA-Z'’-]{1,})+$/;
+  return fullNameRegex.test(name.trim());
+}
+
+const isPhoneValid = (phone: string): boolean => {
+  const phoneRegex = /^\+254(7\d{8}|1\d{8})$/;
+  return phoneRegex.test(phone);
+};
+
 export function AddPaymentAccountForm({
   addPaymentAccount,
   providers,
@@ -49,23 +59,6 @@ export function AddPaymentAccountForm({
   const { isnewUser } = session;
 
   const [isDefault, setIsDefault] = useState(isnewUser);
-
-  const isPhoneValid = () => {
-    //// a regex that checks if the phone number is valid generate one
-    // Kenyan phone number regex: Supports +2547XXXXXXXX or 07XXXXXXXX format
-    const phoneRegex = /^(?:\+254|0)[17]\d{8}$/;
-    const phone = paymentAccount.phoneNumber;
-
-    if (!phoneRegex.test(phone)) {
-      return false;
-    }
-    return true;
-  };
-
-  function isValidFullName(name: string): boolean | undefined {
-    const fullNameRegex = /^[A-Z][a-zA-Z'-]{1,} [A-Z][a-zA-Z'-]{1,}$/;
-    return fullNameRegex.test(name);
-  }
 
   /// define types for the state
 
@@ -118,11 +111,10 @@ export function AddPaymentAccountForm({
           minLength={7}
           placeholder="Enter your full name"
           onChange={(e) => {
-            const isValid = isValidFullName(e.target.value);
             setpaymentAccount((prev) => ({
               ...prev,
               fullName: e.target.value,
-              isFullNameValid: isValid ?? false,
+              isFullNameValid: isValidFullName(e.target.value) ?? false,
             }));
           }}
           isValid={paymentAccount.isFullNameValid}
@@ -142,13 +134,14 @@ export function AddPaymentAccountForm({
           required
           hideDialCode
           defaultCountryCode="KE"
+          placeholder="Only +254 numbers are allowed"
           isValid={paymentAccount.isPhoneNumberValid}
           value={paymentAccount.phoneNumber}
           onChange={(value) => {
             setpaymentAccount((prev) => ({
               ...prev,
               phoneNumber: value,
-              isPhoneNumberValid: isPhoneValid() ?? false,
+              isPhoneNumberValid: isPhoneValid(value),
             }));
           }}
         />
@@ -161,7 +154,7 @@ export function AddPaymentAccountForm({
         <Select name="provider" required options={providers} />
       </div>
       <div className="flex items-center gap-6 p-2 ">
-        <label htmlFor="phoneNumber" className="block mb-1">
+        <label htmlFor="isdefault" className="block mb-1">
           Set Default
         </label>
         <Checkbox
@@ -185,6 +178,7 @@ export function AddPaymentAccountForm({
           type="submit"
           fullWidth
           variant={!state?.pending ? "primary" : "secondary"}
+          disabled={state?.pending || !paymentAccount.isPhoneNumberValid}
           radius="md"
           isLoading={state?.pending}
         >

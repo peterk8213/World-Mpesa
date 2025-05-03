@@ -46,6 +46,13 @@ export interface CompletePayoutInput {
   actualCharges?: number;
 }
 
+// Input type for the refund action
+export interface RefundInput {
+  payoutId: string; // ID of the original ManualPayout to refund
+
+  reason: string; // Reason for the refund
+}
+
 export interface WithdrawalMethod {
   _id: string;
   name: string;

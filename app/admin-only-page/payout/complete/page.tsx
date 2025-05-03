@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import type { ManualPayout as ManualPayoutType } from "@/types";
 import ManualPayout from "@/models/ManualPayout"; // Adjust the import path as necessary
 import CompletePayoutForm from "@/components/AdminPayoutForm"; // Import the new client component
+import { WorldcoinTransaction } from "@/models/WldTransaction"; // Adjust the import path as necessary
 
 async function getPayoutDetails(
   payoutId: string
@@ -41,47 +42,84 @@ interface CompletePayoutPageProps {
   };
 }
 
+interface PreviousDeposit {
+  _id: string;
+  createdAt: Date;
+  inputTokenAmount?: number;
+  inputToken?: string;
+  transactionStatus?: string;
+  transactionHash?: string;
+}
+
+//// fetch 5 previous worldcoin deposits marked as completed
+
+const getUserPreviousDeposits = async (
+  userId: string,
+  limit: number = 5
+): Promise<PreviousDeposit[]> => {
+  try {
+    const deposits = await WorldcoinTransaction.find({
+      userId: userId,
+    })
+      .sort({ createdAt: -1 })
+      .limit(limit);
+    return deposits.map((deposit) => ({
+      _id: deposit._id,
+      createdAt: deposit.createdAt,
+      inputTokenAmount: deposit.inputTokenAmount,
+      inputToken: deposit.inputToken,
+      transactionStatus: deposit.status,
+      transactionHash: deposit.transactionHash,
+    }));
+  } catch (error) {
+    console.error("Error fetching previous deposits:", error);
+    return [];
+  }
+};
+
 // This is now a Server Component
 export default async function CompletePayoutPage({
   searchParams,
 }: {
-  searchParams: Promise<{ transactionId?: string }>;
+  searchParams: Promise<{ transactionId: string }>;
 }) {
   const payoutId = (await searchParams).transactionId;
-  let payoutDetails: ManualPayoutType | null = null;
+
   let error: string | null = null;
 
   if (!payoutId) {
     error = "Payout ID is missing from the URL.";
-  } else {
-    try {
-      payoutDetails = await getPayoutDetails(payoutId);
-      if (!payoutDetails) {
-        error = "Payout details not found.";
-      }
-      // Note: Checking status logic moved to client component for disabling form
-    } catch (err) {
-      console.error("Server-side fetch error:", err);
-      error = "Failed to load payout details. Please try again.";
-    }
   }
+
+  const payoutDetails = await getPayoutDetails(payoutId);
+  if (!payoutDetails) {
+    error = "Payout details not found.";
+  }
+  // Note: Checking status logic moved to client component for disabling form
+  if (!payoutDetails?.userId) {
+    error = "Payout details not found.";
+  }
+  const userId = payoutDetails?.userId;
+  if (!userId) {
+    error = "User ID not found in payout details.";
+  }
+
+  const userDeposits = await getUserPreviousDeposits(userId ?? "", 5);
 
   return (
     <main className="flex min-h-screen flex-col items-center p-6 md:p-24">
-      <Button
-        variant="outline"
-        size="icon"
-        className="absolute top-4 left-4"
-        asChild
-      >
-        <Link href="/admin-only-page/payout">
-          <ArrowLeft />
-          <span className="sr-only">Back to Payouts</span>
-        </Link>
-      </Button>
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <CardTitle>Complete Manual Payout</CardTitle>
+          <CardTitle>
+            {" "}
+            <Button variant="outline" size="icon" className="" asChild>
+              <Link href="/admin-only-page/payout">
+                <ArrowLeft />
+                <span className="sr-only">Back to Payouts</span>
+              </Link>
+            </Button>
+            Complete Manual Payout
+          </CardTitle>
           <CardDescription>
             {`Processing payout ID: ${payoutId || "N/A"}`}
           </CardDescription>
@@ -98,7 +136,9 @@ export default async function CompletePayoutPage({
               // Pass fetched data to the client component
               <CompletePayoutForm
                 payoutDetails={payoutDetails}
-                payoutId={payoutId!}
+                payoutId={payoutId || ""}
+                /// stringify the object to pass it as a prop
+                deposits={JSON.parse(JSON.stringify(userDeposits))} // Fetch previous deposits here
               />
             ) : (
               // This case should ideally be covered by the 'not found' error

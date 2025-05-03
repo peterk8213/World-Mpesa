@@ -27,7 +27,7 @@ export default async function Checkout({
   }
 
   return (
-    <div className="min-h-screen bg-white overflow-hidden ">
+    <div className="min-h-full bg-white overflow-auto lg:mx-20 gap-[3rem] ">
       {userAmount ? (
         <Suspense fallback={<div> loading ...</div>}>
           <CheckoutForm userAmount={userAmount} />
