@@ -17,8 +17,11 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import type { ManualPayout as ManualPayoutType } from "@/types"; // Reusing payout type for now
 import RefundForm from "@/components/AdminRefundForm"; // Import the new client component
 import { processRefundAction } from "@/actions/AdminRefund"; // Import the refund server action
-import ManualPayout from "@/models/ManualPayout"; // Adjust the import path as necessary
+import ManualPayout from "@/models/ManualPayout";
 import { redirect } from "next/navigation";
+
+import { Transaction } from "@/models/Transaction";
+import dbConnect from "@/lib/mongodb"; // Ensure you have this import for database connection
 
 async function getPayoutForRefund(
   payoutId: string
@@ -52,6 +55,8 @@ export default async function RefundPage({
   if (!session || !session.isAdmin) {
     redirect("/");
   }
+
+  await dbConnect(); // Ensure the database connection is established
 
   const payoutId = (await searchParams)?.transactionId;
 

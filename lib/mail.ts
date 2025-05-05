@@ -36,11 +36,21 @@ export async function sendWithdrawalEmail(payout: ManualPayout) {
         <tr><td><strong>Description:</strong></td><td>${
           payout.notes || "N/A"
         }</td></tr>
-        <tr><td><strong>Request Time:</strong></td><td>${new Date().toLocaleString()}</td></tr>
+        <tr><td><strong>Request Time:</strong></td><td>${new Date().toLocaleString(
+          "en-US",
+          {
+            timeZone: "Africa/Nairobi",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }
+        )}</td></tr>
       </table>
       <br/>
       <p style="margin-top: 30px;">
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL}/admin-only-page/payout"
+      <a href="${process.env.NEXT_PUBLIC_BASE_URL}admin-only-page/payout"
          style="display: inline-block; background-color: #2b6cb0; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 6px;">
         Review in Admin Dashboard
       </a>

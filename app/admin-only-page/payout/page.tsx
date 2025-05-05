@@ -28,7 +28,7 @@ import { format } from "date-fns";
 import ManualPayout from "@/models/ManualPayout";
 import { redirect, notFound } from "next/navigation";
 
-const ITEMS_PER_PAGE = 7; // Number of items to display per page
+const ITEMS_PER_PAGE = 10; // Number of items to display per page
 
 async function getPendingPayouts(
   page: number = 1,
@@ -84,8 +84,8 @@ export default async function PayoutPage({
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-6 md:p-24">
-      <Card className="w-full max-w-4xl">
+    <main className="flex min-h-screen flex-col items-center p-6">
+      <Card className="w-full max-w-4xl pt-4">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">
             <div className="flex justify-between items-center">
@@ -136,7 +136,7 @@ export default async function PayoutPage({
                       </TableCell>
                       <TableCell>
                         <Badge
-                          className="text-center rounded-xl"
+                          className="text-center rounded-xl bg-orange-100"
                           variant={
                             payout.status === "pending"
                               ? "secondary"
@@ -149,7 +149,15 @@ export default async function PayoutPage({
                       <TableCell>
                         {/* // i need it in locale format in the time zone of the
                         user use to locale string  */}
-                        {new Date(payout.createdAt).toLocaleString("en-US", {})}
+                        {new Date(payout.createdAt).toLocaleString("en-US", {
+                          timeZone: "Africa/Nairobi",
+                          year: "2-digit",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        })}
                       </TableCell>
                       <TableCell className="text-right rounded-lg">
                         <Button

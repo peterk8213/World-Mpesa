@@ -5,8 +5,10 @@ export default async function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <MainNav />
-      <main className=" ">{children}</main>
+      <div className="flex flex-col min-h-screen bg-neutral-100 ">
+        <MainNav />
+        <main className="mt-16">{children}</main>
+      </div>
     </>
   );
 }

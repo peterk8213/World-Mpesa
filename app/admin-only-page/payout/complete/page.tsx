@@ -12,6 +12,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { ArrowLeft, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import dbConnect from "@/lib/mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import type { ManualPayout as ManualPayoutType } from "@/types";
 import ManualPayout from "@/models/ManualPayout"; // Adjust the import path as necessary
@@ -83,6 +88,16 @@ export default async function CompletePayoutPage({
 }: {
   searchParams: Promise<{ transactionId: string }>;
 }) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/");
+  }
+  if (session.isAdmin == false || session.isAdmin == undefined) {
+    notFound();
+  }
+
+  await dbConnect();
+
   const payoutId = (await searchParams).transactionId;
 
   let error: string | null = null;

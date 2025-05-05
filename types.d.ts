@@ -66,6 +66,22 @@ export interface WithdrawalMethod {
   description?: string;
 }
 
+export interface SubmitRefundParams {
+  amount: number;
+  walletAddress: string;
+  currency?: RefundCurrency;
+  notes?: string;
+}
+
+export interface RefundResponse {
+  success: boolean;
+  data?: {
+    id: string;
+  };
+  error?: string;
+  details?: string[];
+}
+
 export interface WithdrawConfirmProps {
   method: string;
   amount: string;
