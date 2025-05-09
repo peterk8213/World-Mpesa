@@ -34,10 +34,6 @@ export function FeeWarning({ amount, totalFee, netAmount }: FeeWarningProps) {
     return null;
   }
 
-  // Get the fee details for the current amount
-
-  const feePercentage = amount > 0 ? (totalFee / amount) * 100 : 0;
-
   return (
     <>
       <Alert className="mb-4 border-amber-200 bg-amber-50">
@@ -47,9 +43,8 @@ export function FeeWarning({ amount, totalFee, netAmount }: FeeWarningProps) {
         </AlertTitle>
         <AlertDescription className="text-amber-700">
           <p className="mt-1">
-            Withdrawals below 5 USD have a higher fee percentage (
-            {feePercentage.toFixed(1)}%). Consider withdrawing larger amounts
-            for better rates.
+            Withdrawals below 5 USD have a higher fee percentage. Consider
+            withdrawing larger amounts for better rates.
           </p>
           <Button
             variant="link"
