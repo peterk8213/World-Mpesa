@@ -77,6 +77,9 @@ export function AddPaymentAccountForm({
   useEffect(() => {
     if (state?.success) {
       toastInfo("Payment account added successfully");
+      router.back();
+      state.success = undefined;
+      return;
     }
     if (state?.error) {
       toastError(state.error);

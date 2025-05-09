@@ -112,9 +112,7 @@ export function FeeWarning({ amount, totalFee, netAmount }: FeeWarningProps) {
                 <div className="text-sm text-slate-700">
                   <p className="font-medium">Your current withdrawal:</p>
                   <p>Amount: {amount}</p>
-                  <p>
-                    Fee: {totalFee.toFixed(2)} ({feePercentage.toFixed(1)}%)
-                  </p>
+
                   <p>Net amount: {netAmount.toFixed(2)}</p>
                 </div>
               </div>

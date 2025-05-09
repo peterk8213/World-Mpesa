@@ -1,4 +1,5 @@
 import mongoose, { Schema, model, models, Document, Model } from "mongoose";
+import { Provider } from "./provider";
 
 // Define TypeScript interface for PaymentAccount
 export interface IPaymentAccount extends Document {
