@@ -62,7 +62,7 @@ export function FeeWarning({ amount, totalFee, netAmount }: FeeWarningProps) {
       </Alert>
 
       <Drawer open={isDialogOpen}>
-        <DrawerContent className="max-w-md pb-2">
+        <DrawerContent className="max-w-md pb-2 max-h-md">
           <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200">
             <h2 className="text-lg font-semibold">Fee Structure</h2>
             <Button
@@ -75,21 +75,17 @@ export function FeeWarning({ amount, totalFee, netAmount }: FeeWarningProps) {
           </div>
           <div className="mt-4 px-3">
             <p className="text-sm text-slate-700 mb-2">
-              Our fee structure is designed to be transparent and fair. Below is
-              a breakdown of the fees associated with your withdrawal amount:
-            </p>
-            <p className="text-sm text-slate-700 mb-2">
               The fee is calculated based on the following structure:
             </p>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Amount Range</TableHead>
-                  <TableHead>Percentage Fee</TableHead>
+
                   <TableHead>Fixed Fee</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody className="text-sm px-4 max-h-md overflow-y-auto">
                 {batches.map((batch, index) => {
                   const nextBatch = batches[index - 1];
                   const max = nextBatch ? nextBatch.min - 0.01 : "∞";
@@ -107,7 +103,7 @@ export function FeeWarning({ amount, totalFee, netAmount }: FeeWarningProps) {
                       <TableCell>
                         {batch.min} - {max}
                       </TableCell>
-                      <TableCell>{batch.percent}%</TableCell>
+
                       <TableCell>{batch.fixed}</TableCell>
                     </TableRow>
                   );
