@@ -62,6 +62,21 @@ UserSchema.post("save", async function (doc) {
   }
 });
 
+/// static method to change users notifications settings
+UserSchema.statics.changeNotificationSettings = async function ({
+  userId,
+  notifications,
+}: {
+  userId: string;
+  notifications: boolean;
+}) {
+  return this.findOneAndUpdate(
+    { _id: userId },
+    { notifications },
+    { new: true, runValidators: true }
+  );
+};
+
 // Use models to check if 'User' model already exists to prevent recompilation issues
 
 export const User = models.User || model("User", UserSchema);

@@ -9,6 +9,7 @@ import { formatWithoutRounding } from "@/lib/formatBalance";
 import { Separator } from "@/components/ui/separator";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FeeWarning } from "@/components/FeesAlert";
 
 export function WithdrawCheckoutpage({
   withdrawCheckoutData,
@@ -45,6 +46,13 @@ export function WithdrawCheckoutpage({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
+            <div className="px-1 py-2">
+              <FeeWarning
+                amount={parseFloat(withdrawAmount)}
+                totalFee={fees}
+                netAmount={parseFloat(withdrawAmount) - fees}
+              />
+            </div>
             <Card className="w-full">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">
@@ -95,8 +103,10 @@ export function WithdrawCheckoutpage({
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Fiat</span>
-                    <span className="font-sm">
+                    <span className="font-medium text-gray-600">
+                      AmountInKes
+                    </span>
+                    <span className="font-medium">
                       {fiatAmount.toFixed(0)}
                       <span className="text-xs "> KES</span>
                     </span>
@@ -156,7 +166,7 @@ export function WithdrawCheckoutpage({
         </div>
       </div>
       <footer className=" p-4 text-center w-full">
-        &copy; {new Date().getFullYear()} MpesaWorld
+        &copy; {new Date().getFullYear()} Nekron
       </footer>
     </motion.div>
   );

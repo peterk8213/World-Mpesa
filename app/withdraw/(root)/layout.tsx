@@ -15,7 +15,7 @@ export default async function Layout({
   return (
     <>
       <div>
-        {<WithdrawHeader title="Withdraw" />}
+        <WithdrawHeader title="Withdraw" />
         {children}
       </div>
     </>

@@ -10,6 +10,7 @@ import NextAuthProvider from "@/components/next-auth-provider";
 import { ErudaClient } from "@/components/Eruda/ErudaClient";
 
 import { PostHogProvider } from "@/components/posthog-provider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const rubik = Rubik({ subsets: ["latin"] });
 
@@ -26,6 +27,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={rubik.className}>
+        <SpeedInsights />
+
         <NextAuthProvider>
           <PostHogProvider>
             <ErudaClient>

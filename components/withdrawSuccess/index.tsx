@@ -6,6 +6,17 @@ import { Button } from "@worldcoin/mini-apps-ui-kit-react/Button";
 import { Home, Star, MoreVertical } from "lucide-react";
 import Link from "next/link";
 
+import {
+  MiniKit,
+  type RequestPermissionPayload,
+  Permission,
+  type MiniAppRequestPermissionSuccessPayload,
+  type MiniAppRequestPermissionErrorPayload,
+} from "@worldcoin/minikit-js";
+
+import { useCallback, useEffect } from "react";
+import { toastError, toastSuccess } from "@/lib/toast";
+
 interface CheckmarkProps {
   size?: number;
   strokeWidth?: number;
@@ -93,25 +104,85 @@ interface TransactionProps {
     phoneNumber?: string;
   };
   conversionRate: number;
+  notifications: boolean;
 }
+
+type HandleNotificationRequest = (payload: {
+  notifications: boolean;
+}) => Promise<{ success: true; error?: string }>;
 
 export function WithdrawSuccess({
   transaction,
+  handleNotificationRequest,
 }: {
   transaction: TransactionProps;
+  handleNotificationRequest: HandleNotificationRequest;
 }) {
-  // Default values for all properties
-  console.log(transaction, "transaction from client");
-
   const {
     transaction: { transactionId, phoneNumber, amountinKes },
     conversionRate,
+    notifications,
   } = transaction;
+
   const { amount, method, createdAt } = transactionId;
   const transactionAmount = amountinKes.toLocaleString("en-US", {
     style: "currency",
     currency: "KES",
   });
+
+  //////// request notification
+  const requestPermission = useCallback(async () => {
+    try {
+      const requestPermissionPayload: RequestPermissionPayload = {
+        permission: Permission.Notifications,
+      };
+
+      const payload = await MiniKit.commandsAsync.requestPermission(
+        requestPermissionPayload
+      );
+
+      console.log("Permission response:", payload);
+      const { finalPayload } = payload;
+      const { status } = finalPayload as MiniAppRequestPermissionSuccessPayload;
+
+      return status;
+    } catch (err) {
+      console.error("Error requesting permission:", err);
+    }
+  }, [handleNotificationRequest]);
+
+  useEffect(() => {
+    const updateNotificationSettings = async () => {
+      try {
+        if (notifications) return;
+        const permissionResponse = await requestPermission();
+        const status = permissionResponse;
+
+        const success = status === "success";
+        if (success) {
+          const response = await handleNotificationRequest({
+            notifications: !notifications,
+          });
+
+          if (response.success) {
+            toastSuccess("Notification settings updated successfully");
+          } else {
+            toastError(
+              response.error || "Failed to update notification settings"
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Error updating notification settings:", error);
+        toastError("Failed to update notification settings");
+      }
+    };
+
+    updateNotificationSettings();
+  }, [handleNotificationRequest, notifications]);
+
+  ////////////
+
   return (
     <div className=" h-full w-full flex items-center justify-center">
       <Card className="w-full max-w-sm mx-auto  rounded-lg overflow-visible shadow-none border-none">

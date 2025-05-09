@@ -1,6 +1,7 @@
 import { WithdrawSuccess } from "@/components/withdrawSuccess";
 
 import ManualPayout from "@/models/ManualPayout";
+import { User } from "@/models/User";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -9,6 +10,8 @@ import { notFound, redirect } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
 import { getConversionRate } from "@/lib/wallet/conversion";
 import { Suspense } from "react";
+import { Transaction } from "@/models/Transaction";
+import { handleNotificationRequest } from "@/actions/HandleNotifications";
 
 export default async function SuccessPage({
   searchParams,
@@ -53,16 +56,22 @@ const getTransactionData = async ({
   transactionId: string;
   userId: string;
 }) => {
-  const transactiondoc = await ManualPayout.findOne({
-    transactionId,
-    userId,
-  })
-    .select("phoneNumber amountinKes -_id")
-    .populate({
-      path: "transactionId",
-      select:
-        "status amount currency transactionAmount  createdAt description method type -_id",
-    });
+  const [transactiondoc, user] = await Promise.all([
+    ManualPayout.findOne({ transactionId, userId })
+      .select("phoneNumber amountinKes -_id")
+      .populate({
+        path: "transactionId",
+        select:
+          "status amount currency transactionAmount createdAt description method type -_id",
+      }),
+    User.findById(userId),
+  ]);
+
+  if (!user) {
+    notFound();
+  }
+
+  const { notifications } = user;
   const transaction = transactiondoc?.toObject();
   if (!transaction) {
     notFound();
@@ -73,6 +82,7 @@ const getTransactionData = async ({
   return {
     transaction,
     conversionRate,
+    notifications,
   };
 };
 
@@ -97,21 +107,13 @@ export const WithdrawSuccessWrapper = async ({
       amountinKes: number;
     };
     conversionRate: number;
+    notifications: boolean;
   } = await getTransactionData({ transactionId, userId });
 
-  const dummyTransaction = {
-    transactionId: {
-      amount: 1,
-      type: "withdraw",
-      status: "success",
-      description: "Withdraw to Mpesa",
-      createdAt: new Date().toString(),
-      method: "mpesa",
-    },
-    amountinKes: 100,
-    phoneNumber: "0712345678",
-    conversionRate: 1,
-  };
-
-  return <WithdrawSuccess transaction={transaction} />;
+  return (
+    <WithdrawSuccess
+      transaction={transaction}
+      handleNotificationRequest={handleNotificationRequest}
+    />
+  );
 };

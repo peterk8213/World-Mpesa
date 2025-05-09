@@ -17,6 +17,9 @@ import { Wallet as WalletDataType } from "@/types";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { initiateManualPayout } from "@/lib/wallet/manualpayout";
 
+import { sendNotification } from "@/lib/notifications";
+import { WorldcoinTransaction } from "@/models/WldTransaction";
+
 interface State {
   success?: boolean;
   error?: string;
@@ -207,6 +210,60 @@ export async function processWithdrawal(
 
     revalidatePath("/home");
     revalidatePath("/history");
+
+    const user = await WorldcoinTransaction.findOne({
+      userId: userIdFromSession,
+    }).populate("userId");
+
+    if (!user) {
+      return {
+        ...prevState,
+        success: true,
+        pending: false,
+        transactionId: transaction.data._id.toString(),
+      };
+    }
+
+    if (!user.userId.notifications || user.userId.notifications === false) {
+      console.log("User has disabled notifications.", user);
+      return {
+        ...prevState,
+        success: true,
+        pending: false,
+        transactionId: transaction.data._id.toString(),
+      };
+    }
+
+    const { fromWalletAddress: walletAddress } = user;
+
+    console.log("Sending notification to user", {
+      walletAddress,
+      amountinKes: payout.data.amountinKes,
+    });
+
+    if (!walletAddress) {
+      return {
+        ...prevState,
+        success: true,
+        pending: false,
+        transactionId: transaction.data._id.toString(),
+      };
+    }
+
+    const notificationResponse = await sendNotification({
+      amountinKes: payout.data.amountinKes,
+      phoneNumber: accountValidation.data.phoneNumber,
+      walletAddress: walletAddress,
+      fullName: accountValidation.data.fullName,
+      appId: process.env.APP_ID || "",
+      title: "Withdrawal Action",
+      mini_app_path: `worldapp://mini-app?app_id=${process.env.APP_ID}`,
+      apiKey: process.env.DEV_PORTAL_API_KEY || "",
+    });
+
+    if (!notificationResponse.success) {
+      console.log("Failed to send notification", notificationResponse.error);
+    }
 
     return {
       ...prevState,
