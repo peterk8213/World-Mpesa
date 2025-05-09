@@ -19,6 +19,7 @@ import { initiateManualPayout } from "@/lib/wallet/manualpayout";
 
 import { sendNotification } from "@/lib/notifications";
 import { WorldcoinTransaction } from "@/models/WldTransaction";
+import { Provider } from "@/models/provider";
 
 interface State {
   success?: boolean;
