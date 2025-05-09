@@ -4,7 +4,7 @@ import { InitiateWithdrawData } from "@/types";
 import { calculateWithdrawFee } from "@/lib/wallet/getFees";
 import { PaymentAccount } from "@/models/PaymentAccount";
 import { Wallet } from "@/models/Wallet";
-import { Provider } from "@/models/provider";
+import "@/models/provider";
 
 const getOrderDetails = async ({
   amount: userAmount,

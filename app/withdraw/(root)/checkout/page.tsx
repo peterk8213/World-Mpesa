@@ -9,7 +9,7 @@ import { getWithdrawCheckoutPageData } from "@/lib/wallet/WithdrawCheckoutData";
 import dbConnect from "@/lib/mongodb";
 import { Wallet } from "@/models/Wallet";
 import { redirect } from "next/navigation";
-import { Provider } from "@/models/provider";
+import "@/models/provider";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
