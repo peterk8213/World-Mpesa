@@ -30,7 +30,7 @@ export function FeeWarning({ amount, totalFee, netAmount }: FeeWarningProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Only render when amount is less than 2
-  if (amount >= 4) {
+  if (amount >= 5) {
     return null;
   }
 
@@ -47,7 +47,7 @@ export function FeeWarning({ amount, totalFee, netAmount }: FeeWarningProps) {
         </AlertTitle>
         <AlertDescription className="text-amber-700">
           <p className="mt-1">
-            Withdrawals below 2 USD have a higher fee percentage (
+            Withdrawals below 5 USD have a higher fee percentage (
             {feePercentage.toFixed(1)}%). Consider withdrawing larger amounts
             for better rates.
           </p>
