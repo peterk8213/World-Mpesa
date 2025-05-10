@@ -34,35 +34,43 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const data = {
-  daily: [
-    { date: "Mon", profit: 12400 },
-    { date: "Tue", profit: 14405 },
-    { date: "Wed", profit: 19400 },
-    { date: "Thu", profit: 18200 },
-    { date: "Fri", profit: 17000 },
-    { date: "Sat", profit: 21600 },
-    { date: "Sun", profit: 23400 },
-  ],
-  weekly: [
-    { date: "Week 1", profit: 65400 },
-    { date: "Week 2", profit: 74405 },
-    { date: "Week 3", profit: 89400 },
-    { date: "Week 4", profit: 98200 },
-  ],
-  monthly: [
-    { date: "Jan", profit: 234000 },
-    { date: "Feb", profit: 254405 },
-    { date: "Mar", profit: 289400 },
-    { date: "Apr", profit: 298200 },
-    { date: "May", profit: 327000 },
-    { date: "Jun", profit: 321600 },
-  ],
-};
+// const data = {
+//   daily: [
+//     { date: "Mon", profit: 12400 },
+//     { date: "Tue", profit: 14405 },
+//     { date: "Wed", profit: 19400 },
+//     { date: "Thu", profit: 18200 },
+//     { date: "Fri", profit: 17000 },
+//     { date: "Sat", profit: 21600 },
+//     { date: "Sun", profit: 23400 },
+//   ],
+//   weekly: [
+//     { date: "Week 1", profit: 65400 },
+//     { date: "Week 2", profit: 74405 },
+//     { date: "Week 3", profit: 89400 },
+//     { date: "Week 4", profit: 98200 },
+//   ],
+//   monthly: [
+//     { date: "Jan", profit: 234000 },
+//     { date: "Feb", profit: 254405 },
+//     { date: "Mar", profit: 289400 },
+//     { date: "Apr", profit: 298200 },
+//     { date: "May", profit: 327000 },
+//     { date: "Jun", profit: 321600 },
+//   ],
+// };
 
-interface ProfitChartProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface ProfitChart extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function ProfitChart({ className }: ProfitChartProps) {
+interface ProfitChartProps extends ProfitChart {
+  data: {
+    daily: { date: string; profit: number }[];
+    weekly: { date: string; profit: number }[];
+    monthly: { date: string; profit: number }[];
+  };
+}
+
+export function ProfitChart({ className, data, ...props }: ProfitChartProps) {
   return (
     <Card className={className}>
       <CardHeader>
@@ -128,22 +136,6 @@ export function ProfitChart({ className }: ProfitChartProps) {
           ))}
         </Tabs>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Total Profit: $
-              {Object.values(data)
-                .flat()
-                .reduce((sum, item) => sum + item.profit, 0)
-                .toLocaleString()}
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-          </div>
-        </div>
-      </CardFooter>
     </Card>
   );
 }

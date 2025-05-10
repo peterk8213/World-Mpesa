@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type React from "react";
-import { UserNav } from "@/components/User-Nav";
 
 export function MainNav({
   className,
@@ -18,13 +17,13 @@ export function MainNav({
           {...props}
         >
           <Link
-            href="/admin"
+            href="/admin-only-page"
             className="text-sm font-medium transition-colors hover:text-primary"
           >
             Overview
           </Link>
           <Link
-            href="/admin/users"
+            href="/admin-only-page/users"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             Users
@@ -42,9 +41,6 @@ export function MainNav({
             Settings
           </Link>
         </nav>
-        <div className="ml-auto flex items-center space-x-4">
-          <UserNav />
-        </div>
       </div>
     </header>
   );

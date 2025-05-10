@@ -8,9 +8,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect, notFound } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
-import { Provider } from "@/models/provider";
+import "@/models/provider";
 
-// Simulate fetching accounts from a database
 async function getAccounts({
   userId,
   method,
