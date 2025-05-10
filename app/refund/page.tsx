@@ -54,7 +54,7 @@ const RefundPageWrapper = async ({ userId }: { userId: string }) => {
   return (
     <RefundRequestPage
       submitRefundRequest={submitRefundRequest}
-      Balance={parseFloat(formatWithoutRounding(balance - 0.01, 2))} // Replace with actual balance if needed
+      Balance={parseFloat(formatWithoutRounding(balance - 0.01, 2))}
     />
   );
 };

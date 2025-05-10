@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { X, Star, MoreVertical } from "lucide-react";
 import {
@@ -11,24 +11,38 @@ import {
 } from "@worldcoin/mini-apps-ui-kit-react/Drawer";
 import { Button } from "@/components/ui/button";
 
-interface RatingDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-export function RatingDialog({ open, onOpenChange }: RatingDialogProps) {
+export function RatingDialog() {
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showRateModal, setShowRateModal] = useState(false);
+
+  useEffect(() => {
+    const hasSeenRateModal = localStorage.getItem("hasSeenRateModal");
+    console.log("hasSeenRateModal", hasSeenRateModal);
+
+    if (!hasSeenRateModal) {
+      // need like a timeout to show the modal after a few seconds
+      setTimeout(() => {
+        setShowRateModal(true);
+      }, 2000); // show modal after 2 seconds
+    }
+  }, []);
+
+  const handleClose = () => {
+    localStorage.setItem("hasSeenRateModal", "true");
+
+    setShowRateModal(false);
+  };
 
   const handleRate = () => {
     setShowInstructions(true);
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-w-md">
-        <div className="space-y-4 py-2">
+    <Drawer open={showRateModal} onOpenChange={handleClose}>
+      <DrawerContent className="max-w-md  min-h-[200px] flex flex-col justify-around pb-4">
+        <div className="space-y-4 py-2 ">
           {!showInstructions ? (
-            <>
+            <div className="flex justify-between items-center">
               <p className="text-center text-gray-700">
                 Enjoying the app? Please rate us with 5 stars!
               </p>
@@ -40,7 +54,7 @@ export function RatingDialog({ open, onOpenChange }: RatingDialogProps) {
                   />
                 ))}
               </div>
-            </>
+            </div>
           ) : (
             <motion.div
               initial={{ opacity: 0 }}
@@ -63,7 +77,7 @@ export function RatingDialog({ open, onOpenChange }: RatingDialogProps) {
                   <span className="bg-black text-white rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
                     2
                   </span>
-                  <span>Select "Rate App" from the menu</span>
+                  <span>Select "Rate " from the menu</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="bg-black text-white rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -83,22 +97,23 @@ export function RatingDialog({ open, onOpenChange }: RatingDialogProps) {
             </motion.div>
           )}
         </div>
-
-        {!showInstructions ? (
-          <Button
-            onClick={handleRate}
-            className="w-full bg-black hover:bg-gray-800 text-white rounded-full"
-          >
-            Rate Now
-          </Button>
-        ) : (
-          <Button
-            onClick={() => onOpenChange(false)}
-            className="w-full bg-black hover:bg-gray-800 text-white rounded-full"
-          >
-            Got It
-          </Button>
-        )}
+        <div className="flex justify-between items-center px-4 py-2 border-t border-slate-200">
+          {!showInstructions ? (
+            <Button
+              onClick={handleRate}
+              className="w-full bg-black hover:bg-gray-800 text-white rounded-full"
+            >
+              Rate Now
+            </Button>
+          ) : (
+            <Button
+              onClick={() => handleClose()}
+              className="w-full bg-black hover:bg-gray-800 text-white rounded-full"
+            >
+              Got It
+            </Button>
+          )}
+        </div>
       </DrawerContent>
     </Drawer>
   );

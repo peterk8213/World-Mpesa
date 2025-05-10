@@ -16,6 +16,7 @@ import ManualPayout from "@/models/ManualPayout";
 import UserHomePageCard from "@/components/UserHomePage";
 //import { HomePageAnalytics } from "@/components/HomepageAnalytics";
 import { Suspense } from "react";
+import { RatingDialog } from "@/components/RatingDrawer";
 
 //impor { HorizontalTimeline } from "@/components/HorizontalTimeline";
 
@@ -77,6 +78,9 @@ export default async function Home() {
 
       <div className="px-2">
         <AppServices />
+      </div>
+      <div className="px-2">
+        <RatingDialog />
       </div>
     </div>
   );
