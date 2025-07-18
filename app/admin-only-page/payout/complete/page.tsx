@@ -127,7 +127,12 @@ export default async function CompletePayoutPage({
         <CardHeader>
           <CardTitle>
             {" "}
-            <Button variant="outline" size="icon" className="" asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full bg-accent"
+              asChild
+            >
               <Link href="/admin-only-page/payout">
                 <ArrowLeft />
                 <span className="sr-only">Back to Payouts</span>

@@ -23,7 +23,7 @@ export function RatingDialog() {
       // need like a timeout to show the modal after a few seconds
       setTimeout(() => {
         setShowRateModal(true);
-      }, 2000); // show modal after 2 seconds
+      }, 5000); // show modal after 5 seconds
     }
   }, []);
 
