@@ -5,7 +5,8 @@ import {
   Tokens,
   PayCommandInput,
 } from "@worldcoin/minikit-js";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 import { Amount } from "@/types";
 // import { useSession } from "next-auth/react";
@@ -86,26 +87,32 @@ const sendPayment = async ({ userAmount }: { userAmount: string }) => {
   }
 };
 
-const handlePay = async ({ userAmount }: { userAmount: string }) => {
+////// 8/17/25  return a bool on txn status
+
+const handlePay = async ({
+  userAmount,
+}: {
+  userAmount: string;
+}): Promise<boolean> => {
   try {
     if (!MiniKit.isInstalled()) {
       toastError(
         "MiniKit is not installed. Make sure you're running the application inside of World App"
       );
       console.error("MiniKit is not installed");
-      return;
+      return false;
     }
     /////////// only for testing purposes to reduce token usage
     //const paymentResult = await sendPayment({ userAmount: "0.1" });
     const paymentResult = await sendPayment({ userAmount });
     if (!paymentResult) {
-      return;
+      return false;
     }
     const { sendPaymentResponse, transactionId } = paymentResult;
     const response = sendPaymentResponse.finalPayload;
 
     if (!response) {
-      return;
+      return false;
     }
 
     console.log("Payment response", sendPaymentResponse, transactionId);
@@ -124,33 +131,50 @@ const handlePay = async ({ userAmount }: { userAmount: string }) => {
         // Congrats your payment was successful!
         toastSuccess("Payment successful");
         console.log("SUCCESS!");
+
+        return true;
       } else {
         // Payment failed
         toastError("Payment failed");
         console.log("FAILED!");
+        return false;
       }
     }
     if (response.status == "error") {
       toastError("Payment failed");
       console.log("Payment failed");
+      return false;
     }
   } catch (error) {
     console.error("Error sending payment", error);
+    toastError("Error sending payment");
+    return false;
   }
 };
 
 export const PayBlock = ({ userAmount }: { userAmount: string }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
+  const onPayClick = useCallback(async () => {
+    try {
+      setIsLoading(true);
+
+      const status = await handlePay({ userAmount });
+      if (status) {
+        router.push("/home");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userAmount]);
   return (
     <div className="fixed bottom-5 left-0 right-0 p-4 z-10">
       <Button
-        onClick={() => {
-          setIsLoading(true);
-          handlePay({ userAmount });
-        }}
+        onClick={onPayClick}
         className="w-full bg-black text-white py-6 rounded-lg font-medium text-lg hover:scale-95 transition-transform"
         fullWidth
+        isLoading={isLoading}
       >
         Deposit Now
       </Button>

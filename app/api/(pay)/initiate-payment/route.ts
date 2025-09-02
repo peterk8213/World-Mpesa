@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 
       console.log("new User transaction created   ", worldTransaction);
 
-      if (!worldTransaction) {
+      if (!worldTransaction._id) {
         return NextResponse.json(
           { success: false, error: "Failed to initiate payment" },
           { status: 500 }

@@ -45,7 +45,7 @@ export async function CheckoutForm({ userAmount }: { userAmount: string }) {
           {/* Added Alert */}
           <Alert
             variant="default"
-            className="mb-6 bg-yellow-50 border-yellow-200"
+            className="mb-2 bg-yellow-50 border-yellow-200"
           >
             {" "}
             {/* Adjusted styling */}
@@ -101,16 +101,16 @@ export async function CheckoutForm({ userAmount }: { userAmount: string }) {
                     </div>
                   </div>
                 </div>
-                <div>
+                {/* <div>
                   <h3 className="text-gray-500 mb-2">Gas Fee (0.0%)</h3>
                   <div className="">{formattedFee}</div>
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="justify-center  items-center mt-2 space-y-4 bg-transparent py-2">
+        <div className="justify-center  items-center mt-3 space-y-4 bg-transparent py-2">
           <PayBlock userAmount={userAmount} />
         </div>
       </div>
