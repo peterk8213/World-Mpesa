@@ -142,28 +142,28 @@ export async function POST(req: NextRequest) {
           error: "failed to create transaction",
         });
       }
-      const amountInUSD = await convertCrypto(
-        transaction.inputToken,
-        transaction.inputTokenAmount
-      );
+      // const amountInUSD = await convertCrypto(
+      //   transaction.inputToken,
+      //   transaction.inputTokenAmount
+      // );
 
-      if (amountInUSD.success == false) {
-        return NextResponse.json({
-          success: false,
-          error: "Failed to convert crypto",
-        });
-      }
+      // if (amountInUSD.success == false) {
+      //   return NextResponse.json({
+      //     success: false,
+      //     error: "Failed to convert crypto",
+      //   });
+      // }
 
-      if (!amountInUSD.data) {
-        return NextResponse.json({
-          success: false,
-          error: "Amount is undefined",
-        });
-      }
+      // if (!amountInUSD.data) {
+      //   return NextResponse.json({
+      //     success: false,
+      //     error: "Amount is undefined",
+      //   });
+      // }
 
       const updatedWallet = await updateWallet({
         userId,
-        amount: amountInUSD.data.amount,
+        amount:updatedTransaction.amount || 0,
       });
 
       if (updatedWallet.success == false) {

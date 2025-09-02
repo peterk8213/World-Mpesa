@@ -25,14 +25,19 @@ export const convertCrypto = async (
     }
 
     const { result } = await response.json();
+
     const rates = result.prices[inputToken].USD.amount;
-    const ratesNumber = parseFloat(rates) / Math.pow(10, 6);
+    const decimals = result.prices[inputToken].USD.decimals;
+    const decimalsNumber = decimals || 12;
+    const ratesNumber = parseFloat(rates) / Math.pow(10, decimalsNumber);
     let amountInUSD;
 
     if (inputToken == "WLD") {
-      amountInUSD = (inputTokenAmount / Math.pow(10, 18)) * ratesNumber;
+      amountInUSD =
+        (inputTokenAmount / Math.pow(10, decimalsNumber)) * ratesNumber;
     } else if (inputToken == "USDCE") {
-      amountInUSD = (inputTokenAmount / Math.pow(10, 6)) * ratesNumber;
+      amountInUSD =
+        (inputTokenAmount / Math.pow(10, decimalsNumber)) * ratesNumber;
     }
     if (!amountInUSD || amountInUSD <= 0) {
       throw new Error("Invalid amount");

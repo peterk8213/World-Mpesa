@@ -1,13 +1,7 @@
 import { ServiceCard } from "@/components/AppServicesCard";
-import { Phone, Send, Receipt, Wallet, PiggyBank } from "lucide-react";
+import { Phone, Send, Receipt, HelpCircle, PiggyBank } from "lucide-react";
 
 const services = [
-  {
-    icon: <Receipt className="h-6 w-6" />,
-    title: "Withdraw",
-    description: "Popular providers-[Mpesa, Mobile Money, airtel]",
-    href: "/withdraw",
-  },
   {
     icon: <PiggyBank />,
     title: "Deposit",
@@ -15,17 +9,23 @@ const services = [
     href: "/deposit",
   },
   {
+    icon: <Receipt className="h-6 w-6" />,
+    title: "Withdraw",
+    description: "Popular providers-[Mpesa, Mobile Money, airtel]",
+    href: "/withdraw",
+  },
+  {
     icon: <Send />,
     title: "Send Money",
     description: "Transfer to anyone",
     href: "/send",
   },
-  // {
-  //   icon: <Phone />,
-  //   title: "Airtime",
-  //   description: "Buy phone credit",
-  //   href: "/airtime",
-  // },
+  {
+    icon: <HelpCircle />,
+    title: "Need Help?",
+    description: " Our support team is here to help ",
+    href: "mailto:peterwilliams8213@gmail.com",
+  },
 ];
 
 export function AppServices() {

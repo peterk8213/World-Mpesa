@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Plus, Settings, Coins, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { Typography } from "@worldcoin/mini-apps-ui-kit-react/Typography";
 
 import { formatWithoutRounding } from "@/lib/formatBalance";

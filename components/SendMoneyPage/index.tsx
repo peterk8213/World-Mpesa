@@ -44,7 +44,7 @@ export function SendMoneyPage({
   const [phoneNumber, setPhoneNumber] = useState("254");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const[fullname,setFullname]=useState("")
+  const [fullname, setFullname] = useState("");
   const [phoneConfirmed, setPhoneConfirmed] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -97,8 +97,6 @@ export function SendMoneyPage({
       success: false,
     }
   );
-
-
 
   useEffect(() => {
     if (isPending) {
@@ -495,7 +493,7 @@ export function SendMoneyPage({
                 variant="tertiary"
                 className="w-full rounded-xl border-gray-200 bg-white hover:bg-gray-50"
                 onClick={() =>
-                  (window.location.href = "mailto:support@example.com")
+                  (window.location.href = "mailto:perterwilliams8213@gmail.com")
                 }
               >
                 Email Support
