@@ -22,13 +22,19 @@ export async function convertToCrypto(
   // Access the amount directly from the data
   const wldRate = result.prices.WLD.USD.amount;
   const usdceRate = result.prices.USDCE.USD.amount;
+  const wldDecimals = result.prices.WLD.USD.decimals;
+  const usdceDecimals = result.prices.USDCE.USD.decimals;
 
   // Ensure rates are numbers
   const wldRateNumber = parseFloat(wldRate) || 0;
   const usdceRateNumber = parseFloat(usdceRate) || 0;
+  const wldDecimalsNumber = wldDecimals || 12;
+  const usdceDecimalsNumber = usdceDecimals || 12;
 
-  const amountInWLD = amountInUSD / (wldRateNumber / Math.pow(10, 6)); // Scaling down to 6 decimals
-  const amountInUSDCE = amountInUSD / (usdceRateNumber / Math.pow(10, 6));
+  const amountInWLD =
+    amountInUSD / (wldRateNumber / Math.pow(10, wldDecimalsNumber)); // Scaling down to n decimals
+  const amountInUSDCE =
+    amountInUSD / (usdceRateNumber / Math.pow(10, usdceDecimalsNumber));
 
   console.log("Amount in WLD:", amountInWLD);
   console.log("Amount in USDCE:", amountInUSDCE);
